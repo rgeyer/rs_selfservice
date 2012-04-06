@@ -1,0 +1,9 @@
+[submodule "library/guzzle"]
+	path = library/guzzle
+	url = git://github.com/rgeyer/guzzle_selfserve_clients.git
+[submodule "library/Doctrine"]
+	path = library/Doctrine
+	url = git://github.com/doctrine/doctrine2.git
+[submodule "library/lightopenid"]
+	path = library/lightopenid
+	url = git://gitorious.org/lightopenid/lightopenid.git
