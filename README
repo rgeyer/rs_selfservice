@@ -1,3 +1,7 @@
+DEPENDENCIES:
+* Zend Framework 1.11.11
+* Smarty 3.1.7
+
 TODO:
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
 * Handle "cloud not supported" errors when provisioning servers or arrays
