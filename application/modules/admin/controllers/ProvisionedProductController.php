@@ -70,21 +70,21 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 	}
 	
 	private function meta_down_product($product, $request, &$response) {
-		$this->meta_down_object($product, $request, &$response);
+		$this->meta_down_object($product, $request, $response);
 		foreach($product->security_groups as $security_group) {			
-			$this->meta_down_object($security_group, $request, &$response);
+			$this->meta_down_object($security_group, $request, $response);
 		}
 		
 		foreach($product->servers as $server) {
-			$this->meta_down_object($server, $request, &$response);
+			$this->meta_down_object($server, $request, $response);
 		}
 		
 		foreach($product->arrays as $array) {
-			$this->meta_down_object($array, $request, &$response);
+			$this->meta_down_object($array, $request, $response);
 		}
 		
 		foreach($product->alerts as $alert) {
-			$this->meta_down_object($alert, $request, &$response);
+			$this->meta_down_object($alert, $request, $response);
 		}
 	}
 	
@@ -380,6 +380,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					$response['result'] = 'error';
 					$response['error'] = $e->getMessage();
 					$this->log->err("An error occurred provisioning the product. Error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
+					$this->_helper->json->sendJson($response);
 				}
 
 				try {
@@ -388,7 +389,8 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 				} catch (Exception $e) {
 					$response['result'] = 'error';
 					$response['error'] = $e->getMessage();					
-					$this->log->err("An error occurred persisting the provisioned product to the DB. Error " . $e->getMessage() . " Trace: " . $e->getTraceAsString());					
+					$this->log->err("An error occurred persisting the provisioned product to the DB. Error " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
+					$this->_helper->json->sendJson($response);
 				}
 			} else {
 				$response ['result'] = 'error';
