@@ -27,47 +27,79 @@ require_once __DIR__ . '/bootstrapEnvironment.php';
 $frontController = Zend_Controller_Front::getInstance();
 $bootstrap = $application->getBootstrap()->bootstrap('doctrineEntityManager');
 $em = $bootstrap->getResource('doctrineEntityManager');
+$log = null;
 
-$rule1 = new SecurityGroupRule();
-$rule1->ingress_cidr_ips = "0.0.0.0/0";
-$rule1->ingress_from_port = 22;
-$rule1->ingress_to_port = 22;
-$rule1->ingress_protocol = 'tcp';
+if ($bootstrap->hasResource('Log')) {
+	$log = $bootstrap->getResource('Log');
+}
 
-$rule2 = new SecurityGroupRule();
-$rule2->ingress_cidr_ips = "0.0.0.0/0";
-$rule2->ingress_from_port = 80;
-$rule2->ingress_to_port = 80;
-$rule2->ingress_protocol = 'tcp';
+try {
+	
+// START Count MetaInput
+$count_metainput = new NumberProductMetaInput();
+$count_metainput->default_value = 1;
+$count_metainput->input_name = 'instance_count';
+$count_metainput->display_name = 'Count';
+$count_metainput->description = 'The number of instances to create and launch';
 
+$em->persist($count_metainput);
+// END Count MetaInput
+	
+// START default security group
 $securityGroup = new SecurityGroup();
-$securityGroup->name = "base";
-$securityGroup->description = "Port 22 and 80";
-$securityGroup->cloud_id = 1;
-$securityGroup->rules[] = $rule1;
-$securityGroup->rules[] = $rule2;
+$securityGroup->name = new TextProductMetaInput('base');
+$securityGroup->description = new TextProductMetaInput('Port 22 and 80');
+$securityGroup->cloud_id = new NumberProductMetaInput(1);
+
+$idx = 0;
+
+$securityGroup->rules[$idx] = new SecurityGroupRule();
+$securityGroup->rules[$idx]->ingress_cidr_ips = new TextProductMetaInput('0.0.0.0/0');
+$securityGroup->rules[$idx]->ingress_from_port = new NumberProductMetaInput(22);
+$securityGroup->rules[$idx]->ingress_to_port = new NumberProductMetaInput(22);
+$securityGroup->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
+
+$idx++;
+
+$securityGroup->rules[$idx] = new SecurityGroupRule();
+$securityGroup->rules[$idx]->ingress_cidr_ips = new TextProductMetaInput('0.0.0.0/0');
+$securityGroup->rules[$idx]->ingress_from_port = new NumberProductMetaInput(80);
+$securityGroup->rules[$idx]->ingress_to_port = new NumberProductMetaInput(80);
+$securityGroup->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
+
+$em->persist($securityGroup);
+// START default security group
 
 $serverTemplate = new ServerTemplate();
-$serverTemplate->version = 41;
-$serverTemplate->nickname = 'Base ServerTemplate for Linux (Chef)';
+$serverTemplate->version = new NumberProductMetaInput(58);
+$serverTemplate->nickname = new TextProductMetaInput('Base ServerTemplate for Linux (Chef)');
 
 $server = new Server();
-$server->cloud_id = 1;
-$server->count = 1;
-$server->instance_type = 'm1.small';
-$server->security_groups[] = $securityGroup;
+$server->cloud_id = new NumberProductMetaInput(1);
+$server->count = $count_metainput;
+$server->instance_type = new TextProductMetaInput('m1.small');
+$server->security_groups = array($securityGroup);
 $server->server_template = $serverTemplate;
-$server->nickname = "Base ST";
+$server->nickname = new TextProductMetaInput('Base ST');
 
 $product = new Product();
 $product->name = "Base";
 $product->icon_filename = "4f0e334ba64d1.png";
-$product->security_groups[] = $securityGroup;
-$product->servers[] = $server;
+$product->security_groups = array($securityGroup);
+$product->servers = array($server);
+$product->meta_inputs = array($count_metainput);
+$product->launch_servers = true;
+
+} catch (Exception $e) {
+	if($log) { $log->err($e->getMessage()); }
+	print_r($e);
+}
 
 try {
 $em->persist($product);
 $em->flush();
 } catch (Exception $e) {
+	if($log) { $log->err($e->getMessage()); }
 	print $e->getMessage() . "\n";
+	print $e->getTraceAsString();
 }

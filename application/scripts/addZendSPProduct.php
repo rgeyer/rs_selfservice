@@ -43,6 +43,16 @@ $cloud_metainput->description = 'The AWS cloud to create the Zend Solution Pack 
 
 $em->persist($cloud_metainput);
 // END Cloud ProductMetaInput
+
+// START Deployment Name MetaInput
+$deployment_name = new TextProductMetaInput();
+$deployment_name->default_value = 'Zend SP';
+$deployment_name->input_name = 'deployment_name';
+$deployment_name->display_name = 'Deployment Name';
+$deployment_name->description = 'The name of the deployment which will be created in RightScale';
+
+$em->persist($deployment_name);
+// END Deployment Name MetaInput
 	
 // START zend-default Security Group
 $zend_default_sg = new SecurityGroup();
@@ -325,7 +335,8 @@ $product->icon_filename = "4f0e334ba64d1.png";
 $product->security_groups = array($zend_app_sg, $zend_cm_sg, $zend_default_sg, $zend_haproxy_sg, $zend_mysql_sg);
 $product->servers = array($zend_server, $zend_cm, $zend_db, $zend_lb);
 $product->arrays = array($zend_server_ary);
-$product->meta_inputs = array($cloud_metainput);
+$product->meta_inputs = array($cloud_metainput, $deployment_name);
+$product->launch_servers = false;
 
 } catch (Exception $e) {
 	if($log) {

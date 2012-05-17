@@ -54,6 +54,16 @@ $text_metainput->description = 'A tag used to identify the autoscaling array';
 
 $em->persist($text_metainput);
 // END Text ProductMetaInput
+
+// START Deployment Name MetaInput
+$deployment_name = new TextProductMetaInput();
+$deployment_name->default_value = 'PHP 3-Tier';
+$deployment_name->input_name = 'deployment_name';
+$deployment_name->display_name = 'Deployment Name';
+$deployment_name->description = 'The name of the deployment which will be created in RightScale';
+
+$em->persist($deployment_name);
+// END Deployment Name MetaInput
 	
 // START php-default Security Group
 $php_default_sg = new SecurityGroup();
@@ -236,7 +246,8 @@ $product->security_groups = array($php_app_sg, $php_default_sg, $php_lb_sg, $php
 $product->servers = array($app_server, $php_db, $php_lb);
 $product->arrays = array($php_server_ary);
 $product->alerts = array($cpu_scale_up_alert, $cpu_scale_down_alert);
-$product->meta_inputs = array($cloud_metainput, $text_metainput);
+$product->meta_inputs = array($cloud_metainput, $text_metainput, $deployment_name);
+$product->launch_servers = false;
 
 } catch (Exception $e) {
 	if($log) { $log->err($e->getMessage()); }
