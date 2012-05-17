@@ -1,4 +1,5 @@
 <?php
+define('RS_MAX_AWS_CLOUD_ID', 20);
 
 function loadModelsFromDir($dir, $recursive=false) {
 	foreach(scandir($dir) as $modelFile) {
