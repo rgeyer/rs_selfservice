@@ -6,3 +6,4 @@ application/configs/cloud_creds.ini
 .zfproject.xml
 logs
 rs_selfservice.tmproj
+application/proxies/*.php

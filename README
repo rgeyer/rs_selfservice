@@ -5,7 +5,7 @@ DEPENDENCIES:
 TODO:
 * Switch to read-only references to all submodules
 * Create and verify support for SQLite for dev and test
-
+* Soft deletes for products, provisioned products, perhaps others?
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
 * Handle "cloud not supported" errors when provisioning servers or arrays
   * Initial provisioning succeeds without issue. Will not be able to launch
@@ -30,6 +30,7 @@ TODO:
   * Allow execution of scripts on servers once they become operational
 * DNS integration to generate DB records etc.
 * Support multiple AWS/RS accounts
+* In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
 
 Icon Pack
 http://findicons.com/pack/42/basic
