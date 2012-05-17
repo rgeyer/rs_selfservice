@@ -7,3 +7,4 @@ doctrine orm:schema-tool:create
 
 /Applications/XAMPP/xamppfiles/bin/php addZendSPProduct.php
 /Applications/XAMPP/xamppfiles/bin/php addPhp3TierProduct.php
+/Applications/XAMPP/xamppfiles/bin/php addBaseLinuxProduct.php
