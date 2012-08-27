@@ -22,17 +22,21 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-use Guzzle\Rs\Common\ClientFactory;
+use RGeyer\Guzzle\Rs\Model\SecurityGroup1_5;
+
+use RGeyer\Guzzle\Rs\Model\Cloud;
+
+use RGeyer\Guzzle\Rs\Common\ClientFactory;
 use Guzzle\Aws\Ec2\Command\DeleteKeyPair;
 use Guzzle\Aws\Ec2\Command\DescribeKeyPairs;
 use Guzzle\Aws\Ec2\Command\DeleteSecurityGroup;
 use Guzzle\Aws\Ec2\Command\RevokeSecurityGroupIngress;
 use Guzzle\Aws\Ec2\Command\DescribeSecurityGroups;
-use Guzzle\Rs\Model\ServerArray;
-use Guzzle\Rs\Model\Server;
-use Guzzle\Rs\Model\SshKey;
-use Guzzle\Rs\Model\Deployment;
-use Guzzle\Rs\Model\SecurityGroup;
+use RGeyer\Guzzle\Rs\Model\ServerArray;
+use RGeyer\Guzzle\Rs\Model\Server;
+use RGeyer\Guzzle\Rs\Model\SshKey;
+use RGeyer\Guzzle\Rs\Model\Deployment;
+use RGeyer\Guzzle\Rs\Model\SecurityGroup;
 use Guzzle\Aws\Ec2\Ec2Client;
 
 /**
@@ -41,6 +45,13 @@ use Guzzle\Aws\Ec2\Ec2Client;
  * @author Ryan J. Geyer <me@ryangeyer.com> 
  */
 class Admin_ProvisionedproductController extends \SelfService\controller\BaseController {
+	
+	/**
+	 * An array of SshKey models provisioned for a provision product request
+	 * 
+	 * @var SshKey[]
+	 */
+	protected $_ssh_keys = array();
 	
 	private function meta_up_product($product, $request) {
 		$this->meta_up_object($product, $request);
@@ -120,6 +131,30 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$this->view->assign('actions', $actions);
 	}
 	
+	protected function _getSshKey($cloud_id, $name, &$prov_prod) {
+		if(!array_key_exists($cloud_id, $this->_ssh_keys)) {
+			$newkey = new \RGeyer\Guzzle\Rs\Model\SshKey();
+			// TODO: For now assume we're creating a new SSH key and reusing
+			// it, but this should really be configurable
+				
+			// TODO: Need to refactor this into a lazy load function for creating/fetching a key for the
+			// specified cloud, including error handling for clouds which don't support SSH keys
+			//$keyname = sprintf ( "rsss-%s-%s", $product->name, $now );
+			$newkey->aws_key_name = $name;
+			$newkey->cloud_id = $cloud_id;
+			$newkey->create();
+			$prov_key = new ProvisionedSshKey();
+			$prov_key->href = $newkey->href;
+			$prov_key->cloud_id = $cloud_id;
+			$prov_prod->provisioned_objects[] = $prov_key;
+		
+			$this->log->info(sprintf("Created SSH Key - Cloud: %s Name: %s ID: %s", $cloud_id, $name, $newkey->id));
+			$this->_ssh_keys[$cloud_id] = $newkey;
+		}
+
+		return $this->_ssh_keys[$cloud_id];
+	}
+	
 	public function provisionAction() {
 		$now = time();
 		$response = array ('result' => 'success' );
@@ -127,21 +162,31 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$creds = $bootstrap->getResource('cloudCredentials');
 		
-		if ($this->_request->has ( 'id' )) {						
+		if ($this->_request->has ( 'id' )) {
+
+      $prov_helper = new \SelfService\ProvisioningHelper(
+        $creds->rs_acct,
+        $creds->rs_email,
+        $creds->rs_pass,
+        $this->log
+      );
+
 			ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
 			$api = ClientFactory::getClient();
+			$api15 = ClientFactory::getClient('1.5');
+			
+			$cloud_obj = new Cloud();
+			$other_clouds = $cloud_obj->indexAsHash();			
 			
 			$product_id = $this->_request->getParam ( 'id' );
 			$dql = "SELECT p FROM Product p WHERE p.id = " . $product_id;
 			$result = $this->em->createQuery ( $dql )->getResult ();
 			
 			if (count ( $result ) == 1) {				
-				$st = new \Guzzle\Rs\Model\ServerTemplate ();
-				$api_server_templates = $st->index ();
+				$st = new \RGeyer\Guzzle\Rs\Model\ServerTemplate();
+				$api_server_templates = $st->index();
 				$api_security_groups = array();
 				$api_servers = array();
-				
-				$sshkeys = array();
 				
 				$product = $result[0];
 				
@@ -153,31 +198,19 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 				$prov_prod->product = $product;
 				
 				try {
-					// TODO: For now assume we're creating a new SSH key and reusing
-					// it, but this should really be configurable
-					for($i = 1; $i <= 7; $i++) {
-						$keyname = sprintf ( "rsss-%s-%s", $product->name, $now );
-						$sshkeys[$i] = new \Guzzle\Rs\Model\SshKey ();
-						$sshkeys[$i]->aws_key_name = $keyname;
-						$sshkeys[$i]->cloud_id = $i;				
-						$sshkeys[$i]->create();
-						$prov_key = new ProvisionedSshKey();
-						$prov_key->href = $sshkeys[$i]->href;
-						$prov_key->cloud_id = $i;
-						$prov_prod->provisioned_objects[] = $prov_key;				
-						
-						$this->log->info(sprintf("Created SSH Key - Cloud: %s Name: %s ID: %s", $i, $keyname, $sshkeys[$i]->id));
-					}
-					
+          # Create the new deployment
 					$deplname = sprintf ( "rsss-%s-%s", $product->name, $now );
-					$deployment = new \Guzzle\Rs\Model\Deployment ();
-					$deployment->nickname = $deplname;
-					$deployment->description = sprintf ( "Created by rs_selfservice for the '%s' product", $product->name );
-					$deployment->create();
-					$prov_depl = new ProvisionedDeployment();
-					$prov_depl->href = $deployment->href;
+          $deployment_params = array(
+            'deployment[nickname]' => $this->_request->getParam('deployment_name', $deplname),
+            'deployment[description]' => sprintf ( "Created by rs_selfservice for the '%s' product", $product->name )
+          );
+          $deployment = $prov_helper->provisionDeployment($deployment_params);
+
+          # Record the creation of the deployment
+					$prov_depl = new ProvisionedDeployment($deployment);
 					$prov_prod->provisioned_objects[] = $prov_depl;
 					
+					# This converts the api URL of the deployment to a clickable dashboard URL
 					$response['url'] = str_replace('/api', '', $deployment->href);
 					
 					$this->log->info(sprintf("Created Deployment - Name: %s ID: %s", $deplname, $deployment->id));
@@ -185,68 +218,25 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					$this->log->info("About to provision " . count($product->security_groups) . " Security Groups");
 					// Create the Security Groups
 					foreach ( $product->security_groups as $security_group ) {
-						$this->log->info("The Security Group is a " . get_class($security_group));
-						$this->log->info("The Security Group description is a " . get_class($security_group->description));
+						# Create the security group
 						$secGrpBaseName = $security_group->name->getVal();
 						$secGrpPrefixedName = sprintf ( "rsss-%s-%s", $secGrpBaseName, $now );
-						
-						$this->log->info("About to provision with description of " . $security_group->description->getVal());
-						
-						$secGrp = new SecurityGroup();
-						$secGrp->aws_group_name = $secGrpPrefixedName;
-						$secGrp->aws_description = $security_group->description->getVal();
-						$secGrp->cloud_id = $security_group->cloud_id->getVal();
-						$secGrp->create();
-						$prov_grp = new ProvisionedSecurityGroup();
-						$prov_grp->href = $secGrp->href;
-						$prov_grp->cloud_id = $security_group->cloud_id->getVal();
-						$prov_prod->provisioned_objects[] = $prov_grp;					
-						$this->log->info(sprintf("Created Security Group - Name: %s ID: %s", $secGrpPrefixedName, $secGrp->id));
-						// This feels a bit hacky?
-						$secGrp->find_by_id ( $secGrp->id );
-						$api_security_groups[$security_group->id] = array ('api' => $secGrp, 'model' => $security_group );
+            $security_group->name->setVal($secGrpPrefixedName);
+						$secGrp = $prov_helper->provisionSecurityGroup($security_group);
+
+            # Record the creation of the security group
+						$prov_grp = new ProvisionedSecurityGroup($secGrp, $security_group->cloud_id->getVal());
+						$prov_prod->provisioned_objects[] = $prov_grp;
 					}
 					
-					// Add the rules to the security groups
-					foreach ( $api_security_groups as $security_group ) {						
-						$secGrpBaseName = $security_group['model']->name->getVal();
-						$secGrpPrefixedName = sprintf ( "rsss-%s-%s", $secGrpBaseName, $now );
-						
-						$this->log->info("About to provision " . count($security_group['model']->rules) . " rules for Security Group " . $secGrpPrefixedName);
-						foreach ( $security_group['model']->rules as $rule ) {
-							$params = array(
-								'id' => $security_group['api']->id,
-								'ec2_security_group[protocol]' => $rule->ingress_protocol->getVal(),
-								'ec2_security_group[from_port]' => $rule->ingress_from_port->getVal(),
-								'ec2_security_group[to_port]' => $rule->ingress_to_port->getVal()
-							);
-							if ($rule->ingress_group) {
-								$params = array_merge($params,
-									array(
-										'ec2_security_group[owner]' => $security_group['api']->aws_owner,
-										'ec2_security_group[group]' => sprintf ( "rsss-%s-%s", $rule->ingress_group->getVal(), $now)
-									)
-								);
-							} else {
-								$params = array_merge($params,
-									array('ec2_security_group[cidr_ips]' => $rule->ingress_cidr_ips->getVal())
-								);
-							}
-							
-							$command = $api->getCommand( 'ec2_security_groups_update', $params );
-							$command->execute();
-							$result = $command->getResult();
-							$this->log->info(
-								sprintf("Created Security Group Rule - Group Name: %s Rule: protocol: %s ports: %s..%s %s: %s",
-									$secGrpPrefixedName,
-									$rule->ingress_protocol->getVal(),
-									$rule->ingress_from_port->getVal(),
-									$rule->ingress_to_port->getVal(),
-									$rule->ingress_group ? 'group' : 'IPs',
-									$rule->ingress_group ? $rule->ingress_group->getVal() : $rule->ingress_cidr_ips->getVal(),
-									$secGrp->id)
-							);
-						}
+					// Add the rules to all security groups.  This is done after creating each of them
+          // so that rules which reference other groups can be successful.
+					foreach ( $api_security_groups as $security_group ) {
+            $prov_helper->provisionSecurityGroupRule(
+              $security_group['model'],
+              $security_group['api']->id,
+              $security_group['api']->aws_owner
+            );
 					}
 					
 					$this->log->info("About to provision " . count($product->servers) . " different types of servers");
@@ -278,25 +268,25 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 						$this->log->info("About to provision " . $server->count->getVal() . " servers of type " . $server->nickname->getVal());
 						
 						for ($i=1; $i <= $server->count->getVal(); $i++) {
-							$api_server = new \Guzzle\Rs\Model\Server ();
+							$api_server = new \RGeyer\Guzzle\Rs\Model\Server ();
 							$api_server->nickname = $server->nickname->getVal();
 							if($server->count->getVal() > 1) {
 								$api_server->nickname .= $i;
 							}
-							$api_server->ec2_ssh_key_href = $sshkeys[$server->cloud_id->getVal()]->href;
+							$api_server->ec2_ssh_key_href = $this->_getSshKey($server->cloud_id->getVal(), sprintf("rsss-%s-%s", $product->name, $now), $prov_prod)->href;
 							$api_server->ec2_security_groups_href = $server_secgrps;
 							$api_server->server_template_href = $st;
 							$api_server->deployment_href = $deployment->href;
 							$api_server->cloud_id = $server->cloud_id->getVal();
 							$api_server->instance_type = $server->instance_type->getVal();
-							$api_server->create ();
+							$api_server->create();
 							$prov_serv = new ProvisionedServer();
 							$prov_serv->href = $api_server->href;
 							$prov_serv->cloud_id = $server->cloud_id->getVal();
 							$prov_prod->provisioned_objects[] = $prov_serv;						
 							$this->log->info(sprintf("Created Server - Name: %s ID: %s", $server->nickname->getVal(), $api_server->id), $server);
 							$debug_api_server = array ('api' => $api_server, 'model' => $server );
-							$api_servers[$server->id] = $debug_api_server;							
+							$api_servers[$server->id][] = $debug_api_server;							
 						}
 					}
 					
@@ -323,7 +313,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 							'server_array[array_type]' => $array->type->getVal(),
 							'server_array[ec2_security_groups_href]' => $array_secgrps,
 							'server_array[server_template_href]' => $st,
-							'server_array[ec2_ssh_key_href]' => $sshkeys[$array->cloud_id->getVal()]->href,
+							'server_array[ec2_ssh_key_href]' => $this->_getSshKey($array->cloud_id->getVal(), sprintf("rsss-%s-%s", $product->name, $now), $prov_prod)->href,
 							'server_array[voters_tag]' => $array->tag->getVal(),
 							'server_array[elasticity][min_count]' => $array->min_count->getVal(),
 							'server_array[elasticity][max_count]' => $array->max_count->getVal(),
@@ -344,7 +334,9 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 						$alert_spec_subjects = array();
 						foreach($alert->subjects as $alert_spec_subject) {
 							if(array_key_exists($alert_spec_subject->id, $api_servers)) {
-								$alert_spec_subjects[] = $api_servers[$alert_spec_subject->id]['api']->href;
+								foreach($api_servers[$alert_spec_subject->id] as $api_server) {
+									$alert_spec_subjects[] = $api_server['api']->href;
+								}
 							}
 						}
 						
@@ -374,6 +366,41 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 							$result = $command->getResult();
 													
 							$this->log->info(sprintf("Created Alert Spec - Name: %s For Subject: %s", $alert->name->getVal(), $subject_href), $alert);
+						}
+					}
+									
+					if ($product->launch_servers) {
+						foreach($api_servers as $api_server) {
+							foreach($api_server as $server) {
+								$this->log->info(sprintf('Starting Server - Name: %s ID: %s', $server['api']->nickname, $server['api']->id));
+								$server['api']->start();								
+							}
+						}						
+						
+						# Wait for them to become operational
+						$keep_iterating = true;
+						while ($keep_iterating) {
+							$keep_iterating = false;
+							foreach($api_servers as $api_server) {
+								foreach($api_server as $server) {
+									$server['api']->find_by_id($server['api']->id);
+									if($server['api']->state != 'operational') {
+										$keep_iterating = true;
+										$this->log->debug(sprintf('Server (%s) had a state of (%s) so we\'ll keep waiting', $server['api']->id, $server['api']->state));
+									}										
+								}
+							}
+							sleep(10);
+						}
+						
+						# Add some info about them to the response
+						$response['servers'] = array();
+						foreach($api_servers as $api_server) {
+							foreach($api_server as $server) {
+								$server['api']->find_by_id($server['api']->id);
+								$settings = $server['api']->settings();
+								$response['servers'][] = $settings;
+							}
 						}
 					}
 				} catch (Exception $e) {

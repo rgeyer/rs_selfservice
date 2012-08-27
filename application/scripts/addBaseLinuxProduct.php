@@ -49,7 +49,7 @@ $em->persist($count_metainput);
 $securityGroup = new SecurityGroup();
 $securityGroup->name = new TextProductMetaInput('base');
 $securityGroup->description = new TextProductMetaInput('Port 22 and 80');
-$securityGroup->cloud_id = new NumberProductMetaInput(1);
+$securityGroup->cloud_id = new CloudProductMetaInput(1);
 
 $idx = 0;
 
@@ -75,7 +75,7 @@ $serverTemplate->version = new NumberProductMetaInput(58);
 $serverTemplate->nickname = new TextProductMetaInput('Base ServerTemplate for Linux (Chef)');
 
 $server = new Server();
-$server->cloud_id = new NumberProductMetaInput(1);
+$server->cloud_id = new CloudProductMetaInput(1);
 $server->count = $count_metainput;
 $server->instance_type = new TextProductMetaInput('m1.small');
 $server->security_groups = array($securityGroup);

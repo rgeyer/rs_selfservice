@@ -1,6 +1,6 @@
 <?php
 
-// Define path to application directory
+/*// Define path to application directory
 defined('APPLICATION_PATH')
     || define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));
 
@@ -14,5 +14,10 @@ set_include_path(implode(PATH_SEPARATOR, array(
     get_include_path(),
 )));
 
+require_once APPLICATION_PATH . '/../vendor/autoload.php';
+
 require_once 'Zend/Loader/Autoloader.php';
 Zend_Loader_Autoloader::getInstance();
+*/
+
+require_once __DIR__ . '/../application/scripts/bootstrapEnvironment.php';

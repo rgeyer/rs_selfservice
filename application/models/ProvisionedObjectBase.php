@@ -22,6 +22,8 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+use RGeyer\Guzzle\Rs\Model\ModelBase;
+
 /**
  * @Entity
  * @Table(name="provisioned_objects")
@@ -46,7 +48,7 @@ class ProvisionedObjectBase {
 	public $id;
 	
 	/**
-	 * @Column(type="integer", nullable="TRUE")
+	 * @Column(type="integer", nullable=true)
 	 * @var integer
 	 */
 	public $cloud_id;
@@ -56,6 +58,21 @@ class ProvisionedObjectBase {
 	 * @var string
 	 */
 	public $href;
+
+  public function __construct(ModelBase $model, $cloud_id = null) {
+    parent::__construct();
+
+    $model_params = $model->getParameters();
+    if(array_key_exists('id', $model_params)) {
+      $this->id = $model->id;
+    }
+
+    if(array_key_exists('href', $model_params)) {
+      $this->cloud_id = $model->href;
+    }
+
+    $this->cloud_id = $cloud_id;
+  }
 }
 
 /**

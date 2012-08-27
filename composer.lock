@@ -1,0 +1,57 @@
+{
+    "hash": "2253eeec99bdd66adc58de15dd32c0fe",
+    "packages": [
+        {
+            "package": "doctrine/common",
+            "version": "2.2.2"
+        },
+        {
+            "package": "doctrine/dbal",
+            "version": "2.2.2"
+        },
+        {
+            "package": "doctrine/orm",
+            "version": "2.2.3"
+        },
+        {
+            "package": "fp/lightopenid",
+            "version": "dev-master",
+            "source-reference": "ad14146f9c93e90699888e150427aca431dc3c18",
+            "commit-date": "1333528791"
+        },
+        {
+            "package": "guzzle/guzzle",
+            "version": "v2.7.2"
+        },
+        {
+            "package": "guzzle/guzzle-aws",
+            "version": "dev-guzzle2",
+            "source-reference": "fdbbfc5b63e3603b9fc8fabd88ad732470429a20",
+            "commit-date": "1345767459"
+        },
+        {
+            "package": "rgeyer/guzzle-rs",
+            "version": "dev-master",
+            "source-reference": "3dd4222ab46c9ea406cbdc16064e53cef88da8e9",
+            "commit-date": "1345853283"
+        },
+        {
+            "package": "symfony/console",
+            "version": "v2.0.16"
+        },
+        {
+            "package": "symfony/event-dispatcher",
+            "version": "v2.0.16"
+        }
+    ],
+    "packages-dev": null,
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "fp/lightopenid": 20,
+        "rgeyer/guzzle-rs": 20,
+        "guzzle/guzzle-aws": 20
+    }
+}

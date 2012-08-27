@@ -22,6 +22,10 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+use RGeyer\Guzzle\Rs\Model\Cloud;
+
+use RGeyer\Guzzle\Rs\Common\ClientFactory;
+
 /**
  * ProductController
  * 
@@ -139,16 +143,32 @@ class Admin_ProductController extends \SelfService\controller\BaseController {
 		$query = $this->em->createQuery($dql);
 		$result = $query->getResult();
 		
-		$this->view->assign('clouds', array(
-				'AWS US-East' 			=> 1,
-				'AWS US-West' 			=> 3,
-				'AWS EU' 						=> 2,
-				'AWS AP-Singapore' 	=> 4,
-				'AWS AP-Tokyo' 			=> 5,
-				'AWS SA-Sao Paulo' 	=> 7,
-				'AWS US-Oregon' 		=> 6
-			)
+		$bootstrap = $this->getInvokeArg('bootstrap');
+		$creds = $bootstrap->getResource('cloudCredentials');
+		
+		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
+		$api = ClientFactory::getClient('1.5');
+		
+		$clouds = array(
+			'AWS US-East' 			=> 1,
+			'AWS US-West' 			=> 3,
+			'AWS EU' 						=> 2,
+			'AWS AP-Singapore' 	=> 4,
+			'AWS AP-Tokyo' 			=> 5,
+			'AWS SA-Sao Paulo' 	=> 7,
+			'AWS US-Oregon' 		=> 6
 		);
+		
+		$cloud_obj = new Cloud();
+		$other_clouds = array();
+		
+		foreach($cloud_obj->index() as $cloud) {
+			$other_clouds[$cloud->name] = $cloud->id;
+		}
+		
+		$clouds = array_merge($clouds, $other_clouds);		
+		
+		$this->view->assign('clouds', $clouds);
 		$this->view->assign('meta_inputs', $result[0]->meta_inputs);
 		$this->view->assign('id', $result[0]->id);
 	}

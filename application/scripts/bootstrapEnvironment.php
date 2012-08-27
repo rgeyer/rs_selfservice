@@ -28,20 +28,15 @@ set_include_path(implode(PATH_SEPARATOR, array(
 		get_include_path(),
 )));
 
-require_once 'guzzle/vendor/Symfony/Component/ClassLoader/UniversalClassLoader.php';
+spl_autoload_register(function($class) {
+  if(0 === strpos($class, 'SelfService')) {
+    $path = implode('/', array_slice(explode('\\', $class), 1)) . '.php';
+    require_once APPLICATION_PATH . '/../library/SelfService/' . $path;
+    return true;
+  }
+});
 
-$classLoader = new \Symfony\Component\ClassLoader\UniversalClassLoader();
-$classLoader->registerNamespaces(array(
-		'Guzzle' => realpath(APPLICATION_PATH . '/../library/guzzle/src'),
-		'Doctrine' => realpath(APPLICATION_PATH . '/../library/Doctrine/lib'),
-		'Doctrine\DBAL' => realpath(APPLICATION_PATH . '/../library/Doctrine/lib/vendor/doctrine-dbal/lib'),
-		'Doctrine\Common' => realpath(APPLICATION_PATH . '/../library/Doctrine/lib/vendor/doctrine-common/lib'),
-		'SelfService' => realpath(APPLICATION_PATH . '/../library')
-));
-$classLoader->register();
-
-/** Smarty */
-require_once 'SelfService/SmartyViews/SmartyRsSelfService.php';
+require_once APPLICATION_PATH . '/../vendor/autoload.php';
 
 /** Zend_Application */
 require_once 'Zend/Application.php';

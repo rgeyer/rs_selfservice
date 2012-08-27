@@ -9,8 +9,8 @@
       {/foreach}
     </select>
     {/if}
-    {if preg_match('/TextProductMetaInput(Proxy)?$/', get_class($meta_input))}
-    <input type="text" name="{$meta_input->input_name}" id="{$meta_input->input_name}" value="{$meta_input->default_value}"/>
+    {if preg_match('/TextProductMetaInput(Proxy)?$/', get_class($meta_input)) || preg_match('/NumberProductMetaInput(Proxy)?$/', get_class($meta_input)) }
+    <input type="text" name="{$meta_input->input_name}" id="{$meta_input->input_name}" value="{$meta_input->getVal()}"/>
     {/if}
     <div style="font-size: -1; color: grey;"><img src="/images/info.png" /> {$meta_input->description}</div>
   </fieldset>
@@ -20,7 +20,7 @@
 
 <script>
 $(function() {
-	$('#product_{$id}_submit').click(function() {
+	$('#product_{$id}_submit').click(function(evt) {
 		$('#product-dialog').dialog('close');
 		$("#dialog-modal").dialog('open');
 		timeout_func();
@@ -34,12 +34,20 @@ $(function() {
 				if(data.result == 'error') {
 					$("#finished-dialog").html("<p>" + data.error + "</p>");
 				} else {
+					if(data.servers) {
+						hostname_list = 'The following servers were launched and are currently available </br>';
+						for(server in data.servers) {
+							hostname_list += data.servers[server]['dns-name'] + "</br>"
+						}
+						$("#finished-dialog").html(hostname_list);
+					} else {
 					  $("#finished-dialog").html("<a href='" + data.url + "' target='_blank'>" + data.url + "</a>");
+					}
 				}
 				$("#finished-dialog").dialog('open');
 			});
 		});
-		event.preventDefault();
+		evt.preventDefault();
 	});
 });
 </script>

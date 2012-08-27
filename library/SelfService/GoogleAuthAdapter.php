@@ -26,8 +26,6 @@ namespace SelfService;
 
 use Doctrine\Tests\Common\Annotations\False;
 
-require_once('lightopenid/openid.php');
-
 class GoogleAuthAdapter implements \Zend_Auth_Adapter_Interface {	
 
 	/**

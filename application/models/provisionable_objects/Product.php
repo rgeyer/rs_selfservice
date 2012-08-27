@@ -42,7 +42,7 @@ class Product {
 	
 	/**
 	 * The filename of the icon found in APPLICATION_PATH/images/icons
-	 * @Column(type="string", nullable="TRUE")
+	 * @Column(type="string", nullable=true)
 	 * @var string
 	 */
 	public $icon_filename;
@@ -76,6 +76,12 @@ class Product {
 	 * @var ProductMetaInputBase[]
 	 */
 	public $meta_inputs;
+	
+	/**
+	 * @Column(type="boolean")
+	 * @var bool
+	 */
+	public $launch_servers;
 	
 	public $parameters;
 }

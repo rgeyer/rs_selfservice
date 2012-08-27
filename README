@@ -1,6 +1,8 @@
 DEPENDENCIES:
+In addition to the dependencies defined in composer.json, these don't play well with composer and will need to be installed manually
+
 * Zend Framework 1.11.11
-* Smarty 3.1.7
+* Smarty 3.1.11
 
 TODO:
 * Switch to read-only references to all submodules
@@ -31,6 +33,7 @@ TODO:
 * DNS integration to generate DB records etc.
 * Support multiple AWS/RS accounts
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
+* Inputs "2.0" type functionality.  When a particular cloud is chosen, ask for required inputs specific to that cloud etc.
 
 Icon Pack
 http://findicons.com/pack/42/basic

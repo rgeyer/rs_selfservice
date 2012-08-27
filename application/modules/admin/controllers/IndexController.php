@@ -22,7 +22,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-use Guzzle\Rs\Common\ClientFactory;
+use RGeyer\Guzzle\Rs\Common\ClientFactory;
 
 /**
  * Admin_IndexController

@@ -25,6 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\SmartyViews;
 
 require_once 'Smarty/libs/Smarty.class.php';
+#require_once '/Users/ryangeyer/Library/php_include_path/Smarty/libs';
 
 class SmartyRsSelfService extends \Smarty {
 	function __construct() {

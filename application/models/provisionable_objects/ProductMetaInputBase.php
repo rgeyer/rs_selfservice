@@ -46,22 +46,28 @@ class ProductMetaInputBase {
 	public $id;
 	
 	/**
-	 * @Column(type="string", nullable="true")
+	 * @Column(type="string", nullable=true)
 	 * @var string
 	 */
 	public $input_name;
 	
 	/**
-	 * @Column(type="string", nullable="true")
+	 * @Column(type="string", nullable=true)
 	 * @var string
 	 */
 	public $display_name;
 	
 	/**
-	 * @Column(type="string", nullable="true")
+	 * @Column(type="string", nullable=true)
 	 * @var string
 	 */
 	public $description;
+
+	/**
+	 * @Column(type="string")
+	 * @var string
+	 */
+	public $default_value;
 	
 	public function getVal() {
 		if($this->_val == null) {
@@ -105,13 +111,6 @@ class TextProductMetaInput extends ProductMetaInputBase {
 	public function __construct($default_value='') {
 		$this->default_value = $default_value;
 	}
-
-	/**
-	 * @Column(type="string")
-	 * @var string
-	 */
-	public $default_value;
-
 }
 
 /**

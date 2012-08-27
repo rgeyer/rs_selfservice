@@ -7,3 +7,7 @@ application/configs/cloud_creds.ini
 logs
 rs_selfservice.tmproj
 application/proxies/*.php
+*.iml
+*.ipr
+*.iws
+vendor
