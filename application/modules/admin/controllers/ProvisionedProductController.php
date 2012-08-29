@@ -22,8 +22,6 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-use RGeyer\Guzzle\Rs\Model\SecurityGroup1_5;
-
 use RGeyer\Guzzle\Rs\Model\Cloud;
 
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
@@ -36,7 +34,6 @@ use RGeyer\Guzzle\Rs\Model\ServerArray;
 use RGeyer\Guzzle\Rs\Model\Server;
 use RGeyer\Guzzle\Rs\Model\SshKey;
 use RGeyer\Guzzle\Rs\Model\Deployment;
-use RGeyer\Guzzle\Rs\Model\SecurityGroup;
 use Guzzle\Aws\Ec2\Ec2Client;
 
 /**
@@ -168,23 +165,19 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
         $creds->rs_acct,
         $creds->rs_email,
         $creds->rs_pass,
-        $this->log
+        $this->log,
+        $creds->owners
       );
 
 			ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
 			$api = ClientFactory::getClient();
 			$api15 = ClientFactory::getClient('1.5');
 			
-			$cloud_obj = new Cloud();
-			$other_clouds = $cloud_obj->indexAsHash();			
-			
 			$product_id = $this->_request->getParam ( 'id' );
 			$dql = "SELECT p FROM Product p WHERE p.id = " . $product_id;
 			$result = $this->em->createQuery ( $dql )->getResult ();
 			
-			if (count ( $result ) == 1) {				
-				$st = new \RGeyer\Guzzle\Rs\Model\ServerTemplate();
-				$api_server_templates = $st->index();
+			if (count ( $result ) == 1) {
 				$api_security_groups = array();
 				$api_servers = array();
 				
@@ -231,63 +224,14 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					
 					// Add the rules to all security groups.  This is done after creating each of them
           // so that rules which reference other groups can be successful.
-					foreach ( $api_security_groups as $security_group ) {
-            $prov_helper->provisionSecurityGroupRule(
-              $security_group['model'],
-              $security_group['api']->id,
-              $security_group['api']->aws_owner
-            );
+					foreach ( $product->security_groups as $security_group ) {
+            $prov_helper->provisionSecurityGroupRules($security_group);
 					}
 					
 					$this->log->info("About to provision " . count($product->servers) . " different types of servers");
 					
 					foreach ( $product->servers as $server ) {
-						$messages = '';
-						$st = null;
-						foreach( $api_server_templates as $api_st ) {
-							$messages .= $api_st->nickname . " " . $api_st->updated_at->format('Y-m-d H:i:s') . ' ' . $api_st->version . '<br/>';
-							if ($api_st->nickname == $server->server_template->nickname->getVal() && $api_st->version == $server->server_template->version->getVal()) {
-								$st = $api_st->href;
-							}
-						}
-						
-						if (!$st) {
-							$response ['result'] = 'error';
-							$response ['error'] = 'A server template with nickname "' . $server->server_template->nickname->getVal() . '" and version "' . $server->server_template->version->getVal() . '" was not found!';
-							$this->log->err($response['error']);
-							break;
-						}
-						
-						$server_secgrps = array();
-						foreach ( $server->security_groups as $secgrp ) {
-							if (array_key_exists( $secgrp->id, $api_security_groups )) {
-								$server_secgrps[] = $api_security_groups[$secgrp->id]['api']->href;
-							}
-						}
-						
-						$this->log->info("About to provision " . $server->count->getVal() . " servers of type " . $server->nickname->getVal());
-						
-						for ($i=1; $i <= $server->count->getVal(); $i++) {
-							$api_server = new \RGeyer\Guzzle\Rs\Model\Server ();
-							$api_server->nickname = $server->nickname->getVal();
-							if($server->count->getVal() > 1) {
-								$api_server->nickname .= $i;
-							}
-							$api_server->ec2_ssh_key_href = $this->_getSshKey($server->cloud_id->getVal(), sprintf("rsss-%s-%s", $product->name, $now), $prov_prod)->href;
-							$api_server->ec2_security_groups_href = $server_secgrps;
-							$api_server->server_template_href = $st;
-							$api_server->deployment_href = $deployment->href;
-							$api_server->cloud_id = $server->cloud_id->getVal();
-							$api_server->instance_type = $server->instance_type->getVal();
-							$api_server->create();
-							$prov_serv = new ProvisionedServer();
-							$prov_serv->href = $api_server->href;
-							$prov_serv->cloud_id = $server->cloud_id->getVal();
-							$prov_prod->provisioned_objects[] = $prov_serv;						
-							$this->log->info(sprintf("Created Server - Name: %s ID: %s", $server->nickname->getVal(), $api_server->id), $server);
-							$debug_api_server = array ('api' => $api_server, 'model' => $server );
-							$api_servers[$server->id][] = $debug_api_server;							
-						}
+						$prov_helper->provisionServer($server);
 					}
 					
 					foreach($product->arrays as $array) {
@@ -370,6 +314,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					}
 									
 					if ($product->launch_servers) {
+            // TODO: Excellent place to hand off to a CloudFlow
 						foreach($api_servers as $api_server) {
 							foreach($api_server as $server) {
 								$this->log->info(sprintf('Starting Server - Name: %s ID: %s', $server['api']->nickname, $server['api']->id));

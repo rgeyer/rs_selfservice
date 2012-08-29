@@ -43,6 +43,7 @@ class Cloudcredentials extends \Zend_Application_Resource_ResourceAbstract
 	public $rs_acct;
 	public $aws_key;
 	public $aws_secret;
+  public $owners;
 	
 	public function init() {
 		$options = $this->getOptions();
@@ -53,6 +54,8 @@ class Cloudcredentials extends \Zend_Application_Resource_ResourceAbstract
 		
 		$this->aws_key 		= $options['aws']['access_key_id'];
 		$this->aws_secret = $options['aws']['secret_key'];
+
+    $this->owners     = $options['owners'];
 		
 		return $this;
 	}

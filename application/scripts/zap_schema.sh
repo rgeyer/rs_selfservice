@@ -5,6 +5,6 @@ APPLICATION_ENV=development
 php ./doctrine.php orm:schema-tool:drop --force
 php ./doctrine.php orm:schema-tool:create
 
-php addZendSPProduct.php
+#php addZendSPProduct.php
 php addPhp3TierProduct.php
 php addBaseLinuxProduct.php

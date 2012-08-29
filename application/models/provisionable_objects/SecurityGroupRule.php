@@ -42,7 +42,7 @@ class SecurityGroupRule {
 	public $ingress_protocol;
 
 	/**
-	 * @ManyToOne(targetEntity="TextProductMetaInput", fetch="EAGER", cascade={"all"})
+	 * @ManyToOne(targetEntity="SecurityGroup", fetch="EAGER", cascade={"all"})
 	 * @var TextProductMetaInput
 	 */
 	public $ingress_group;

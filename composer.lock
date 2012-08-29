@@ -3,7 +3,7 @@
     "packages": [
         {
             "package": "doctrine/common",
-            "version": "2.2.2"
+            "version": "2.2.3"
         },
         {
             "package": "doctrine/dbal",
@@ -32,16 +32,16 @@
         {
             "package": "rgeyer/guzzle-rs",
             "version": "dev-master",
-            "source-reference": "3dd4222ab46c9ea406cbdc16064e53cef88da8e9",
-            "commit-date": "1345853283"
+            "source-reference": "67555570faf69dd9845e57ec97b51795f662267b",
+            "commit-date": "1346268163"
         },
         {
             "package": "symfony/console",
-            "version": "v2.0.16"
+            "version": "v2.0.17"
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.0.16"
+            "version": "v2.0.17"
         }
     ],
     "packages-dev": null,
