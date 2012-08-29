@@ -22,7 +22,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-use RGeyer\Guzzle\Rs\Model\Cloud;
+use RGeyer\Guzzle\Rs\Model\Mc\Cloud;
 
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
 use Guzzle\Aws\Ec2\Command\DeleteKeyPair;
@@ -30,10 +30,10 @@ use Guzzle\Aws\Ec2\Command\DescribeKeyPairs;
 use Guzzle\Aws\Ec2\Command\DeleteSecurityGroup;
 use Guzzle\Aws\Ec2\Command\RevokeSecurityGroupIngress;
 use Guzzle\Aws\Ec2\Command\DescribeSecurityGroups;
-use RGeyer\Guzzle\Rs\Model\ServerArray;
-use RGeyer\Guzzle\Rs\Model\Server;
-use RGeyer\Guzzle\Rs\Model\SshKey;
-use RGeyer\Guzzle\Rs\Model\Deployment;
+use RGeyer\Guzzle\Rs\Model\Ec2\ServerArray;
+use RGeyer\Guzzle\Rs\Model\Ec2\Server;
+use RGeyer\Guzzle\Rs\Model\Ec2\SshKey;
+use RGeyer\Guzzle\Rs\Model\Ec2\Deployment;
 use Guzzle\Aws\Ec2\Ec2Client;
 
 /**
@@ -42,13 +42,6 @@ use Guzzle\Aws\Ec2\Ec2Client;
  * @author Ryan J. Geyer <me@ryangeyer.com> 
  */
 class Admin_ProvisionedproductController extends \SelfService\controller\BaseController {
-	
-	/**
-	 * An array of SshKey models provisioned for a provision product request
-	 * 
-	 * @var SshKey[]
-	 */
-	protected $_ssh_keys = array();
 	
 	private function meta_up_product($product, $request) {
 		$this->meta_up_object($product, $request);
@@ -128,31 +121,9 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$this->view->assign('actions', $actions);
 	}
 	
-	protected function _getSshKey($cloud_id, $name, &$prov_prod) {
-		if(!array_key_exists($cloud_id, $this->_ssh_keys)) {
-			$newkey = new \RGeyer\Guzzle\Rs\Model\SshKey();
-			// TODO: For now assume we're creating a new SSH key and reusing
-			// it, but this should really be configurable
-				
-			// TODO: Need to refactor this into a lazy load function for creating/fetching a key for the
-			// specified cloud, including error handling for clouds which don't support SSH keys
-			//$keyname = sprintf ( "rsss-%s-%s", $product->name, $now );
-			$newkey->aws_key_name = $name;
-			$newkey->cloud_id = $cloud_id;
-			$newkey->create();
-			$prov_key = new ProvisionedSshKey();
-			$prov_key->href = $newkey->href;
-			$prov_key->cloud_id = $cloud_id;
-			$prov_prod->provisioned_objects[] = $prov_key;
-		
-			$this->log->info(sprintf("Created SSH Key - Cloud: %s Name: %s ID: %s", $cloud_id, $name, $newkey->id));
-			$this->_ssh_keys[$cloud_id] = $newkey;
-		}
-
-		return $this->_ssh_keys[$cloud_id];
-	}
-	
 	public function provisionAction() {
+    // TODO: Wrap EVERYTHING in a try catch.  There's some volatile stuff that
+    // could throw catchable errors and result in very meaningless errors here
 		$now = time();
 		$response = array ('result' => 'success' );
 		
@@ -168,10 +139,6 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
         $this->log,
         $creds->owners
       );
-
-			ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
-			$api = ClientFactory::getClient();
-			$api15 = ClientFactory::getClient('1.5');
 			
 			$product_id = $this->_request->getParam ( 'id' );
 			$dql = "SELECT p FROM Product p WHERE p.id = " . $product_id;
@@ -199,6 +166,8 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
           );
           $deployment = $prov_helper->provisionDeployment($deployment_params);
 
+          $this->log->debug(sprintf("After provisioning the deployment, it's properties are.. %s", print_r($deployment->getParameters(), true)));
+
           # Record the creation of the deployment
 					$prov_depl = new ProvisionedDeployment($deployment);
 					$prov_prod->provisioned_objects[] = $prov_depl;
@@ -217,9 +186,11 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
             $security_group->name->setVal($secGrpPrefixedName);
 						$secGrp = $prov_helper->provisionSecurityGroup($security_group);
 
-            # Record the creation of the security group
-						$prov_grp = new ProvisionedSecurityGroup($secGrp, $security_group->cloud_id->getVal());
-						$prov_prod->provisioned_objects[] = $prov_grp;
+            if($secGrp) {
+              # Record the creation of the security group
+              $prov_grp = new ProvisionedSecurityGroup($secGrp);
+              $prov_prod->provisioned_objects[] = $prov_grp;
+            }
 					}
 					
 					// Add the rules to all security groups.  This is done after creating each of them
@@ -231,10 +202,21 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					$this->log->info("About to provision " . count($product->servers) . " different types of servers");
 					
 					foreach ( $product->servers as $server ) {
-						$prov_helper->provisionServer($server);
+						foreach($prov_helper->provisionServer($server, $deployment) as $provisioned_model) {
+              if($provisioned_model instanceof RGeyer\Guzzle\Rs\Model\Ec2\SshKey) {
+                $prov_key = new \ProvisionedSshKey($provisioned_model);
+                $prov_prod->provisioned_objects[] = $prov_key;
+              }
+
+              if($provisioned_model instanceof RGeyer\Guzzle\Rs\Model\Ec2\Server ||
+                $provisioned_model instanceof RGeyer\Guzzle\Rs\Model\Mc\Server ) {
+                $prov_svr = new \ProvisionedServer($provisioned_model);
+                $prov_prod->provisioned_objects[] = $prov_svr;
+              }
+            }
 					}
 					
-					foreach($product->arrays as $array) {
+					/*foreach($product->arrays as $array) {
 						$st = null;
 						foreach ( $api_server_templates as $api_st ) {
 							$messages .= $api_st->nickname . " " . $api_st->updated_at->format ( 'Y-m-d H:i:s' ) . ' ' . $api_st->version . '<br/>';
@@ -347,7 +329,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 								$response['servers'][] = $settings;
 							}
 						}
-					}
+					}*/
 				} catch (Exception $e) {
 					$response['result'] = 'error';
 					$response['error'] = $e->getMessage();

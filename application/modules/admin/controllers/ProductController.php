@@ -22,7 +22,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-use RGeyer\Guzzle\Rs\Model\Cloud;
+use RGeyer\Guzzle\Rs\Model\Mc\Cloud;
 
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
 

@@ -32,35 +32,34 @@ In addition to the dependencies defined in composer.json, these don't play well 
 * Smarty 3.1.11
 
 TODO:
-* Switch to read-only references to all submodules
 * Create and verify support for SQLite for dev and test
 * Soft deletes for products, provisioned products, perhaps others?
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
 * Handle "cloud not supported" errors when provisioning servers or arrays
+  * Be smarter about picking the MCI that supports the requested cloud.
   * Initial provisioning succeeds without issue. Will not be able to launch
 * Tokenize all paths
 * Refactor
   * Lots of confusion of methods in controllers that are unrelated, not enough controllers, etc
   * Build services for common tasks like product provisioning and deletion, and user interactions (fetch, cache, create) 
 * Accept (meta, not dashboard) inputs for products.  Customized form during provisioning.  Also self referencing variables
-  * Cloud ID (Show a list of available clouds, concatenated w/ AWS clouds and the return of the API 1.5 "clouds" call)
-    * Finished for AWS, need to implement API 1.5
   * Multiple Choice (dropdown)
   * If/Else options, like MySQL 5.1 or 5.5 with logic (use one ST over another depending upon selection)
+  * Inputs "2.0" type functionality.  When a particular cloud is chosen, ask for required inputs specific to that cloud etc.
 * Accept dashboard inputs for products.
   * As a named credential
   * As a named credential (only in absence of a same named credential)
-* Shared sessions
+* Shared sessions - Horizontal Scalability
 * Cache commonly read data (user profiles/oauth uris, etc)
 * Use API 1.5 publishing API's for getting correct ServerTemplates
 * Use API 1.5 to support additional clouds
+  * In progress...
 * Allow launching of servers once deployment is created
   * Create launch stages (tiers), launch all LB first, then DB, then App
   * Allow execution of scripts on servers once they become operational
 * DNS integration to generate DB records etc.
 * Support multiple AWS/RS accounts
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
-* Inputs "2.0" type functionality.  When a particular cloud is chosen, ask for required inputs specific to that cloud etc.
 
 Icon Pack
 http://findicons.com/pack/42/basic

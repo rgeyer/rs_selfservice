@@ -11,7 +11,7 @@ namespace SelfService;
 
 use RGeyer\Guzzle\Rs\RightScaleClient;
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
-use RGeyer\Guzzle\Rs\Model\Deployment;
+use RGeyer\Guzzle\Rs\Model\Ec2\Deployment;
 
 class ProvisioningHelper {
   /**
@@ -56,16 +56,23 @@ class ProvisioningHelper {
   /**
    * An associative array (hash) of clouds as returned by RGeyer\Guzzle\Rs\Model\Cloud::indexAsHash
    *
-   * This will include an "owner" property which contains the owner account ID
-   *
    * @var array An associative array (hash) of clouds as returned by RGeyer\Guzzle\Rs\Model\Cloud::indexAsHash
    */
   protected $_clouds;
+
+  protected $_owners;
 
   /**
    * @var RGeyer\Guzzle\Rs\Model\Ec2\ServerTemplate[] The response of the RightScale API Client 1.0 servertemplate index
    */
   protected $_server_templates;
+
+  /**
+	 * An array of SshKey API models provisioned for a provision product request
+	 *
+	 * @var RGeyer\Guzzle\Rs\Model\Ec2\SshKey[]
+	 */
+	protected $_ssh_keys = array();
 
   public function __construct($rs_account, $rs_email, $rs_password, $log, $owners = array()) {
     $this->_now_ts = time();
@@ -74,23 +81,48 @@ class ProvisioningHelper {
     $this->client_ec2 = ClientFactory::getClient();
     $this->client_mc = ClientFactory::getClient('1.5');
 
-    $this->_clouds = $this->client_ec2->newModel('Cloud')->indexAsHash();
-    foreach($this->_clouds as $cloud_id => $cloud) {
-      if(array_key_exists($cloud_id, $owners)) {
-        $this->_clouds[$cloud_id]->owner = $owners[$cloud_id];
-      }
-    }
+    $this->_clouds = $this->client_ec2->newModel('Mc\Cloud')->indexAsHash();
+    $this->_owners = $owners;
+//    foreach($this->_clouds as $cloud_id => $cloud) {
+//      if(array_key_exists($cloud_id, $owners)) {
+//        $this->_clouds[$cloud_id]->owner = $owners[$cloud_id];
+//      }
+//    }
 
-    $this->_server_templates = $this->client_ec2->newModel('ServerTemplate')->index();
+    $this->_server_templates = $this->client_ec2->newModel('Ec2\ServerTemplate')->index();
   }
 
-  public function provisionServer(\Server $server) {
+	protected function _getSshKey($cloud_id, $name, &$prov_prod) {
+		if(!array_key_exists($cloud_id, $this->_ssh_keys)) {
+			$newkey = new \RGeyer\Guzzle\Rs\Model\Ec2\SshKey();
+			// TODO: For now assume we're creating a new SSH key and reusing
+			// it, but this should really be configurable
+
+			// TODO: Need to refactor this into a lazy load function for creating/fetching a key for the
+			// specified cloud, including error handling for clouds which don't support SSH keys
+			$newkey->aws_key_name = $name;
+			$newkey->cloud_id = $cloud_id;
+			$newkey->create();
+      $prov_prod[] = $newkey;
+
+			$this->log->info(sprintf("Created SSH Key - Cloud: %s Name: %s ID: %s", $cloud_id, $name, $newkey->id));
+			$this->_ssh_keys[$cloud_id] = $newkey;
+		}
+
+		return $this->_ssh_keys[$cloud_id];
+	}
+
+  public function provisionServer(\Server $server, Deployment $deployment) {
+    // TODO: Currently we don't have any clouds besides AWS which use SSH keys.  When we do, some
+    // refactoring will need to be done here to support that cloud.
+    $result = array();
     $st = null;
+    $cloud_id = $server->cloud_id->getVal();
     // Search for the desired ServerTemplate by name and revision
     foreach( $this->_server_templates as $api_st ) {
       if ($api_st->nickname == $server->server_template->nickname->getVal() &&
           $api_st->version == $server->server_template->version->getVal()) {
-        $st = $api_st->href;
+        $st = $api_st;
       }
     }
 
@@ -100,6 +132,9 @@ class ProvisioningHelper {
 
     $server_secgrps = array();
     foreach ( $server->security_groups as $secgrp ) {
+      // This is as good as checking Cloud::supportsSecurityGroups because $this->_security_groups only
+      // contains security groups for clouds where they're supported, and have already been created in the
+      // ProvisioningHelper::provisionSecurityGroup method
       if (array_key_exists( $secgrp->id, $this->_security_groups )) {
         $server_secgrps[] = $this->_security_groups[$secgrp->id]['api']->href;
       }
@@ -108,26 +143,43 @@ class ProvisioningHelper {
     $this->log->info("About to provision " . $server->count->getVal() . " servers of type " . $server->nickname->getVal());
 
     for ($i=1; $i <= $server->count->getVal(); $i++) {
-      $api_server = new \RGeyer\Guzzle\Rs\Model\Server ();
-      $api_server->nickname = $server->nickname->getVal();
+      $nickname = $server->nickname->getVal();
       if($server->count->getVal() > 1) {
-        $api_server->nickname .= $i;
+        $nickname .= $i;
       }
-      $api_server->ec2_ssh_key_href = $this->_getSshKey($server->cloud_id->getVal(), sprintf("rsss-%s-%s", $product->name, $now), $prov_prod)->href;
-      $api_server->ec2_security_groups_href = $server_secgrps;
-      $api_server->server_template_href = $st;
-      $api_server->deployment_href = $deployment->href;
-      $api_server->cloud_id = $server->cloud_id->getVal();
-      $api_server->instance_type = $server->instance_type->getVal();
-      $api_server->create();
-      $prov_serv = new ProvisionedServer();
-      $prov_serv->href = $api_server->href;
-      $prov_serv->cloud_id = $server->cloud_id->getVal();
-      $prov_prod->provisioned_objects[] = $prov_serv;
+
+      $params = array();
+
+      $api_server = null;
+      if($cloud_id > RS_MAX_AWS_CLOUD_ID) {
+        $api_server = $this->client_mc->newModel('Mc\Server');
+
+        $params['server[name]'] = $nickname;
+        $params['server[deployment_href]'] = '/api/deployments/' . $deployment->id;
+        $params['server[instance][server_template_href]'] = '/api/server_templates/' . $st->id;
+        $params['server[instance][cloud_href]'] = $this->_clouds[$cloud_id]->href;
+        if(count($server_secgrps) > 0) {
+          $params['server[instance][security_group_hrefs]'] = $server_secgrps;
+        }
+      } else {
+        $ssh_key = $this->_getSshKey( $cloud_id, $deployment->nickname, $result);
+
+        $api_server = $this->client_ec2->newModel('Ec2\Server');
+        $api_server->nickname = $nickname;
+        $api_server->ec2_ssh_key_href = $ssh_key->href;
+        $api_server->ec2_security_groups_href = $server_secgrps;
+        $api_server->server_template_href = $st->href;
+        $api_server->deployment_href = $deployment->href;
+        $api_server->instance_type = $server->instance_type->getVal();
+      }
+      $api_server->cloud_id = $cloud_id;
+      $api_server->create($params);
+
+      $result[] = $api_server;
+
       $this->log->info(sprintf("Created Server - Name: %s ID: %s", $server->nickname->getVal(), $api_server->id), $server);
-      $debug_api_server = array ('api' => $api_server, 'model' => $server );
-      $api_servers[$server->id][] = $debug_api_server;
     }
+    return $result;
   }
 
   /**
@@ -135,10 +187,10 @@ class ProvisioningHelper {
    *
    * @param $params An array of parameters to pass to the call.
    * @link http://reference.rightscale.com/api1.0/ApiR1V0/Docs/ApiDeployments.html#create
-   * @return \RGeyer\Guzzle\Rs\Model\Deployment
+   * @return \RGeyer\Guzzle\Rs\Model\Ec2\Deployment
    */
   public function provisionDeployment($params) {
-    $deployment = $this->client_ec2->newModel('Deployment');
+    $deployment = $this->client_ec2->newModel('Ec2\Deployment');
     $deployment->create($params);
     return $deployment;
   }
@@ -150,24 +202,25 @@ class ProvisioningHelper {
    * @return bool|\RGeyer\Guzzle\Rs\Model\AbstractSecurityGroup False if no group was created, a created security group if successful
    */
   public function provisionSecurityGroup(\SecurityGroup $security_group) {
+    $cloud_id = $security_group->cloud_id->getVal();
     // Check if this cloud supports security groups first!
-    if($security_group->cloud_id->getVal() > RS_MAX_AWS_CLOUD_ID &&
-       !$this->_clouds[$security_group->cloud_id->getVal()]->supportsSecurityGroups()) {
-      $this->log->debug('The specified cloud (' . $security_group->cloud_id->getVal() . ') does not support security groups, skipping the creation of the security group');
+    if($cloud_id > RS_MAX_AWS_CLOUD_ID &&
+       !$this->_clouds[$cloud_id]->supportsSecurityGroups()) {
+      $this->log->debug('The specified cloud (' . $cloud_id . ') does not support security groups, skipping the creation of the security group');
       return false;
     }
 
-    if($security_group->cloud_id->getVal() > RS_MAX_AWS_CLOUD_ID) {
+    $secGrp = null;
+    if($cloud_id > RS_MAX_AWS_CLOUD_ID) {
       $secGrp = $this->client_mc->newModel('Mc\SecurityGroup');
       $secGrp->name = $security_group->name->getVal();
       $secGrp->description = $security_group->description->getVal();
-      $secGrp->cloud_id = $security_group->cloud_id->getVal();
     } else {
       $secGrp = $this->client_ec2->newModel('Ec2\SecurityGroup');
       $secGrp->aws_group_name = $security_group->name->getVal();
       $secGrp->aws_description = $security_group->description->getVal();
-      $secGrp->cloud_id = $security_group->cloud_id->getVal();
     }
+    $secGrp->cloud_id = $cloud_id;
     $secGrp->create();
     // This feels a bit hacky?
     $secGrp->find_by_id ( $secGrp->id );
@@ -191,10 +244,11 @@ class ProvisioningHelper {
    * @return bool
    */
   public function provisionSecurityGroupRules(\SecurityGroup $security_group) {
+    $cloud_id = $security_group->cloud_id->getVal();
     // Check if this cloud supports security groups first!
-    if($security_group->cloud_id->getVal() > RS_MAX_AWS_CLOUD_ID &&
-       !$this->_clouds[$security_group->cloud_id->getVal()]->supportsSecurityGroups()) {
-      $this->log->debug('The specified cloud (' . $security_group->cloud_id->getVal() . ') does not support security groups, skipping the creation of the security group rules');
+    if($cloud_id > RS_MAX_AWS_CLOUD_ID &&
+       !$this->_clouds[$cloud_id]->supportsSecurityGroups()) {
+      $this->log->debug('The specified cloud (' . $cloud_id . ') does not support security groups, skipping the creation of the security group rules');
       return false;
     }
 
@@ -207,15 +261,14 @@ class ProvisioningHelper {
     }
 
     // Make sure that we can derive the owner
-    if(!array_key_exists($security_group->cloud_id, $this->_clouds) ||
-       !isset($this->_clouds[$security_group->cloud_id]->owner)) {
-      $this->log->warn(sprintf("Could not determine the 'owner' for cloud id %s.", $security_group->cloud_id));
-      $this->log->debug(sprintf("The available clouds (and owners) is as follows.  %s", print_r($this->_clouds, true)));
+    if($cloud_id > RS_MAX_AWS_CLOUD_ID && !array_key_exists($cloud_id, $this->_owners)) {
+      $this->log->warn(sprintf("Could not determine the 'owner' for cloud id %s.", $cloud_id));
+      $this->log->debug(sprintf("The available clouds (and owners) is as follows.  %s", print_r($this->_owners, true)));
       return false;
     }
 
     $api = $this->_security_groups[$security_group->id]['api'];
-    $owner = $this->_clouds[$security_group->cloud_id]->owner;
+    $owner = $cloud_id > RS_MAX_AWS_CLOUD_ID ? $this->_owners[$cloud_id] : $security_group->aws_owner;
 
     $this->log->info("About to provision " . count($security_group->rules) . " rules for Security Group " . $security_group->name->getVal());
     foreach ( $security_group->rules as $rule ) {

@@ -32,8 +32,8 @@
         {
             "package": "rgeyer/guzzle-rs",
             "version": "dev-master",
-            "source-reference": "67555570faf69dd9845e57ec97b51795f662267b",
-            "commit-date": "1346268163"
+            "source-reference": "604f6992b5641ad31ec8c702d43df9cc6caf96fc",
+            "commit-date": "1346278592"
         },
         {
             "package": "symfony/console",

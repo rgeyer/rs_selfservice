@@ -59,19 +59,19 @@ class ProvisionedObjectBase {
 	 */
 	public $href;
 
-  public function __construct(ModelBase $model, $cloud_id = null) {
-    parent::__construct();
-
+  public function __construct(ModelBase $model) {
     $model_params = $model->getParameters();
     if(array_key_exists('id', $model_params)) {
       $this->id = $model->id;
     }
 
     if(array_key_exists('href', $model_params)) {
-      $this->cloud_id = $model->href;
+      $this->href = $model->href;
     }
 
-    $this->cloud_id = $cloud_id;
+    if(array_key_exists('cloud_id', $model_params)) {
+      $this->cloud_id = $model->cloud_id;
+    }
   }
 }
 

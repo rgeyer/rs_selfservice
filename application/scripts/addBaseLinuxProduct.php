@@ -44,12 +44,22 @@ $count_metainput->description = 'The number of instances to create and launch';
 
 $em->persist($count_metainput);
 // END Count MetaInput
+
+// START Cloud ProductMetaInput
+$cloud_metainput = new CloudProductMetaInput();
+$cloud_metainput->default_value = 1;
+$cloud_metainput->input_name = 'cloud';
+$cloud_metainput->display_name = 'Cloud';
+$cloud_metainput->description = 'The target cloud for the 3-Tier';
+
+$em->persist($cloud_metainput);
+// END Cloud ProductMetaInput
 	
 // START default security group
 $securityGroup = new SecurityGroup();
 $securityGroup->name = new TextProductMetaInput('base');
 $securityGroup->description = new TextProductMetaInput('Port 22 and 80');
-$securityGroup->cloud_id = new CloudProductMetaInput(1);
+$securityGroup->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
@@ -75,7 +85,7 @@ $serverTemplate->version = new NumberProductMetaInput(58);
 $serverTemplate->nickname = new TextProductMetaInput('Base ServerTemplate for Linux (Chef)');
 
 $server = new Server();
-$server->cloud_id = new CloudProductMetaInput(1);
+$server->cloud_id = $cloud_metainput;
 $server->count = $count_metainput;
 $server->instance_type = new TextProductMetaInput('m1.small');
 $server->security_groups = array($securityGroup);
@@ -87,7 +97,7 @@ $product->name = "Base";
 $product->icon_filename = "4f0e334ba64d1.png";
 $product->security_groups = array($securityGroup);
 $product->servers = array($server);
-$product->meta_inputs = array($count_metainput);
+$product->meta_inputs = array($cloud_metainput, $count_metainput);
 $product->launch_servers = true;
 
 } catch (Exception $e) {
