@@ -274,7 +274,7 @@ class ProvisioningHelper {
     foreach ( $security_group->rules as $rule ) {
       $other_model = null; // Declare this up here so it can be accessed when logging at the end
       if($rule->ingress_group) {
-        if(array_key_exists($this->_security_groups, $rule->ingress_group->id)) {
+        if(array_key_exists($rule->ingress_group->id, $this->_security_groups)) {
           // Make sure we've got information about the ingress group
           if(!array_key_exists($rule->ingress_group->id, $this->_security_groups)) {
             $this->log->warn(sprintf("No concrete security group was provisioned for security group doctrine model ID %s.  Skipping rule creation", $rule->ingress_group->id));
@@ -283,6 +283,9 @@ class ProvisioningHelper {
           }
 
           $other_model = $this->_security_groups[$rule->ingress_group->id]['model'];
+
+          $this->log->debug(sprintf("The doctrine model for the source ingress group was %s", print_r($other_model, true)));
+
           $api->createGroupRule(
             $other_model->name->getVal(),
             $owner,
