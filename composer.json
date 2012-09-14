@@ -3,6 +3,7 @@
     "fp/lightopenid": "dev-master",
     "rgeyer/guzzle-rs": "dev-master",
     "guzzle/guzzle-aws": "dev-guzzle2",
+    "guzzle/guzzle": ">=2.0.0,<=2.7.2",
     "doctrine/orm": "=2.2.3",
     "symfony/console": ">=2.0.0,<2.1.0"
   }

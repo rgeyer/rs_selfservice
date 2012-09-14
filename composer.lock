@@ -1,5 +1,5 @@
 {
-    "hash": "2253eeec99bdd66adc58de15dd32c0fe",
+    "hash": "386a2b2071f0e40049391cbcfe0974cc",
     "packages": [
         {
             "package": "doctrine/common",
@@ -32,8 +32,8 @@
         {
             "package": "rgeyer/guzzle-rs",
             "version": "dev-master",
-            "source-reference": "604f6992b5641ad31ec8c702d43df9cc6caf96fc",
-            "commit-date": "1346278592"
+            "source-reference": "ae45dc87d41adbeffe8d36b63affa18dca430c36",
+            "commit-date": "1347490275"
         },
         {
             "package": "symfony/console",
@@ -41,7 +41,7 @@
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.0.17"
+            "version": "v2.1.1"
         }
     ],
     "packages-dev": null,
