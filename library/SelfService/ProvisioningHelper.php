@@ -275,16 +275,9 @@ class ProvisioningHelper {
       $other_model = null; // Declare this up here so it can be accessed when logging at the end
       if($rule->ingress_group) {
         if(array_key_exists($rule->ingress_group->id, $this->_security_groups)) {
-          // Make sure we've got information about the ingress group
-          if(!array_key_exists($rule->ingress_group->id, $this->_security_groups)) {
-            $this->log->warn(sprintf("No concrete security group was provisioned for security group doctrine model ID %s.  Skipping rule creation", $rule->ingress_group->id));
-            $this->log->debug(sprintf("The security group doctrine model IDs which have been provisioned by this ProvisioningHelper are (%s)", join(',', array_keys($this->_security_groups))));
-            continue;
-          }
+          $ingress_group = $this->_security_groups[$rule->ingress_group->id];
 
-          $other_model = $this->_security_groups[$rule->ingress_group->id]['model'];
-
-          $this->log->debug(sprintf("The doctrine model for the source ingress group was %s", print_r($other_model, true)));
+          $other_model = $ingress_group['model'];
 
           $api->createGroupRule(
             $other_model->name->getVal(),
@@ -293,6 +286,9 @@ class ProvisioningHelper {
             $rule->ingress_from_port->getVal(),
             $rule->ingress_to_port->getVal()
           );
+        } else {
+          $this->log->warn(sprintf("No concrete security group was provisioned for security group doctrine model ID %s.  Skipping rule creation", $rule->ingress_group->id));
+          continue;
         }
       } else {
         $api->createCidrRule(
