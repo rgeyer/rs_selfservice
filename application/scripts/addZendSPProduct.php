@@ -67,6 +67,42 @@ $zend_default_sg->name = new TextProductMetaInput("zend-default");
 $zend_default_sg->description = new TextProductMetaInput("zend solution packs");
 $zend_default_sg->cloud_id = $cloud_metainput;
 
+$em->persist($zend_default_sg);
+// END zend-default Security Group
+
+// START zend-app Security Group
+$zend_app_sg->name = new TextProductMetaInput("zend-app");
+$zend_app_sg->description = new TextProductMetaInput("zend solution packs");
+$zend_app_sg->cloud_id = $cloud_metainput;
+
+$em->persist($zend_app_sg);
+// END zend-app Security Group
+
+// START zend-cm Security Group
+$zend_cm_sg->name = new TextProductMetaInput("zend-cm");
+$zend_cm_sg->description = new TextProductMetaInput("zend solution packs");
+$zend_cm_sg->cloud_id = $cloud_metainput;
+
+$em->persist($zend_cm_sg);
+// END zend-cm Security Group
+
+// START zend-mysql Security Group
+$zend_mysql_sg->name = new TextProductMetaInput("zend-mysql");
+$zend_mysql_sg->description = new TextProductMetaInput("zend solution packs");
+$zend_mysql_sg->cloud_id = $cloud_metainput;
+
+$em->persist($zend_mysql_sg);
+// END zend-mysql Security Group
+
+// START zend-haproxy Security Group
+$zend_haproxy_sg->name = new TextProductMetaInput("zend-haproxy");
+$zend_haproxy_sg->description = new TextProductMetaInput("zend solution packs");
+$zend_haproxy_sg->cloud_id = $cloud_metainput;
+
+$em->persist($zend_haproxy_sg);
+// END zend-haproxy Security Group
+
+// START Security Group Rules
 $idx = 0;
 
 $zend_default_sg->rules[$idx] = new SecurityGroupRule();
@@ -76,12 +112,6 @@ $zend_default_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(22);
 $zend_default_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 
 $em->persist($zend_default_sg);
-// END zend-default Security Group
-
-// START zend-app Security Group
-$zend_app_sg->name = new TextProductMetaInput("zend-app");
-$zend_app_sg->description = new TextProductMetaInput("zend solution packs");
-$zend_app_sg->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
@@ -142,12 +172,6 @@ $zend_app_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 $idx++;
 
 $em->persist($zend_app_sg);
-// END zend-app Security Group
-
-// START zend-cm Security Group
-$zend_cm_sg->name = new TextProductMetaInput("zend-cm");
-$zend_cm_sg->description = new TextProductMetaInput("zend solution packs");
-$zend_cm_sg->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
@@ -208,12 +232,6 @@ $zend_cm_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 $idx++;
 
 $em->persist($zend_cm_sg);
-// END zend-cm Security Group
-
-// START zend-mysql Security Group
-$zend_mysql_sg->name = new TextProductMetaInput("zend-mysql");
-$zend_mysql_sg->description = new TextProductMetaInput("zend solution packs");
-$zend_mysql_sg->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
@@ -232,12 +250,6 @@ $zend_mysql_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 $idx++;
 
 $em->persist($zend_mysql_sg);
-// END zend-mysql Security Group
-
-// START zend-haproxy Security Group
-$zend_haproxy_sg->name = new TextProductMetaInput("zend-haproxy");
-$zend_haproxy_sg->description = new TextProductMetaInput("zend solution packs");
-$zend_haproxy_sg->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
@@ -249,7 +261,7 @@ $zend_haproxy_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp'
 $idx++;
 
 $em->persist($zend_haproxy_sg);
-// END zend-haproxy Security Group
+// END Security Group Rules
 
 // START zend_server 1
 $zend_server_st = new ServerTemplate();

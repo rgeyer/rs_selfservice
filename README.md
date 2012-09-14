@@ -60,6 +60,7 @@ TODO:
 * DNS integration to generate DB records etc.
 * Support multiple AWS/RS accounts
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
+* Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
 
 Icon Pack
 http://findicons.com/pack/42/basic

@@ -71,6 +71,38 @@ $php_default_sg->name = new TextProductMetaInput('php-default');
 $php_default_sg->description = new TextProductMetaInput('PHP 3-Tier');
 $php_default_sg->cloud_id = $cloud_metainput;
 
+$em->persist($php_default_sg);
+// END php-default Security Group
+
+  // START php-lb Security Group
+$php_lb_sg = new SecurityGroup();
+$php_lb_sg->name = new TextProductMetaInput("php-lb");
+$php_lb_sg->description = new TextProductMetaInput("PHP 3-Tier");
+$php_lb_sg->cloud_id = $cloud_metainput;
+
+$em->persist($php_lb_sg);
+// END php-lb Security Group
+
+// START php-app Security Group
+$php_app_sg = new SecurityGroup();
+$php_app_sg->name = new TextProductMetaInput('php-app');
+$php_app_sg->description = new TextProductMetaInput('PHP 3-Tier');
+$php_app_sg->cloud_id = $cloud_metainput;
+
+$em->persist($php_app_sg);
+// END php-app Security Group
+
+// START php-mysql Security Group
+$php_mysql_sg = new SecurityGroup();
+$php_mysql_sg->name = new TextProductMetaInput("php-mysql");
+$php_mysql_sg->description = new TextProductMetaInput("PHP 3-Tier");
+$php_mysql_sg->cloud_id = $cloud_metainput;
+
+$em->persist($php_mysql_sg);
+// END php-mysql Security Group
+
+
+// START Add security group rules
 $idx = 0;
 
 $php_default_sg->rules[$idx] = new SecurityGroupRule();
@@ -80,13 +112,6 @@ $php_default_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(22);
 $php_default_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 
 $em->persist($php_default_sg);
-// END php-default Security Group
-
-  // START php-lb Security Group
-$php_lb_sg = new SecurityGroup();
-$php_lb_sg->name = new TextProductMetaInput("php-lb");
-$php_lb_sg->description = new TextProductMetaInput("PHP 3-Tier");
-$php_lb_sg->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
@@ -98,13 +123,6 @@ $php_lb_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 $idx++;
 
 $em->persist($php_lb_sg);
-// END php-lb Security Group
-
-// START php-app Security Group
-$php_app_sg = new SecurityGroup();
-$php_app_sg->name = new TextProductMetaInput('php-app');
-$php_app_sg->description = new TextProductMetaInput('PHP 3-Tier');
-$php_app_sg->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
@@ -115,13 +133,6 @@ $php_app_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(8000);
 $php_app_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 
 $em->persist($php_app_sg);
-// END php-app Security Group
-
-// START php-mysql Security Group
-$php_mysql_sg = new SecurityGroup();
-$php_mysql_sg->name = new TextProductMetaInput("php-mysql");
-$php_mysql_sg->description = new TextProductMetaInput("PHP 3-Tier");
-$php_mysql_sg->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
@@ -140,7 +151,7 @@ $php_mysql_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 $idx++;
 
 $em->persist($php_mysql_sg);
-// END php-mysql Security Group
+// END Add security group rules
 
 // START app_server 1
 $app_server_st = new ServerTemplate();
