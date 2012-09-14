@@ -71,6 +71,9 @@ if(file_exists(APPLICATION_PATH . '/configs/cloud_creds.ini')) {
 	$final_config->merge($creds_config);
 }
 
+# This is added to compensate for a broken curl implementation in Zend Studio when debugging or running PHP unit
+RGeyer\Guzzle\Rs\Common\ClientFactory::setAdditionalParams(array('curl.CURLOPT_SSL_VERIFYPEER' => false));
+
 $application = new Zend_Application(
 		APPLICATION_ENV,
 		$final_config
