@@ -165,6 +165,8 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
         $this->em->persist($prov_prod);
         $this->em->flush();
 
+        $response['url'] = $this->_helper->url('show', 'provisionedproduct', 'admin') . '?id=' . $prov_prod->id;
+
         $prov_helper->setTags(array('rsss:provisioned_product_id='.$prov_prod->id));
 
 				try {
@@ -181,9 +183,6 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
           # Record the creation of the deployment
 					$prov_depl = new ProvisionedDeployment($deployment);
 					$prov_prod->provisioned_objects[] = $prov_depl;
-					
-					# This converts the api URL of the deployment to a clickable dashboard URL
-					$response['url'] = str_replace('/api', '', $deployment->href);
 					
 					$this->log->info(sprintf("Created Deployment - Name: %s ID: %s", $deplname, $deployment->id));
 					
@@ -224,6 +223,10 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
                 $prov_prod->provisioned_objects[] = $prov_svr;
               }
             }
+					}
+
+					if ($product->launch_servers) {
+            $prov_helper->launchServers();
 					}
 					
 					/*foreach($product->arrays as $array) {
@@ -302,42 +305,6 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 							$result = $command->getResult();
 													
 							$this->log->info(sprintf("Created Alert Spec - Name: %s For Subject: %s", $alert->name->getVal(), $subject_href), $alert);
-						}
-					}
-									
-					if ($product->launch_servers) {
-            // TODO: Excellent place to hand off to a CloudFlow
-						foreach($api_servers as $api_server) {
-							foreach($api_server as $server) {
-								$this->log->info(sprintf('Starting Server - Name: %s ID: %s', $server['api']->nickname, $server['api']->id));
-								$server['api']->start();								
-							}
-						}						
-						
-						# Wait for them to become operational
-						$keep_iterating = true;
-						while ($keep_iterating) {
-							$keep_iterating = false;
-							foreach($api_servers as $api_server) {
-								foreach($api_server as $server) {
-									$server['api']->find_by_id($server['api']->id);
-									if($server['api']->state != 'operational') {
-										$keep_iterating = true;
-										$this->log->debug(sprintf('Server (%s) had a state of (%s) so we\'ll keep waiting', $server['api']->id, $server['api']->state));
-									}										
-								}
-							}
-							sleep(10);
-						}
-						
-						# Add some info about them to the response
-						$response['servers'] = array();
-						foreach($api_servers as $api_server) {
-							foreach($api_server as $server) {
-								$server['api']->find_by_id($server['api']->id);
-								$settings = $server['api']->settings();
-								$response['servers'][] = $settings;
-							}
 						}
 					}*/
 				} catch (Exception $e) {

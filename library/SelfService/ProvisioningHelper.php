@@ -358,4 +358,10 @@ class ProvisioningHelper {
     return true;
   }
 
+  public function launchServers() {
+    foreach($this->_servers as $server) {
+      $server->launch();
+    }
+  }
+
 }
