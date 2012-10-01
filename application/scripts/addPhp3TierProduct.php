@@ -155,8 +155,9 @@ $em->persist($php_mysql_sg);
 
 // START app_server 1
 $app_server_st = new ServerTemplate();
-$app_server_st->version = new NumberProductMetaInput(57);
-$app_server_st->nickname = new TextProductMetaInput('PHP App Server');
+$app_server_st->version = new NumberProductMetaInput(118);
+$app_server_st->nickname = new TextProductMetaInput('PHP App Server (v13.0)');
+$app_server_st->publication_id = new TextProductMetaInput('40014');
 
 $app_server = new Server();
 $app_server->cloud_id = $cloud_metainput;
@@ -171,8 +172,9 @@ $em->persist($app_server);
 
 // START php_db server(s)
 $php_db_st = new ServerTemplate();
-$php_db_st->version = new NumberProductMetaInput(24);
-$php_db_st->nickname = new TextProductMetaInput('Database Manager for MySQL 5.5');
+$php_db_st->version = new NumberProductMetaInput(69);
+$php_db_st->nickname = new TextProductMetaInput('Database Manager for MySQL 5.5 (v13.0)');
+$php_db_st->publication_id = new TextProductMetaInput('40020');
 
 $php_db = new Server();
 $php_db->cloud_id = $cloud_metainput;
@@ -188,8 +190,9 @@ $em->persist($php_db);
 
 // START php_lb server(s)
 $php_lb_st = new ServerTemplate();
-$php_lb_st->version = new NumberProductMetaInput(68);
-$php_lb_st->nickname = new TextProductMetaInput('Load Balancer');
+$php_lb_st->version = new NumberProductMetaInput(106);
+$php_lb_st->nickname = new TextProductMetaInput('Load Balancer with HAProxy (v13.0)');
+$php_lb_st->publication_id = new TextProductMetaInput('40015');
 
 $php_lb = new Server();
 $php_lb->cloud_id = $cloud_metainput;

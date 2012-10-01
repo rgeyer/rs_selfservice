@@ -51,7 +51,6 @@ TODO:
   * As a named credential (only in absence of a same named credential)
 * Shared sessions - Horizontal Scalability
 * Cache commonly read data (user profiles/oauth uris, etc)
-* Use API 1.5 publishing API's for getting correct ServerTemplates
 * Use API 1.5 to support additional clouds
   * In progress...
 * Allow launching of servers once deployment is created

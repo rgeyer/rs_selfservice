@@ -267,6 +267,7 @@ $em->persist($zend_haproxy_sg);
 $zend_server_st = new ServerTemplate();
 $zend_server_st->version = new NumberProductMetaInput(7);
 $zend_server_st->nickname = new TextProductMetaInput('ZEND PHP5 Zend Server - Zend Solution Pack - 11H1');
+$zend_server_st->publication_id = new TextProductMetaInput('23069');
 
 $zend_server = new Server();
 $zend_server->cloud_id = $cloud_metainput;
@@ -283,6 +284,7 @@ $em->persist($zend_server);
 $zend_cm_st = new ServerTemplate();
 $zend_cm_st->version = new NumberProductMetaInput(5);
 $zend_cm_st->nickname = new TextProductMetaInput('ZEND Zend Server Cluster Manager local DB - Zend Solution Pack');
+$zend_cm_st->publication_id = new TextProductMetaInput('23070');
 
 $zend_cm = new Server();
 $zend_cm->cloud_id = $cloud_metainput;
@@ -299,6 +301,7 @@ $em->persist($zend_cm);
 $zend_db_st = new ServerTemplate();
 $zend_db_st->version = new NumberProductMetaInput(16);
 $zend_db_st->nickname = new TextProductMetaInput('Database Manager with MySQL 5.1 - 11H1');
+$zend_db_st->publication_id = new TextProductMetaInput('18163');
 
 $zend_db = new Server();
 $zend_db->cloud_id = $cloud_metainput;
@@ -316,6 +319,7 @@ $em->persist($zend_db);
 $zend_lb_st = new ServerTemplate();
 $zend_lb_st->version = new NumberProductMetaInput(9);
 $zend_lb_st->nickname = new TextProductMetaInput('RightScale Load Balancer with Apache/HAProxy - 11H1');
+$zend_lb_st->publication_id = new TextProductMetaInput('18192');
 
 $zend_lb = new Server();
 $zend_lb->cloud_id = $cloud_metainput;

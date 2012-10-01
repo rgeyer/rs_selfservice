@@ -46,4 +46,10 @@ class ServerTemplate extends AlertSubjectBase {
 	 * @var NumberProductMetaInput
 	 */
 	public $version;
+
+  /**
+   * @ManyToOne(targetEntity="TextProductMetaInput", fetch="EAGER", cascade={"all"})
+	 * @var TextProductMetaInput
+   */
+  public $publication_id;
 }

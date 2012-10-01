@@ -98,7 +98,7 @@ class ProvisioningHelper {
     $this->client_ec2 = ClientFactory::getClient();
     $this->client_mc = ClientFactory::getClient('1.5');
 
-    $this->_clouds = $this->client_ec2->newModel('Cloud')->indexAsHash();
+    $this->_clouds = $this->client_mc->newModel('Cloud')->indexAsHash();
     $this->_owners = $owners;
 //    foreach($this->_clouds as $cloud_id => $cloud) {
 //      if(array_key_exists($cloud_id, $owners)) {
@@ -141,6 +141,23 @@ class ProvisioningHelper {
           $api_st->version == $server->server_template->version->getVal()) {
         $st = $api_st;
       }
+    }
+
+    # Try to import it
+    if(!$st) {
+      $command = $this->client_mc->getCommand(
+        'publications_import',
+        array(
+          'id' => $server->server_template->publication_id->getVal()
+        )
+      );
+
+      $command->execute();
+      $mc_href = (string)$command->getResponse()->getHeader('Location');
+      $st_id = RightScaleClient::getIdFromRelativeHref($mc_href);
+      $st = $this->client_ec2->newModel('ServerTemplate');
+      $st->find_by_id($st_id);
+      $this->_server_templates[] = $st;
     }
 
     if (!$st) {
