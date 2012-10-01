@@ -65,3 +65,4 @@ TODO:
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
 http://findicons.com/pack/2580/android_icons - Server Icons
+http://findicons.com/pack/1689/splashy - More symbols, candidate for replacing the first icon pack
