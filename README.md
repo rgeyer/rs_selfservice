@@ -63,4 +63,5 @@ TODO:
 * Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
 
 Icon Pack
-http://findicons.com/pack/42/basic
+http://findicons.com/pack/42/basic - Symbols, basic stuff
+http://findicons.com/pack/2580/android_icons - Server Icons
