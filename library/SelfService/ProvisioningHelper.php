@@ -98,7 +98,7 @@ class ProvisioningHelper {
     $this->client_ec2 = ClientFactory::getClient();
     $this->client_mc = ClientFactory::getClient('1.5');
 
-    $this->_clouds = $this->client_ec2->newModel('Mc\Cloud')->indexAsHash();
+    $this->_clouds = $this->client_ec2->newModel('Cloud')->indexAsHash();
     $this->_owners = $owners;
 //    foreach($this->_clouds as $cloud_id => $cloud) {
 //      if(array_key_exists($cloud_id, $owners)) {
@@ -106,7 +106,7 @@ class ProvisioningHelper {
 //      }
 //    }
 
-    $this->_server_templates = $this->client_ec2->newModel('Ec2\ServerTemplate')->index();
+    $this->_server_templates = $this->client_ec2->newModel('ServerTemplate')->index();
   }
 
 	protected function _getSshKey($cloud_id, $name, &$prov_prod) {
@@ -169,7 +169,7 @@ class ProvisioningHelper {
 
       $api_server = null;
       if($cloud_id > RS_MAX_AWS_CLOUD_ID) {
-        $api_server = $this->client_mc->newModel('Mc\Server');
+        $api_server = $this->client_mc->newModel('Server');
 
         $params['server[name]'] = $nickname;
         $params['server[deployment_href]'] = '/api/deployments/' . $deployment->id;
@@ -181,7 +181,7 @@ class ProvisioningHelper {
       } else {
         $ssh_key = $this->_getSshKey( $cloud_id, $deployment->nickname, $result);
 
-        $api_server = $this->client_ec2->newModel('Ec2\Server');
+        $api_server = $this->client_ec2->newModel('Server');
         $api_server->nickname = $nickname;
         $api_server->ec2_ssh_key_href = $ssh_key->href;
         $api_server->ec2_security_groups_href = $server_secgrps;
@@ -209,7 +209,7 @@ class ProvisioningHelper {
    * @return \RGeyer\Guzzle\Rs\Model\Ec2\Deployment
    */
   public function provisionDeployment($params) {
-    $deployment = $this->client_ec2->newModel('Ec2\Deployment');
+    $deployment = $this->client_ec2->newModel('Deployment');
     $deployment->create($params);
 
     $command = $this->client_ec2->getCommand('tags_set',
@@ -240,11 +240,11 @@ class ProvisioningHelper {
 
     $secGrp = null;
     if($cloud_id > RS_MAX_AWS_CLOUD_ID) {
-      $secGrp = $this->client_mc->newModel('Mc\SecurityGroup');
+      $secGrp = $this->client_mc->newModel('SecurityGroup');
       $secGrp->name = $security_group->name->getVal();
       $secGrp->description = $security_group->description->getVal();
     } else {
-      $secGrp = $this->client_ec2->newModel('Ec2\SecurityGroup');
+      $secGrp = $this->client_ec2->newModel('SecurityGroup');
       $secGrp->aws_group_name = $security_group->name->getVal();
       $secGrp->aws_description = $security_group->description->getVal();
     }

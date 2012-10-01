@@ -644,7 +644,6 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 	}
 
   public function showAction() {
-		$response = array ('result' => 'success' );
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$creds = $bootstrap->getResource('cloudCredentials');
 		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
@@ -671,7 +670,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
         $servers = array();
 
         # Aggregate the servers from API 1 and API 1.5
-        $depl_ec2 = $ec2->newModel('Ec2\Deployment');
+        $depl_ec2 = $ec2->newModel('Deployment');
         $depl_ec2->find_by_href($prov_depl->href);
         foreach($depl_ec2->servers as $server) {
           if(!$server->server_type == 'ec2') { continue; }
@@ -685,7 +684,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
           $servers[] = $stdServer;
         }
 
-        $mc_srv_model = $mc->newModel('Mc\Server');
+        $mc_srv_model = $mc->newModel('Server');
         $mc_depl_href = \RGeyer\Guzzle\Rs\RightScaleClient::convertHrefFrom1to15($prov_depl->href);
         foreach($mc_srv_model->index($mc_depl_href) as $server) {
           $stdServer = new stdClass();
@@ -698,9 +697,41 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
           $servers[] = $stdServer;
         }
 
+        foreach($servers as $idx => $server) {
+          if(!$server->actions) {
+            $server->actions = array();
+          }
+          if(in_array($server->state, array('inactive', 'stopped'))) {
+            $server->actions['start'] = array(
+              'uri_prefix' => $this->_helper->url('serverstart', 'provisionedproduct', 'admin'),
+              'img_path' => '/images/plus.png'
+            );
+          }
+        }
+
         $this->view->assign('servers', $servers);
       }
     }
+  }
+
+  public function serverstartAction() {
+    $response = array ('result' => 'success' );
+		$bootstrap = $this->getInvokeArg('bootstrap');
+		$creds = $bootstrap->getResource('cloudCredentials');
+		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
+		$ec2 = ClientFactory::getClient();
+    $mc = ClientFactory::getClient('1.5');
+
+		if($this->_request->has('href') && $this->_request->has('api')) {
+      $href = $this->_request->getParam('href');
+      $api = $this->_request->getParam('api');
+      $client = $api == 'ec2' ? $ec2 : $mc;
+      $server = $client->newModel('Server');
+      $server->find_by_href($href);
+      $server->launch();
+    }
+
+		$this->_helper->json->sendJson($response);
   }
 	
 }
