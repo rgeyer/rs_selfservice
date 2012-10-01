@@ -156,7 +156,13 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 				$prov_prod->createdate = new DateTime();
 				$prov_prod->owner = $this->em->getRepository('User')->find(Zend_Auth::getInstance()->getIdentity()->id);
 				$prov_prod->product = $product;
-				
+
+        # Persist and flush right away so that ->id is assigned and can be used
+        $this->em->persist($prov_prod);
+        $this->em->flush();
+
+        $prov_helper->setTags(array('rsss:provisioned_product_id='.$prov_prod->id));
+
 				try {
           # Create the new deployment
 					$deplname = sprintf ( "rsss-%s-%s", $product->name, $now );
@@ -472,7 +478,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 						# Destroy the rules first
 						foreach($prov_secgrps as $prov_secgrp) {
 							// TODO: This is expensive, making 2 calls simply to find the group
-							$sec_grp = new SecurityGroup(null);
+							$sec_grp = new \RGeyer\Guzzle\Rs\Model\Ec2\SecurityGroup(null);
 							$sec_grp->find_by_href($prov_secgrp->href);
 							
 							$command = new DescribeSecurityGroups();
