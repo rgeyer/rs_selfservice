@@ -72,7 +72,24 @@ class ProvisioningHelper {
 	 *
 	 * @var RGeyer\Guzzle\Rs\Model\Ec2\SshKey[]
 	 */
-	protected $_ssh_keys = array();
+  protected $_ssh_keys = array();
+
+  /**
+   * @var RGeyer\Guzzle\Rs\Model\AbstractServer[] The complete list of servers provisioned by this helper
+   */
+  protected $_servers;
+
+  /**
+   * @var array An array of tags which will be set on every taggable resource created by this provisioning helper
+   */
+  protected $_tags = array();
+
+  /**
+   * @param array $tags The array of tags which will be set on every taggable resource created by this provisioning helper
+   */
+  public function setTags(array $tags) {
+    $this->_tags = $tags;
+  }
 
   public function __construct($rs_account, $rs_email, $rs_password, $log, $owners = array()) {
     $this->_now_ts = time();
@@ -174,8 +191,10 @@ class ProvisioningHelper {
       }
       $api_server->cloud_id = $cloud_id;
       $api_server->create($params);
+      $api_server->addTags($this->_tags);
 
       $result[] = $api_server;
+      $this->_servers[] = $api_server;
 
       $this->log->info(sprintf("Created Server - Name: %s ID: %s", $server->nickname->getVal(), $api_server->id), $server);
     }
@@ -192,6 +211,15 @@ class ProvisioningHelper {
   public function provisionDeployment($params) {
     $deployment = $this->client_ec2->newModel('Ec2\Deployment');
     $deployment->create($params);
+
+    $command = $this->client_ec2->getCommand('tags_set',
+      array(
+        'resource_href' => $deployment->href,
+        'tags' => $this->_tags
+      )
+    );
+    $command->execute();
+    $command->getResult();
     return $deployment;
   }
 
