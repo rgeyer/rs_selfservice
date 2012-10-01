@@ -41,11 +41,11 @@ div.server > img.operational {
 div.server > img.booting,
 div.server > img.pending
 {
-  background: transparent url('/images/16refresh_forward.png') no-repeat center;
+  background: transparent url('/images/16up.png') no-repeat center;
 }
 
 div.server > img.stranded {
-  background: transparent url('/images/16warn_trianble.png') no-repeat center;
+  background: transparent url('/images/16warning_triangle.png') no-repeat center;
 }
 
 div.server > img.decommissioning {
