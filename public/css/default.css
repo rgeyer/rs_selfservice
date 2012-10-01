@@ -47,3 +47,7 @@ div.server > img.pending
 div.server > img.stranded {
   background: transparent url('/images/16warn_trianble.png') no-repeat center;
 }
+
+div.server > img.decommissioning {
+  background: transparent url('/images/16down.png') no-repeat center;
+}

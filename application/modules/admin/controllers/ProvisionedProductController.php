@@ -707,6 +707,12 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
               'img_path' => '/images/plus.png'
             );
           }
+          if($server->state == 'operational') {
+            $server->actions['stop'] = array(
+              'uri_prefix' => $this->_helper->url('serverstop', 'provisionedproduct', 'admin'),
+              'img_path' => '/images/delete.png'
+            );
+          }
         }
 
         $this->view->assign('servers', $servers);
@@ -729,6 +735,27 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
       $server = $client->newModel('Server');
       $server->find_by_href($href);
       $server->launch();
+    }
+
+		$this->_helper->json->sendJson($response);
+  }
+
+  public function serverstopAction() {
+    $response = array ('result' => 'success' );
+		$bootstrap = $this->getInvokeArg('bootstrap');
+		$creds = $bootstrap->getResource('cloudCredentials');
+		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
+		$ec2 = ClientFactory::getClient();
+    $mc = ClientFactory::getClient('1.5');
+
+		if($this->_request->has('href') && $this->_request->has('api')) {
+      $href = $this->_request->getParam('href');
+      $api = $this->_request->getParam('api');
+      $client = $api == 'ec2' ? $ec2 : $mc;
+      $server = $client->newModel('Server');
+      $server->find_by_href($href);
+      $this->log->debug(print_r($server->getParameters(), true));
+      $server->terminate();
     }
 
 		$this->_helper->json->sendJson($response);
