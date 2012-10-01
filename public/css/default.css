@@ -19,3 +19,31 @@ input {
 	width: 400px;
 	margin: 2px 0 20px 10px;
 }
+
+div.server {
+  clear: both;
+  height: 40px;
+  width: 40px;
+}
+
+div.server > img.state {
+  width: 16px;
+  height: 16px;
+  top: -24px;
+  right: -16px;
+  position: relative;
+}
+
+div.server > img.operational {
+  background: transparent url('/images/16check.png') no-repeat center;
+}
+
+div.server > img.booting,
+div.server > img.pending
+{
+  background: transparent url('/images/16refresh_forward.png') no-repeat center;
+}
+
+div.server > img.stranded {
+  background: transparent url('/images/16warn_trianble.png') no-repeat center;
+}

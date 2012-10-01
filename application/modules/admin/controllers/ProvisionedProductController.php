@@ -113,10 +113,14 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$this->view->assign('provisioned_products', $result);	
 		
 		$actions = array(
-				'del' => array(
-						'uri_prefix' => $this->_helper->url('cleanup', 'provisionedproduct', 'admin'),
-						'img_path' => '/images/delete.png'
-				)
+      'del' => array(
+        'uri_prefix' => $this->_helper->url('cleanup', 'provisionedproduct', 'admin'),
+        'img_path' => '/images/delete.png'
+      ),
+      'show' => array(
+        'uri_prefix' => $this->_helper->url('show', 'provisionedproduct', 'admin'),
+        'img_path' => '/images/info.png'
+      )
 		);
 		$this->view->assign('actions', $actions);
 	}
@@ -365,7 +369,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$response = array ('result' => 'success' );
 		if($this->_request->has ( 'id' )) {			
 			$bootstrap = $this->getInvokeArg('bootstrap');				
-			$creds = $bootstrap->getResource('cloudCredentials');			
+			$creds = $bootstrap->getResource('cloudCredentials');
 			ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
 			$api = ClientFactory::getClient();
 			
@@ -638,5 +642,65 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		
 		$this->_helper->json->sendJson($response);
 	}
+
+  public function showAction() {
+		$response = array ('result' => 'success' );
+		$bootstrap = $this->getInvokeArg('bootstrap');
+		$creds = $bootstrap->getResource('cloudCredentials');
+		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
+		$ec2 = ClientFactory::getClient();
+    $mc = ClientFactory::getClient('1.5');
+
+		if($this->_request->has ( 'id' )) {
+			$product_id = $this->_request->getParam ( 'id' );
+			$dql = "SELECT p FROM ProvisionedProduct p WHERE p.id = " . $product_id;
+			$result = $this->em->createQuery($dql)->getResult();
+
+			if(count($result) == 1) {
+        $prov_servers = array();
+        $prov_depl = null;
+        foreach($result[0]->provisioned_objects as $provisioned_obj) {
+          if(is_a($provisioned_obj, 'ProvisionedDeployment')) {
+            $prov_depl = $provisioned_obj;
+          }
+          if(is_a($provisioned_obj, 'ProvisionedServer')) {
+            $prov_servers[] = $provisioned_obj;
+          }
+        }
+
+        $servers = array();
+
+        # Aggregate the servers from API 1 and API 1.5
+        $depl_ec2 = $ec2->newModel('Ec2\Deployment');
+        $depl_ec2->find_by_href($prov_depl->href);
+        foreach($depl_ec2->servers as $server) {
+          if(!$server->server_type == 'ec2') { continue; }
+          $stdServer = new stdClass();
+          $stdServer->name = $server->nickname;
+          $stdServer->state = $server->state;
+          $stdServer->created_at = $server->created_at;
+          $stdServer->href = $server->href;
+          $stdServer->api = 'ec2';
+
+          $servers[] = $stdServer;
+        }
+
+        $mc_srv_model = $mc->newModel('Mc\Server');
+        $mc_depl_href = \RGeyer\Guzzle\Rs\RightScaleClient::convertHrefFrom1to15($prov_depl->href);
+        foreach($mc_srv_model->index($mc_depl_href) as $server) {
+          $stdServer = new stdClass();
+          $stdServer->name = $server->name;
+          $stdServer->state = $server->state;
+          $stdServer->created_at = $server->created_at;
+          $stdServer->href = $server->href;
+          $stdServer->api = 'mc';
+
+          $servers[] = $stdServer;
+        }
+
+        $this->view->assign('servers', $servers);
+      }
+    }
+  }
 	
 }
