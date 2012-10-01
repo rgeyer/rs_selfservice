@@ -1,3 +1,6 @@
+path_to_rss = "/path/to/rss_install"
+
+# May have to switch to Pyrus or a standalone recipe for installation
 `pear channel-discover zend.googlecode.com/svn`
 `pear install zend/zend-1.11.11`
 
@@ -5,13 +8,13 @@
 # http://www.smarty.net/files/Smarty-3.1.7.tar.gz
 # Currently just tossing it into the pear dir
 
-directory "/path/to/rsss_install/logs" do
+directory ::File.join(path_to_rss, 'logs') do
   owner 'apache|http'
   group 'apache|http'
   action :create
 end
 
-file "/path/to/rsss_install/logs/application.log" do
+file ::File.join(path_to_rss, 'logs', 'application.log') do
   owner 'apache|http'
   group 'apache|http'
   action :create|touch
@@ -24,12 +27,17 @@ end
 
 # Recursively get submodules, cause apparently we don't.  Doctrine submodule of guzzle dir has SSL cert problems as well
 
-template "/path/to/rsss_install/application/configs/db.ini" do
+template ::File.join(path_to_rss, 'application', 'configs', 'db.ini') do
   source "db.ini.erb"
 end
 
-template "/path/to/rsss_install/application/configs/cloud_creds.ini" do
+template ::File.join(path_to_rss, 'application', 'configs', 'cloud_creds.ini') do
   source "cloud_creds.ini.erb"
 end
+
+# Create empty model directories
+directory ::File.join(path_to_rss, 'application', 'modules', 'admin', 'models')
+
+directory ::File.join(path_to_rss, 'application', 'modules', 'default', 'models')
 
 # Create a php.d file to set the timezone
