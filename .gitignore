@@ -1,4 +1,5 @@
 application/configs/db.ini
+application/configs/rsss.ini
 application/configs/cloud_creds.ini
 .buildpath
 .project

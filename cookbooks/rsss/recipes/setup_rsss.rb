@@ -25,13 +25,17 @@ end
 # Set AllowOverride All
 # SetEnv APPLICATION_ENV "production|development"
 
-# Recursively get submodules, cause apparently we don't.  Doctrine submodule of guzzle dir has SSL cert problems as well
+# Install and run composer.php to get dependencies
 
 template ::File.join(path_to_rss, 'application', 'configs', 'db.ini') do
   source "db.ini.erb"
 end
 
 template ::File.join(path_to_rss, 'application', 'configs', 'cloud_creds.ini') do
+  source "cloud_creds.ini.erb"
+end
+
+template ::File.join(path_to_rss, 'application', 'configs', 'rsss.ini') do
   source "cloud_creds.ini.erb"
 end
 

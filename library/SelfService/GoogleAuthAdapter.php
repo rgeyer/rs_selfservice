@@ -35,9 +35,8 @@ class GoogleAuthAdapter implements \Zend_Auth_Adapter_Interface {
 	
 	protected $em;
 	
-	public function __construct($entityManager) {
-		# TODO: Put in the discovered hostname/domain here?
-		$this->_oid = new \LightOpenID('local.rsss.com');
+	public function __construct($entityManager, $hostname) {
+		$this->_oid = new \LightOpenID($hostname);
 		$this->em = $entityManager;
 	}
 	

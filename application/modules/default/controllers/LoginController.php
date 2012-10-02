@@ -37,14 +37,15 @@ class LoginController extends \SelfService\controller\BaseController {
 	}
 	
 	public function loginAction() {
-		$authAdapter = new SelfService\GoogleAuthAdapter($this->em);
+    $rsss_options = $this->getInvokeArg('bootstrap')->getOption('rsss');
+		$authAdapter = new SelfService\GoogleAuthAdapter($this->em, $rsss_options['hostname']);
 		if(!$authAdapter->getOidMode()) {
 			$this->view->assign('url', $authAdapter->redirectUrlForGoogleAuth());
 			$this->_redirect($authAdapter->redirectUrlForGoogleAuth());
 		} elseif ($authAdapter->getOidMode() == 'cancel') {
 			$this->view->assign('message', 'You cancelled authenticating with Google, refresh if you\'d like to try again');
 		} else {
-			$result = Zend_Auth::getInstance()->authenticate(new SelfService\GoogleAuthAdapter($this->em));
+			$result = Zend_Auth::getInstance()->authenticate(new SelfService\GoogleAuthAdapter($this->em, $rsss_options['hostname']));
 			if($result->getCode() == \Zend_Auth_Result::SUCCESS) {
 				if(!$result->getIdentity()->name || !$result->getIdentity()->email) {
 					$this->_helper->redirector('newprofile', 'user', 'default');
@@ -53,7 +54,7 @@ class LoginController extends \SelfService\controller\BaseController {
 					$session = new Zend_Session_Namespace('auth');
 					$this->_helper->redirector($session->return_action, $session->return_controller, $session->return_module);
 					# TODO: Redirect to some logical page, perhaps where they came from?			
-					$this->view->assign('message', nl2br(htmlentities(print_r($db_result, true))));
+					#$this->view->assign('message', nl2br(htmlentities(print_r($db_result, true))));
 				}
 			} else {
 				

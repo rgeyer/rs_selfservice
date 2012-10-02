@@ -71,6 +71,11 @@ if(file_exists(APPLICATION_PATH . '/configs/cloud_creds.ini')) {
 	$final_config->merge($creds_config);
 }
 
+if(file_exists(APPLICATION_PATH . '/configs/rsss.ini')) {
+	$rsss_config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/rsss.ini', 'production');
+	$final_config->merge($rsss_config);
+}
+
 # This is added to compensate for a broken curl implementation in Zend Studio when debugging or running PHP unit
 RGeyer\Guzzle\Rs\Common\ClientFactory::setAdditionalParams(array('curl.CURLOPT_SSL_VERIFYPEER' => false));
 
