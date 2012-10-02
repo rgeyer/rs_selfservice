@@ -1,23 +1,49 @@
-path_to_rss = "/path/to/rss_install"
+#
+# Cookbook Name:: rsss
+# Recipe:: setup_rsss
+#
+# Copyright 2012, Ryan J. Geyer <me@ryangeyer.com>
+#
+# All rights reserved - Do Not Redistribute
+#
 
-# May have to switch to Pyrus or a standalone recipe for installation
-`pear channel-discover zend.googlecode.com/svn`
-`pear install zend/zend-1.11.11`
+smarty_version = '3.1.11'
+smarty_tmp_path = ::File.join(Chef::Config[:file_cache_path], "Smarty-#{smarty_version}.tar.gz")
+smarty_dest_path = "/usr/share/php/Smarty"
 
-# Install Smarty to a shared lib dir and/or add config extension to PHP include.
-# http://www.smarty.net/files/Smarty-3.1.7.tar.gz
-# Currently just tossing it into the pear dir
+composer_path = ::File.join(Chef::Config[:file_cache_path], "composer.phar")
 
-directory ::File.join(path_to_rss, 'logs') do
-  owner 'apache|http'
-  group 'apache|http'
-  action :create
+bash "Install Zend Framework Prerequisite" do
+  code <<-EOF
+pear channel-discover zend.googlecode.com/svn
+pear install zend/zend-1.11.12
+  EOF
 end
 
-file ::File.join(path_to_rss, 'logs', 'application.log') do
-  owner 'apache|http'
-  group 'apache|http'
-  action :create|touch
+unless ::File.exists?(::File.join(smarty_dest_path, "lib"))
+  directory smarty_dest_path do
+    recursive true
+  end
+
+  remote_file smarty_tmp_path do
+    source "http://www.smarty.net/files/Smarty-#{smarty_version}.tar.gz"
+  end
+
+  execute "Extract Smarty lib Download" do
+    command "tar -zxf #{smarty_tmp_path} -C #{smarty_dest_path} --strip-components 1"
+  end
+
+end
+
+directory ::File.join(node.rsss.install_dir, 'logs') do
+  owner 'apache'
+  group 'apache'
+end
+
+file ::File.join(node.rsss.install_dir, 'logs', 'application.log') do
+  owner 'apache'
+  group 'apache'
+  action [:create, :touch]
 end
 
 # Create or re-create virtualhost (apache) or config for nginx
@@ -26,22 +52,45 @@ end
 # SetEnv APPLICATION_ENV "production|development"
 
 # Install and run composer.php to get dependencies
-
-template ::File.join(path_to_rss, 'application', 'configs', 'db.ini') do
-  source "db.ini.erb"
+execute "Download composer.phar" do
+  cwd Chef::Config[:file_cache_path]
+  command "curl -s http://getcomposer.org/installer | php"
+  creates composer_path
 end
 
-template ::File.join(path_to_rss, 'application', 'configs', 'cloud_creds.ini') do
-  source "cloud_creds.ini.erb"
+execute "Get rsss vendor libraries" do
+  cwd node.rsss.install_dir
+  command "php composer.phar install"
+  creates ::File.join(node.rsss.install_dir, 'vendor')
 end
 
-template ::File.join(path_to_rss, 'application', 'configs', 'rsss.ini') do
-  source "cloud_creds.ini.erb"
+template ::File.join(node.rsss.install_dir, 'application', 'configs', 'db.ini') do
+  local true
+  source ::File.join(node.rsss.install_dir, 'application', 'configs', 'db.ini.erb')
+end
+
+template ::File.join(node.rsss.install_dir, 'application', 'configs', 'cloud_creds.ini') do
+  local true
+  source ::File.join(node.rsss.install_dir, 'application', 'configs', 'cloud_creds.ini.erb')
+  variables(
+    :rs_email => node.rsss.rightscale_email,
+    :rs_pass => node.rsss.rightscale_password,
+    :rs_acct_num => node.rsss.rightscale_acct_num,
+    :aws_access_key => node.rsss.aws_access_key,
+    :aws_secret_access_key => node.rsss.aws_secret_access_key,
+    :datapipe_owner => node.rsss.datapipe_owner
+  )
+end
+
+template ::File.join(node.rsss.install_dir, 'application', 'configs', 'rsss.ini') do
+  local true
+  source ::File.join(node.rsss.install_dir, 'application', 'configs', 'rsss.ini.erb')
+  variables :hostname => node.rsss.fqdn
 end
 
 # Create empty model directories
-directory ::File.join(path_to_rss, 'application', 'modules', 'admin', 'models')
+directory ::File.join(node.rsss.install_dir, 'application', 'modules', 'admin', 'models')
 
-directory ::File.join(path_to_rss, 'application', 'modules', 'default', 'models')
+directory ::File.join(node.rsss.install_dir, 'application', 'modules', 'default', 'models')
 
 # Create a php.d file to set the timezone
