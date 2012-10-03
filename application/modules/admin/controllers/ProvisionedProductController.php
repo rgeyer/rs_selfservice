@@ -648,6 +648,13 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
           $stdServer->href = $server->href;
           $stdServer->api = 'ec2';
 
+          if(!in_array($server->state, array('inactive', 'stopped'))){
+            $api_server_model = $ec2->newModel('Server');
+            $api_server_model->find_by_href($stdServer->href);
+
+            $stdServer->ip = $api_server_model->current_settings()->ip_address;
+          }
+
           $servers[] = $stdServer;
         }
 

@@ -10,6 +10,7 @@
          <td>State:</td>
          <td>Name:</td>
          <td>Create Date:</td>
+         <td>IP:</td>
          <td>Actions:</td>
        </tr>
       </thead>
@@ -24,6 +25,7 @@
           </td>
           <td>{$server->name}</td>
           <td>{$server->created_at|date_format}</td>
+          <td>{$server->ip}</td>
           <td>{foreach $server->actions as $key=>$action}<a href="{$action.uri_prefix}?href={urlencode($server->href)}&api={$server->api}"><img src="{$action.img_path}"/></a>{/foreach}</td>
         </tr>
     {/foreach}
