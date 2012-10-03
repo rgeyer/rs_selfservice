@@ -1,0 +1,3 @@
+[submodule "cookbooks/rsss"]
+	path = cookbooks/rsss
+	url = git://github.com/rgeyer-rs-cookbooks/rsss.git

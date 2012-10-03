@@ -13,3 +13,4 @@ application/proxies/*.php
 *.iws
 vendor
 .idea
+.release_config
