@@ -5,6 +5,10 @@ description      "Installs/Configures rsss"
 long_description "Installs/Configures rsss"
 version          "0.0.1"
 
+supports "centos"
+
+depends "rightscale"
+
 recipe "rsss::setup_rsss", "Assuming that the code has already been downloaded and that an apache vhost is setup, this installs and configures dependencies for the RSSS"
 
 attribute "rsss/install_dir",

@@ -7,6 +7,8 @@
 # All rights reserved - Do Not Redistribute
 #
 
+rightscale_marker :begin
+
 smarty_version = '3.1.11'
 smarty_tmp_path = ::File.join(Chef::Config[:file_cache_path], "Smarty-#{smarty_version}.tar.gz")
 smarty_dest_path = "/usr/share/php/Smarty"
@@ -18,6 +20,7 @@ bash "Install Zend Framework Prerequisite" do
 pear channel-discover zend.googlecode.com/svn
 pear install zend/zend-1.11.12
   EOF
+  creates "/usr/share/pear/Zend"
 end
 
 unless ::File.exists?(::File.join(smarty_dest_path, "lib"))
@@ -46,11 +49,6 @@ file ::File.join(node.rsss.install_dir, 'logs', 'application.log') do
   action [:create, :touch]
 end
 
-# Create or re-create virtualhost (apache) or config for nginx
-# Point doc root to /root/of/app/public
-# Set AllowOverride All
-# SetEnv APPLICATION_ENV "production|development"
-
 # Install and run composer.php to get dependencies
 execute "Download composer.phar" do
   cwd Chef::Config[:file_cache_path]
@@ -60,18 +58,22 @@ end
 
 execute "Get rsss vendor libraries" do
   cwd node.rsss.install_dir
-  command "php composer.phar install"
+  command "php #{composer_path} install"
   creates ::File.join(node.rsss.install_dir, 'vendor')
 end
 
 template ::File.join(node.rsss.install_dir, 'application', 'configs', 'db.ini') do
   local true
   source ::File.join(node.rsss.install_dir, 'application', 'configs', 'db.ini.erb')
+  mode 0650
+  group "apache"
 end
 
 template ::File.join(node.rsss.install_dir, 'application', 'configs', 'cloud_creds.ini') do
   local true
   source ::File.join(node.rsss.install_dir, 'application', 'configs', 'cloud_creds.ini.erb')
+  mode 0650
+  group "apache"
   variables(
     :rs_email => node.rsss.rightscale_email,
     :rs_pass => node.rsss.rightscale_password,
@@ -85,7 +87,12 @@ end
 template ::File.join(node.rsss.install_dir, 'application', 'configs', 'rsss.ini') do
   local true
   source ::File.join(node.rsss.install_dir, 'application', 'configs', 'rsss.ini.erb')
-  variables :hostname => node.rsss.fqdn
+  mode 0650
+  group "apache"
+  variables(
+    :hostname => node.rsss.fqdn,
+    :admin_email => node.rsss.admin_email
+  )
 end
 
 # Create empty model directories
@@ -93,4 +100,37 @@ directory ::File.join(node.rsss.install_dir, 'application', 'modules', 'admin', 
 
 directory ::File.join(node.rsss.install_dir, 'application', 'modules', 'default', 'models')
 
+directory ::File.join(node.rsss.install_dir, 'application', 'proxies') do
+  mode 0774
+  group "apache"
+end
+
 # Create a php.d file to set the timezone
+
+# Create DB and zap schema
+if `mysql -e 'show databases' | grep rs_selfservice`.empty?
+  execute "Create Database Schema" do
+    command "mysql -e 'create database rs_selfservice'"
+  end
+
+  execute "Zap Schema" do
+    cwd ::File.join(node.rsss.install_dir, 'application', 'scripts')
+    command './zap_schema.sh'
+  end
+end
+
+# Hack up the vhost for AllowOverride and using /public
+# Create or re-create virtualhost (apache) or config for nginx
+# Point doc root to /root/of/app/public
+# Set AllowOverride All
+# SetEnv APPLICATION_ENV "production|development"
+
+bash "Hack up the vhost" do
+  code <<-EOF
+sed -i 's/AllowOverride None/AllowOverride All/g' /etc/httpd/sites-available/rsss.conf
+sed -i 's,/home/webapps/rsss\(>\?\)$,/home/webapps/rsss/public\1,g' /etc/httpd/sites-available/rsss.conf
+/etc/init.d/httpd restart
+  EOF
+end
+
+rightscale_marker :end
