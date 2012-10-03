@@ -61,7 +61,9 @@ TODO:
 * Support multiple AWS/RS accounts
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
 * Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
-*
+* Add Authorization functionality (admin, read_all, act_all, read_mine, act_mine, etc)
+* Move Cloud Credential Management into the DB and UI and away from the *.ini config files
+
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
