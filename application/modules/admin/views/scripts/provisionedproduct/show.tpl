@@ -83,5 +83,4 @@
     </table>
   </div>
 </div>
-<h1>Test</h1>
 {/block}
