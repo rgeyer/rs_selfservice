@@ -51,6 +51,7 @@ TODO:
   * As a named credential (only in absence of a same named credential)
 * Shared sessions - Horizontal Scalability
 * Cache commonly read data (user profiles/oauth uris, etc)
+  * Frequently query the RS API and cache status for provisioned product show screen(s)
 * Use API 1.5 to support additional clouds
   * In progress...
 * Allow launching of servers once deployment is created
@@ -60,6 +61,7 @@ TODO:
 * Support multiple AWS/RS accounts
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
 * Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
+*
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
