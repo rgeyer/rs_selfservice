@@ -63,6 +63,8 @@ TODO:
 * Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
 * Add Authorization functionality (admin, read_all, act_all, read_mine, act_mine, etc)
 * Move Cloud Credential Management into the DB and UI and away from the *.ini config files
+* Filter cloud menu based on product ST support?
+* Tests, and continuous integration/deployment
 
 
 Icon Pack
