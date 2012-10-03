@@ -90,8 +90,7 @@ template ::File.join(node.rsss.install_dir, 'application', 'configs', 'rsss.ini'
   mode 0650
   group "apache"
   variables(
-    :hostname => node.rsss.fqdn,
-    :admin_email => node.rsss.admin_email
+    :hostname => node.rsss.fqdn
   )
 end
 
@@ -128,7 +127,7 @@ end
 bash "Hack up the vhost" do
   code <<-EOF
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/httpd/sites-available/rsss.conf
-sed -i 's,/home/webapps/rsss\(>\?\)$,/home/webapps/rsss/public\1,g' /etc/httpd/sites-available/rsss.conf
+sed -i 's,/home/webapps/rsss\\(>\\?\\)$,/home/webapps/rsss/public\\1,g' /etc/httpd/sites-available/rsss.conf
 /etc/init.d/httpd restart
   EOF
 end
