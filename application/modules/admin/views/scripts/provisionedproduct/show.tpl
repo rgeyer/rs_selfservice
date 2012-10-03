@@ -48,6 +48,15 @@
         <td>
           <div class="server">
             <img src="/images/32server.png" />
+            <img src="/images/spacer.gif" class="state operational"/>
+          </div>
+        </td>
+        <td>Runnin'</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="server">
+            <img src="/images/32server.png" />
             <img src="/images/spacer.gif" class="state booting"/>
           </div>
         </td>
