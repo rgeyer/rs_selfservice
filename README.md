@@ -65,7 +65,8 @@ TODO:
 * Move Cloud Credential Management into the DB and UI and away from the *.ini config files
 * Filter cloud menu based on product ST support?
 * Tests, and continuous integration/deployment
-
+* Make sure ServerTemplate is done importing before starting servers
+* Use Google OAuth to get user info, rather than prompting for it!
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
