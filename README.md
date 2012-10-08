@@ -67,6 +67,8 @@ TODO:
 * Tests, and continuous integration/deployment
 * Make sure ServerTemplate is done importing before starting servers
 * Make the windows product work by properly passing inputs into the server or deployment.
+* Cleaner handling of failure while provisioning.  Make sure that successfully provisioned stuff gets persisted so that it can be destroyed.
+  * Cleaner handling of failure while destroying, make sure that destruction can be re-run until everything is gone.
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
