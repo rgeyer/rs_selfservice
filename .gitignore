@@ -14,3 +14,4 @@ application/proxies/*.php
 vendor
 .idea
 .release_config
+.DS_Store
