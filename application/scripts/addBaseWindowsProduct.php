@@ -58,15 +58,15 @@ $em->persist($cloud_metainput);
 // START default security group
 $securityGroup = new SecurityGroup();
 $securityGroup->name = new TextProductMetaInput('base');
-$securityGroup->description = new TextProductMetaInput('Port 22 and 80');
+$securityGroup->description = new TextProductMetaInput('Port 3389 and 80');
 $securityGroup->cloud_id = $cloud_metainput;
 
 $idx = 0;
 
 $securityGroup->rules[$idx] = new SecurityGroupRule();
 $securityGroup->rules[$idx]->ingress_cidr_ips = new TextProductMetaInput('0.0.0.0/0');
-$securityGroup->rules[$idx]->ingress_from_port = new NumberProductMetaInput(22);
-$securityGroup->rules[$idx]->ingress_to_port = new NumberProductMetaInput(22);
+$securityGroup->rules[$idx]->ingress_from_port = new NumberProductMetaInput(3389);
+$securityGroup->rules[$idx]->ingress_to_port = new NumberProductMetaInput(3389);
 $securityGroup->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
 
 $idx++;
@@ -81,9 +81,9 @@ $em->persist($securityGroup);
 // START default security group
 
 $serverTemplate = new ServerTemplate();
-$serverTemplate->version = new NumberProductMetaInput(92);
-$serverTemplate->nickname = new TextProductMetaInput('Base ServerTemplate for Linux (v13.0)');
-$serverTemplate->publication_id = new TextProductMetaInput('39440');
+$serverTemplate->version = new NumberProductMetaInput(54);
+$serverTemplate->nickname = new TextProductMetaInput('Base ServerTemplate for Windows (v13.1)');
+$serverTemplate->publication_id = new TextProductMetaInput('40720');
 
 $server = new Server();
 $server->cloud_id = $cloud_metainput;
@@ -91,10 +91,10 @@ $server->count = $count_metainput;
 $server->instance_type = new TextProductMetaInput('m1.small');
 $server->security_groups = array($securityGroup);
 $server->server_template = $serverTemplate;
-$server->nickname = new TextProductMetaInput('Base ST');
+$server->nickname = new TextProductMetaInput('Base Windows ST');
 
 $product = new Product();
-$product->name = "Base";
+$product->name = "Base Windows";
 $product->icon_filename = "4f0e334ba64d1.png";
 $product->security_groups = array($securityGroup);
 $product->servers = array($server);

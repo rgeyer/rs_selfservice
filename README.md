@@ -67,6 +67,7 @@ TODO:
 * Tests, and continuous integration/deployment
 * Make sure ServerTemplate is done importing before starting servers
 * Use Google OAuth to get user info, rather than prompting for it!
+* Make the windows product work by properly passing inputs into the server or deployment.
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
