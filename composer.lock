@@ -350,19 +350,19 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/rgeyer/rs_guzzle_client.git",
-                "reference": "1e8890ea86b928115de71dacb6a5f9da3c75461c"
+                "reference": "1a5c4a4796efc5e8d4a9fffff8e1a2f7e311b4cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/rgeyer/rs_guzzle_client/zipball/1e8890ea86b928115de71dacb6a5f9da3c75461c",
-                "reference": "1e8890ea86b928115de71dacb6a5f9da3c75461c",
+                "url": "https://github.com/rgeyer/rs_guzzle_client/zipball/1a5c4a4796efc5e8d4a9fffff8e1a2f7e311b4cd",
+                "reference": "1a5c4a4796efc5e8d4a9fffff8e1a2f7e311b4cd",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "guzzle/guzzle": ">=2.0.0,<=2.7.2"
             },
-            "time": "1349134581",
+            "time": "1349309095",
             "type": "library",
             "installation-source": "source",
             "autoload": {

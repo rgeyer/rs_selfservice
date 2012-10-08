@@ -668,6 +668,13 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
           $stdServer->href = $server->href;
           $stdServer->api = 'mc';
 
+          if(!in_array($server->state, array('inactive', 'stopped'))){
+            $api_server_model = $mc->newModel('Server');
+            $api_server_model->find_by_href($stdServer->href);
+
+            $stdServer->ip = $api_server_model->current_instance()->public_ip_addresses[0];
+          }
+
           $servers[] = $stdServer;
         }
 
