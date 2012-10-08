@@ -47,15 +47,11 @@ class LoginController extends \SelfService\controller\BaseController {
 		} else {
 			$result = Zend_Auth::getInstance()->authenticate(new SelfService\GoogleAuthAdapter($this->em, $rsss_options['hostname']));
 			if($result->getCode() == \Zend_Auth_Result::SUCCESS) {
-				if(!$result->getIdentity()->name || !$result->getIdentity()->email) {
-					$this->_helper->redirector('newprofile', 'user', 'default');
-				} else {
 					Zend_Session::start();
 					$session = new Zend_Session_Namespace('auth');
 					$this->_helper->redirector($session->return_action, $session->return_controller, $session->return_module);
 					# TODO: Redirect to some logical page, perhaps where they came from?			
 					#$this->view->assign('message', nl2br(htmlentities(print_r($db_result, true))));
-				}
 			} else {
 				
 			}

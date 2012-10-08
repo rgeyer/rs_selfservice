@@ -34,9 +34,20 @@ class GoogleAuthAdapter implements \Zend_Auth_Adapter_Interface {
 	protected $_oid;
 	
 	protected $em;
+
+  public function getPrincipalName() {
+    $attributes = $this->_oid->getAttributes();
+    return $attributes['namePerson/first'] . ' ' . $attributes['namePerson/last'];
+  }
+
+  public function getPrincipalEmail() {
+    $attributes = $this->_oid->getAttributes();
+    return $attributes['contact/email'];
+  }
 	
 	public function __construct($entityManager, $hostname) {
 		$this->_oid = new \LightOpenID($hostname);
+    $this->_oid->required = array('namePerson/first', 'namePerson/last', 'contact/email');
 		$this->em = $entityManager;
 	}
 	
@@ -60,6 +71,8 @@ class GoogleAuthAdapter implements \Zend_Auth_Adapter_Interface {
 			if(!$user) {
 				$user = new \User();
 				$user->oid_url = $this->_oid->identity;
+        $user->email = $this->getPrincipalEmail();
+        $user->name = $this->getPrincipalName();
 				$this->em->persist($user);
 				$this->em->flush();
 			}
