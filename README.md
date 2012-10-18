@@ -13,23 +13,20 @@
         pear channel-discover zend.googlecode.com/svn
         pear install zend/zend-1.11.11
 
-4. Install Smarty someplace, and add it to your PHP include_path
+4. Make sure that /path/to/rsss/logs exists, and is writable by apache2/httpd
 
-5. Make sure that /path/to/rsss/logs exists, and is writable by apache2/httpd
+5. Copy application/configs/db.ini.tpl and application/configs/cloud_creds.ini.tpl to their *.ini equivalents, and enter your values.
 
-6. Copy application/configs/db.ini.tpl and application/configs/cloud_creds.ini.tpl to their *.ini equivalents, and enter your values.
+6. Run application/scripts/zap_schema.sh script which will create the schema in the DB specified in application/configs/db.ini and populate the 3 "standard" products.
 
-7. Run application/scripts/zap_schema.sh script which will create the schema in the DB specified in application/configs/db.ini and populate the 3 "standard" products.
+7. Edit library/SelfService/GoogleAuthAdapter.php to use your servers hostname/ip rather than "local.rsss.com"
 
-8. Edit library/SelfService/GoogleAuthAdapter.php to use your servers hostname/ip rather than "local.rsss.com"
-
-9. Enjoy.. Hopefully!
+8. Enjoy.. Hopefully!
 
 DEPENDENCIES:
 In addition to the dependencies defined in composer.json, these don't play well with composer and will need to be installed manually
 
-* Zend Framework 1.11.11
-* Smarty 3.1.11
+* Zend Framework 1.11.12
 
 TODO:
 * Create and verify support for SQLite for dev and test

@@ -1,5 +1,5 @@
 {
-    "hash": "386a2b2071f0e40049391cbcfe0974cc",
+    "hash": "4d2644d9aab92d9268042cc0f597d62e",
     "packages": [
         {
             "name": "doctrine/common",
@@ -350,19 +350,19 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/rgeyer/rs_guzzle_client.git",
-                "reference": "1a5c4a4796efc5e8d4a9fffff8e1a2f7e311b4cd"
+                "reference": "a950881f36b6082c4f5ecfcc73c1d0b65fa30f48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/rgeyer/rs_guzzle_client/zipball/1a5c4a4796efc5e8d4a9fffff8e1a2f7e311b4cd",
-                "reference": "1a5c4a4796efc5e8d4a9fffff8e1a2f7e311b4cd",
+                "url": "https://github.com/rgeyer/rs_guzzle_client/zipball/a950881f36b6082c4f5ecfcc73c1d0b65fa30f48",
+                "reference": "a950881f36b6082c4f5ecfcc73c1d0b65fa30f48",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "guzzle/guzzle": ">=2.0.0,<=2.7.2"
             },
-            "time": "1349309095",
+            "time": "1350089428",
             "type": "library",
             "installation-source": "source",
             "autoload": {
@@ -386,6 +386,48 @@
                 "client",
                 "Guzzle",
                 "RightScale"
+            ]
+        },
+        {
+            "name": "smarty/smarty",
+            "version": "v3.1.12",
+            "source": {
+                "type": "svn",
+                "url": "http://smarty-php.googlecode.com/svn",
+                "reference": "/tags/v3.1.12/@4664"
+            },
+            "require": {
+                "php": ">=5.2"
+            },
+            "time": "2012-09-25 22:13:16",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "classmap": [
+                    "distribution/libs/Smarty.class.php"
+                ]
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Monte Ohrt",
+                    "email": "monte@ohrt.com"
+                },
+                {
+                    "name": "Uwe Tews",
+                    "email": "uwe.tews@googlemail.com"
+                },
+                {
+                    "name": "Rodney Rehm",
+                    "email": "rodney.rehm@medialize.de"
+                }
+            ],
+            "description": "Smarty - the compiling PHP template engine",
+            "homepage": "http://www.smarty.net",
+            "keywords": [
+                "templating"
             ]
         },
         {
