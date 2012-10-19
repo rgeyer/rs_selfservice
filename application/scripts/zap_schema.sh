@@ -8,3 +8,4 @@ php ./doctrine.php orm:schema-tool:create
 php addZendSPProduct.php
 php addPhp3TierProduct.php
 php addBaseLinuxProduct.php
+php addBaseWindowsProduct.php

@@ -95,11 +95,11 @@ $server->nickname = new TextProductMetaInput('Base Windows ST');
 
 $product = new Product();
 $product->name = "Base Windows";
-$product->icon_filename = "4f0e334ba64d1.png";
+$product->icon_filename = "windows.png";
 $product->security_groups = array($securityGroup);
 $product->servers = array($server);
 $product->meta_inputs = array($cloud_metainput, $count_metainput);
-$product->launch_servers = true;
+$product->launch_servers = false;
 
 } catch (Exception $e) {
 	if($log) { $log->err($e->getMessage()); }

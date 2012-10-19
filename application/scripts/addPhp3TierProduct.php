@@ -255,7 +255,7 @@ $em->persist($cpu_scale_down_alert);
 
 $product = new Product();
 $product->name = "PHP 3-Tier";
-$product->icon_filename = "4f0e334ba64d1.png";
+$product->icon_filename = "apache.png";
 $product->security_groups = array($php_app_sg, $php_default_sg, $php_lb_sg, $php_mysql_sg);
 $product->servers = array($app_server, $php_db, $php_lb);
 $product->arrays = array($php_server_ary);

@@ -95,7 +95,7 @@ $server->nickname = new TextProductMetaInput('Base ST');
 
 $product = new Product();
 $product->name = "Base";
-$product->icon_filename = "4f0e334ba64d1.png";
+$product->icon_filename = "redhat.png";
 $product->security_groups = array($securityGroup);
 $product->servers = array($server);
 $product->meta_inputs = array($cloud_metainput, $count_metainput);

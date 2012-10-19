@@ -350,7 +350,7 @@ $em->persist($zend_server_ary);
 
 $product = new Product();
 $product->name = "Zend SP";
-$product->icon_filename = "4f0e334ba64d1.png";
+$product->icon_filename = "zend.png";
 $product->security_groups = array($zend_app_sg, $zend_cm_sg, $zend_default_sg, $zend_haproxy_sg, $zend_mysql_sg);
 $product->servers = array($zend_server, $zend_cm, $zend_db, $zend_lb);
 $product->arrays = array($zend_server_ary);
