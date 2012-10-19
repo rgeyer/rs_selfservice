@@ -41,6 +41,7 @@ $log .= $zend_app_dir . "\n";
 $config_dir		= $zend_app_dir . DIRECTORY_SEPARATOR . 'configs';
 $scripts_dir 	= $zend_app_dir . DIRECTORY_SEPARATOR . 'scripts';
 $log_dir 			= $_SERVER['ZS_APPLICATION_BASE_DIR'] . DIRECTORY_SEPARATOR . 'logs';
+$proxies_dir	= $zend_app_dir . DIRECTORY_SEPARATOR . 'proxies';
 
 # Generate the DB config file
 $db_template_file = $config_dir . DIRECTORY_SEPARATOR . 'db.ini.erb';
@@ -79,6 +80,9 @@ file_put_contents($rsss_config_file, $rsss_config_str);
 
 # Allow everybody to write the log
 exec("chmod 777 $log_dir");
+
+# Allow everybod to write the proxies
+exec("chmod -R 777 $proxies_dir");
 
 # Nuke the schema
 $log .= exec("export PATH=$PATH:/usr/local/zend/bin && ./zap_schema.sh");

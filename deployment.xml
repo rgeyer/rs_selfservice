@@ -21,7 +21,7 @@
     </parameter>
     <parameter display="Database Name" id="db_name" readonly="false" required="true" type="string"/>
     <parameter display="Database User" id="db_user" readonly="false" required="true" type="string"/>
-    <parameter display="Database Password" id="db_pass" readonly="false" required="true" type="password"/>
+    <parameter display="Database Password" id="db_pass" readonly="false" required="false" type="password"/>
     <parameter display="Application FQDN" id="fqdn" readonly="false" required="true" type="hostname"/>
     <parameter display="RightScale Account Email" id="rs_email" readonly="false" required="true" type="email"/>
     <parameter display="RightScale Account Password" id="rs_pass" readonly="false" required="true" type="password"/>
@@ -29,5 +29,5 @@
     <parameter display="AWS Access Key ID" id="aws_key_id" readonly="false" required="true" type="string"/>
     <parameter display="AWS Secret Key" id="aws_key_secret" readonly="false" required="true" type="password"/>
     <parameter display="Datapipe Owner" id="dp_owner" readonly="false" required="false" type="string"/>
-  </parameters>
+    </parameters>
     </package>
