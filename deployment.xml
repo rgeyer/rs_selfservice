@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<package xmlns="http://www.zend.com/server/deployment-descriptor/1.0" version="1.0">
+    <name>rs_selfservice</name>
+    <version>
+        <release>1.0.0</release>
+    </version>
+    <appdir>data</appdir>
+    <docroot>data/public</docroot>
+    <scriptsdir>application/scripts</scriptsdir>
+    <dependencies>
+    <required>
+      <zendframework>
+        <min>1.11.0</min>
+        <max>1.12.0</max>
+      </zendframework>
+    </required>
+  </dependencies>
+    <parameters>
+    <parameter display="Database Host" id="db_host" readonly="false" required="true" type="string">
+      <defaultvalue>localhost</defaultvalue>
+    </parameter>
+    <parameter display="Database Name" id="db_name" readonly="false" required="true" type="string"/>
+    <parameter display="Database User" id="db_user" readonly="false" required="true" type="string"/>
+    <parameter display="Database Password" id="db_pass" readonly="false" required="true" type="password"/>
+    <parameter display="Application FQDN" id="fqdn" readonly="false" required="true" type="hostname"/>
+    <parameter display="RightScale Account Email" id="rs_email" readonly="false" required="true" type="email"/>
+    <parameter display="RightScale Account Password" id="rs_pass" readonly="false" required="true" type="password"/>
+    <parameter display="RightScale Account Number" id="rs_acctnum" readonly="false" required="true" type="string"/>
+    <parameter display="AWS Access Key ID" id="aws_key_id" readonly="false" required="true" type="string"/>
+    <parameter display="AWS Secret Key" id="aws_key_secret" readonly="false" required="true" type="password"/>
+    <parameter display="Datapipe Owner" id="dp_owner" readonly="false" required="false" type="string"/>
+  </parameters>
+    </package>

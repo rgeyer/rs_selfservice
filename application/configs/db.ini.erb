@@ -1,7 +1,7 @@
 [production]
 resources.doctrineEntityManager.connection.driver    = "pdo_mysql"
-resources.doctrineEntityManager.connection.host      = "localhost"
-resources.doctrineEntityManager.connection.dbname    = "rs_selfservice"
-resources.doctrineEntityManager.connection.user      = "root"
-resources.doctrineEntityManager.connection.password  = ""
+resources.doctrineEntityManager.connection.host      = "<%= @db_host %>"
+resources.doctrineEntityManager.connection.dbname    = "<%= @db_name %>"
+resources.doctrineEntityManager.connection.user      = "<%= @db_user %>"
+resources.doctrineEntityManager.connection.password  = "<%= @db_pass %>"
 resources.doctrineEntityManager.key                  = "<%= @encryption_key %>" // A 32 character key used for encryption

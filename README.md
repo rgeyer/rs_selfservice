@@ -1,5 +1,6 @@
 # Installation instructions
 
+## For a LAMP All-in-One or PHP App server
 1. Download and install Composer:
 
         curl -s http://getcomposer.org/installer | php
@@ -11,7 +12,7 @@
 3. Install the pear/pyrus managed dependencies:
 
         pear channel-discover zend.googlecode.com/svn
-        pear install zend/zend-1.11.11
+        pear install zend/zend-1.12.0
 
 4. Make sure that /path/to/rsss/logs exists, and is writable by apache2/httpd
 
@@ -23,10 +24,27 @@
 
 8. Enjoy.. Hopefully!
 
+## For Zend Server
+1. Download and install Composer:
+
+        curl -s http://getcomposer.org/installer | php
+
+2. Install the composer managed dependencies:
+
+        php composer.phar install
+
+3. Create a Zend Deployment package
+
+        zdpack --src-dir=. pack
+
+4. Deploy using Zend Server/Cluster mechanism of choice
+
+5. Change the vhost for your application to allow overrides, either manually or by changing the templates at /usr/local/zend/share/
+
 DEPENDENCIES:
 In addition to the dependencies defined in composer.json, these don't play well with composer and will need to be installed manually
 
-* Zend Framework 1.11.12
+* Zend Framework 1.12.0
 
 TODO:
 * Create and verify support for SQLite for dev and test
@@ -66,6 +84,7 @@ TODO:
 * Make the windows product work by properly passing inputs into the server or deployment.
 * Cleaner handling of failure while provisioning.  Make sure that successfully provisioned stuff gets persisted so that it can be destroyed.
   * Cleaner handling of failure while destroying, make sure that destruction can be re-run until everything is gone.
+* Add vendor dependency downloads with composer in pre_activate.php for Zend Server
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
