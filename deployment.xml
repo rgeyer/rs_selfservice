@@ -16,6 +16,15 @@
     </required>
   </dependencies>
     <parameters>
+    <parameter display="Database Driver" id="db_driver" readonly="false" required="true" type="choice">
+      <validation>
+        <enums>
+          <enum>pdo_mysql</enum>
+          <enum>pdo_pgsql</enum>
+        </enums>
+      </validation>
+      <defaultvalue>pdo_mysql</defaultvalue>
+    </parameter>
     <parameter display="Database Host" id="db_host" readonly="false" required="true" type="string">
       <defaultvalue>localhost</defaultvalue>
     </parameter>
@@ -29,5 +38,5 @@
     <parameter display="AWS Access Key ID" id="aws_key_id" readonly="false" required="true" type="string"/>
     <parameter display="AWS Secret Key" id="aws_key_secret" readonly="false" required="true" type="password"/>
     <parameter display="Datapipe Owner" id="dp_owner" readonly="false" required="false" type="string"/>
-    </parameters>
+  </parameters>
     </package>

@@ -85,6 +85,8 @@ exec("chmod 777 $log_dir");
 exec("chmod -R 777 $proxies_dir");
 
 # Nuke the schema
-$log .= exec("export PATH=$PATH:/usr/local/zend/bin && ./zap_schema.sh");
+$cmdout = '';
+$log .= exec("cd $scripts_dir && chmod +x zap_schema.sh && export PATH=\$PATH:/usr/local/zend/bin && ./zap_schema.sh", $cmdout);
+$log .= print_r($cmdout, true);
 
 file_put_contents('/tmp/pre_activate.log', $log);
