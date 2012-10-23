@@ -90,3 +90,14 @@ Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
 http://findicons.com/pack/2580/android_icons - Server Icons
 http://findicons.com/pack/1689/splashy - More symbols, candidate for replacing the first icon pack
+
+Handy useful queries..
+select
+  server_templates.id,
+  nickmeta.default_value as nickname,
+  vermeta.default_value as version,
+  pubmeta.default_value as publication_id
+from server_templates
+	join product_meta_inputs as nickmeta on (server_templates.nickname_id = nickmeta.id)
+	join product_meta_inputs as vermeta on (server_templates.version_id = vermeta.id)
+	join product_meta_inputs as pubmeta on (server_templates.publication_id_id = pubmeta.id);
