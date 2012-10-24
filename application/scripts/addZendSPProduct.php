@@ -265,9 +265,9 @@ $em->persist($zend_haproxy_sg);
 
 // START zend_server 1
 $zend_server_st = new ServerTemplate();
-$zend_server_st->version = new NumberProductMetaInput(7);
-$zend_server_st->nickname = new TextProductMetaInput('ZEND PHP5 Zend Server - Zend Solution Pack - 11H1');
-$zend_server_st->publication_id = new TextProductMetaInput('23069');
+$zend_server_st->version = new NumberProductMetaInput(28);
+$zend_server_st->nickname = new TextProductMetaInput('Zend Server 5.6 cluster edition');
+$zend_server_st->publication_id = new TextProductMetaInput('37499');
 
 $zend_server = new Server();
 $zend_server->cloud_id = $cloud_metainput;
@@ -282,9 +282,9 @@ $em->persist($zend_server);
 
 // START zend_cm server
 $zend_cm_st = new ServerTemplate();
-$zend_cm_st->version = new NumberProductMetaInput(5);
-$zend_cm_st->nickname = new TextProductMetaInput('ZEND Zend Server Cluster Manager local DB - Zend Solution Pack');
-$zend_cm_st->publication_id = new TextProductMetaInput('23070');
+$zend_cm_st->version = new NumberProductMetaInput(26);
+$zend_cm_st->nickname = new TextProductMetaInput('Zend Server Cluster Manager 5.6');
+$zend_cm_st->publication_id = new TextProductMetaInput('37498');
 
 $zend_cm = new Server();
 $zend_cm->cloud_id = $cloud_metainput;
@@ -298,10 +298,11 @@ $em->persist($zend_cm);
 // END zend_cm server
 
 // START zend_db server(s)
+# TODO: Update to v12.11 or something, the publication ID is blank/invalid so the template must already be imported
 $zend_db_st = new ServerTemplate();
-$zend_db_st->version = new NumberProductMetaInput(16);
-$zend_db_st->nickname = new TextProductMetaInput('Database Manager with MySQL 5.1 - 11H1');
-$zend_db_st->publication_id = new TextProductMetaInput('18163');
+$zend_db_st->version = new NumberProductMetaInput(116);
+$zend_db_st->nickname = new TextProductMetaInput('Database Manager for MySQL 5.1');
+$zend_db_st->publication_id = new TextProductMetaInput('0');
 
 $zend_db = new Server();
 $zend_db->cloud_id = $cloud_metainput;
@@ -316,10 +317,11 @@ $em->persist($zend_db);
 // END zend_db server(s)
 
 // START zend_lb server(s)
+# TODO: Update to v12.11 or something, the publication ID is blank/invalid so the template must already be imported
 $zend_lb_st = new ServerTemplate();
-$zend_lb_st->version = new NumberProductMetaInput(9);
-$zend_lb_st->nickname = new TextProductMetaInput('RightScale Load Balancer with Apache/HAProxy - 11H1');
-$zend_lb_st->publication_id = new TextProductMetaInput('18192');
+$zend_lb_st->version = new NumberProductMetaInput(84);
+$zend_lb_st->nickname = new TextProductMetaInput('Load Balancer');
+$zend_lb_st->publication_id = new TextProductMetaInput('0');
 
 $zend_lb = new Server();
 $zend_lb->cloud_id = $cloud_metainput;

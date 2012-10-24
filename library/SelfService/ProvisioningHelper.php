@@ -135,9 +135,10 @@ class ProvisioningHelper {
     $result = array();
     $st = null;
     $cloud_id = $server->cloud_id->getVal();
+    // TODO: Fix the import then find goodies here.
     // Search for the desired ServerTemplate by name and revision
     foreach( $this->_server_templates as $api_st ) {
-      if ($api_st->nickname == $server->server_template->nickname->getVal() &&
+      if (strtolower(trim($api_st->nickname)) == strtolower(trim($server->server_template->nickname->getVal())) &&
           $api_st->version == $server->server_template->version->getVal()) {
         $st = $api_st;
       }

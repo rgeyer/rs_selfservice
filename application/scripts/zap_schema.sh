@@ -9,3 +9,5 @@ php addZendSPProduct.php
 php addPhp3TierProduct.php
 php addBaseLinuxProduct.php
 php addBaseWindowsProduct.php
+php addZendMySQLDevProduct.php
+php addZendPgSQLDevProduct.php
