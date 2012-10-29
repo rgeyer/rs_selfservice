@@ -1,4 +1,6 @@
 <?php
+use RGeyer\Guzzle\Rs\RightScaleClient;
+
 /*
  Copyright (c) 2012 Ryan J. Geyer <me@ryangeyer.com>
 
@@ -134,7 +136,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$creds = $bootstrap->getResource('cloudCredentials');
 		
-		if ($this->_request->has ( 'id' )) {
+		if ($this->_request->has('id')) {
 
       $prov_helper = new \SelfService\ProvisioningHelper(
         $creds->rs_acct,
@@ -339,6 +341,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 			$creds = $bootstrap->getResource('cloudCredentials');
 			ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
 			$api = ClientFactory::getClient();
+			$api15 = ClientFactory::getClient('1.5');
 			
 			$aws = array();
 			$aws[1] = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => \Guzzle\Aws\Ec2\Ec2Client::REGION_US_EAST_1));
@@ -399,12 +402,12 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					# Stop and destroy the servers
 					if(count($prov_servers) > 0) {
 						foreach($prov_servers as $prov_server) {
-							$server = new Server();
+							$server = $prov_server->cloud_id > RS_MAX_AWS_CLOUD_ID ? $api15->newModel('Server') : $api->newModel('Server');							
 							$server->find_by_href($prov_server->href);
-							if(!in_array($server->state, array('stopped', 'decomissioning'))) {
-								$server->stop(true);
+							if(!in_array($server->state, array('inactive', 'stopped', 'decomissioning'))) {
+								$server->terminate();
 								$response['wait_for_decom']['servers'][] = $server->href;
-							} else if($server->state == 'decomissioning') {
+							} else if($server->state == 'decommissioning') {
 								$response['wait_for_decom']['servers'][] = $server->href;
 							} else {
 								$server->destroy();
@@ -448,42 +451,72 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 						
 						# Destroy the rules first
 						foreach($prov_secgrps as $prov_secgrp) {
-							// TODO: This is expensive, making 2 calls simply to find the group
-							$sec_grp = new \RGeyer\Guzzle\Rs\Model\Ec2\SecurityGroup(null);
-							$sec_grp->find_by_href($prov_secgrp->href);
-							
-							$command = new DescribeSecurityGroups();
-							$command->set('filters', array('group-name' => $sec_grp->aws_group_name));
-							$grpz = $aws[$prov_secgrp->cloud_id]->execute($command);
-							# Delete the group rules
-							foreach($grpz->securityGroupInfo->item as $group) {
-								$command = new RevokeSecurityGroupIngress();
-								$command->set('group_id', (string)$group->groupId);
-								$rules = array();
-								foreach($group->ipPermissions->item as $rule) {
-									if(count($rule->ipRanges->item) > 0) {
-										$rlz = array('protocol' => $rule->ipProtocol, 'from_port' => $rule->fromPort, 'to_port' => $rule->toPort, 'cidr_ips' => $rule->ipRanges->item[0]->cidrIp);
-										$rules[] = $rlz;
-									}
-								
-									if(count($rule->groups->item) > 0){
-										$rlz = array('user_id' => $rule->groups->item[0]->userId, 'group_id' => $rule->groups->item[0]->groupId, 'protocol' => $rule->ipProtocol, 'from_port' => $rule->fromPort, 'to_port' => $rule->toPort);
-										$rules[] = $rlz;
-									}
-								}
-								if(count($rules) > 0) {
-									$command->set('rules', $rules);
-									$aws[$prov_secgrp->cloud_id]->execute($command);
-								}
-								$group_ids[(string)$group->groupId] = $prov_secgrp;
+						  if($prov_secgrp->cloud_id <= RS_MAX_AWS_CLOUD_ID) {
+  							// TODO: This is expensive, making 2 calls simply to find the group
+  							$sec_grp = new \RGeyer\Guzzle\Rs\Model\Ec2\SecurityGroup(null);
+  							$sec_grp->find_by_href($prov_secgrp->href);
+  							
+  							$command = new DescribeSecurityGroups();
+  							$command->set('filters', array('group-name' => $sec_grp->aws_group_name));
+  							$grpz = $aws[$prov_secgrp->cloud_id]->execute($command);
+  							# Delete the group rules
+  							foreach($grpz->securityGroupInfo->item as $group) {
+  								$command = new RevokeSecurityGroupIngress();
+  								$command->set('group_id', (string)$group->groupId);
+  								$rules = array();
+  								foreach($group->ipPermissions->item as $rule) {
+  									if(count($rule->ipRanges->item) > 0) {
+  										$rlz = array('protocol' => $rule->ipProtocol, 'from_port' => $rule->fromPort, 'to_port' => $rule->toPort, 'cidr_ips' => $rule->ipRanges->item[0]->cidrIp);
+  										$rules[] = $rlz;
+  									}
+  								
+  									if(count($rule->groups->item) > 0){
+  										$rlz = array('user_id' => $rule->groups->item[0]->userId, 'group_id' => $rule->groups->item[0]->groupId, 'protocol' => $rule->ipProtocol, 'from_port' => $rule->fromPort, 'to_port' => $rule->toPort);
+  										$rules[] = $rlz;
+  									}
+  								}
+  								if(count($rules) > 0) {
+  									$command->set('rules', $rules);
+  									$aws[$prov_secgrp->cloud_id]->execute($command);
+  								}
+  								$group_ids[(string)$group->groupId] = $prov_secgrp;
+  							}
+							} else {
+							  $sec_grp = $api15->newModel('SecurityGroup');
+							  $sec_grp->find_by_href($prov_secgrp->href, array('cloud_id' => $prov_secgrp->cloud_id));
+							  # TODO: Delete the rule, may need an extension to the model in the lib
+							  $rules = $sec_grp->security_group_rules();
+							  foreach($rules as $rule) {
+							    $rule_links = array_filter($rule->links, function($var) {
+							      return $var->rel == 'self';
+							    });
+							    $rule_link = array_pop($rule_links)->href;
+							    
+							    $long_link = $sec_grp->href . str_replace('/api', '', $rule_link);
+							    
+							    $this->log->info("Long link be " . $long_link);
+							    
+							    $command = $api15->delete($long_link);
+							    $command->send();
+							    
+							    #$command = $api15->getCommand('security_group_rules_destroy', array('id' => (string)RightScaleClient::getIdFromRelativeHref($rule_link)));
+							    #$command->execute();
+							    $this->log->info("I wanna delete a security group of ID " . $rule_link);
+							  }
 							}
 						}
 						
 						# Destroy the actual groups
 						foreach($group_ids as $groupid => $prov_secgrp) {
-							$command = new DeleteSecurityGroup();
-							$command->set('group_id', $groupid);
-							$aws[$prov_secgrp->cloud_id]->execute($command);
+						  if($prov_secgrp->cloud_id <= RS_MAX_AWS_CLOUD_ID) {
+  							$command = new DeleteSecurityGroup();
+  							$command->set('group_id', $groupid);
+  							$aws[$prov_secgrp->cloud_id]->execute($command);
+						  } else {
+						    $sec_grp = $api15->newModel('SecurityGroup');
+						    $sec_grp->find_by_href($prov_secgrp->href, array('cloud_id' => $prov_secgrp->cloud_id));
+						    $sec_grp->destroy();
+						  }
 							
 							# Remove the provisioned object DB record
 							$result[0]->provisioned_objects->removeElement($prov_secgrp);
