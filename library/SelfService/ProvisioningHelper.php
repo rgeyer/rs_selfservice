@@ -100,13 +100,8 @@ class ProvisioningHelper {
 
     $this->_clouds = $this->client_mc->newModel('Cloud')->indexAsHash();
     $this->_owners = $owners;
-//    foreach($this->_clouds as $cloud_id => $cloud) {
-//      if(array_key_exists($cloud_id, $owners)) {
-//        $this->_clouds[$cloud_id]->owner = $owners[$cloud_id];
-//      }
-//    }
 
-    $this->_server_templates = $this->client_ec2->newModel('ServerTemplate')->index();
+    $this->_server_templates = $this->client_mc->newModel('ServerTemplate')->index();
   }
 
 	protected function _getSshKey($cloud_id, $name, &$prov_prod) {
@@ -138,8 +133,8 @@ class ProvisioningHelper {
     // TODO: Fix the import then find goodies here.
     // Search for the desired ServerTemplate by name and revision
     foreach( $this->_server_templates as $api_st ) {
-      if (strtolower(trim($api_st->nickname)) == strtolower(trim($server->server_template->nickname->getVal())) &&
-          $api_st->version == $server->server_template->version->getVal()) {
+      if (strtolower(trim($api_st->name)) == strtolower(trim($server->server_template->nickname->getVal())) &&
+          $api_st->revision == $server->server_template->version->getVal()) {
         $st = $api_st;
       }
     }
@@ -154,15 +149,36 @@ class ProvisioningHelper {
       );
 
       $command->execute();
+      $this->log->info("Imported");
       $mc_href = (string)$command->getResponse()->getHeader('Location');
-      $st_id = RightScaleClient::getIdFromRelativeHref($mc_href);
-      $st = $this->client_ec2->newModel('ServerTemplate');
-      $st->find_by_id($st_id);
+      $this->log->info(sprintf("href be %s", $mc_href));      
+      $st = $this->client_mc->newModel('ServerTemplate');
+      $st->find_by_href($mc_href);
+      $this->log->info(sprintf("The available properties are %s", print_r($st->getParameters(), true)));
       $this->_server_templates[] = $st;
     }
 
     if (!$st) {
       throw new \InvalidArgumentException('A server template with nickname "' . $server->server_template->nickname->getVal() . '" and version "' . $server->server_template->version->getVal() . '" was not found!');
+    }
+    
+    if($cloud_id > RS_MAX_AWS_CLOUD_ID) {
+      # Detect the right MultiCloudImage and select it, or throw an exception if there isn't a match
+      $mci_href = null;
+      foreach($st->multi_cloud_images() as $mci) {
+        foreach($mci->settings() as $setting) {
+          $cloud_link = array_filter($setting->links, function($var) {
+            return $var->rel == 'cloud';
+          });        
+          if(array_pop($cloud_link)->href == $this->_clouds[$cloud_id]->href) {
+            $mci_href = $mci->href;
+          }
+        }
+      }
+      if(!$mci_href) {
+        $message = sprintf('The ServerTemplate "%s" does not have an image which supports the cloud "%s"', $st->name, $this->_clouds[$cloud_id]->name);
+        throw new \InvalidArgumentException($message);
+      }
     }
 
     $server_secgrps = array();
@@ -196,6 +212,7 @@ class ProvisioningHelper {
         if(count($server_secgrps) > 0) {
           $params['server[instance][security_group_hrefs]'] = $server_secgrps;
         }
+        $params['server[instance][multi_cloud_image_href]'] = $mci_href;        
       } else {
         $ssh_key = $this->_getSshKey( $cloud_id, $deployment->nickname, $result);
 
@@ -203,7 +220,7 @@ class ProvisioningHelper {
         $api_server->nickname = $nickname;
         $api_server->ec2_ssh_key_href = $ssh_key->href;
         $api_server->ec2_security_groups_href = $server_secgrps;
-        $api_server->server_template_href = $st->href;
+        $api_server->server_template_href = 'https://my.rightscale.com/api/server_templates/' . $st->id;
         $api_server->deployment_href = $deployment->href;
         $api_server->instance_type = $server->instance_type->getVal();
       }
