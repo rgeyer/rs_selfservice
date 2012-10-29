@@ -313,7 +313,6 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					$response['result'] = 'error';
 					$response['error'] = $e->getMessage();
 					$this->log->err("An error occurred provisioning the product. Error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
-					$this->_helper->json->sendJson($response);
 				}
 
 				try {
@@ -323,7 +322,6 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					$response['result'] = 'error';
 					$response['error'] = $e->getMessage();					
 					$this->log->err("An error occurred persisting the provisioned product to the DB. Error " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
-					$this->_helper->json->sendJson($response);
 				}
 			} else {
 				$response ['result'] = 'error';
