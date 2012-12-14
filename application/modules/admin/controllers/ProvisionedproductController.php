@@ -494,7 +494,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 							    
 							    $this->log->info("Long link be " . $long_link);
 							    
-							    $command = $api15->delete($long_link);
+							    $command = $api15->delete($long_link, array('X-API-VERSION' => '1.5'));
 							    $command->send();
 							    
 							    #$command = $api15->getCommand('security_group_rules_destroy', array('id' => (string)RightScaleClient::getIdFromRelativeHref($rule_link)));
