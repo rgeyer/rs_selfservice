@@ -81,9 +81,9 @@ $em->persist($securityGroup);
 // START default security group
 
 $serverTemplate = new ServerTemplate();
-$serverTemplate->version = new NumberProductMetaInput(57);
-$serverTemplate->nickname = new TextProductMetaInput('Base ServerTemplate for Windows (v13.1.1)');
-$serverTemplate->publication_id = new TextProductMetaInput('42941');
+$serverTemplate->version = new NumberProductMetaInput(61);
+$serverTemplate->nickname = new TextProductMetaInput('Base ServerTemplate for Windows (v13.2)');
+$serverTemplate->publication_id = new TextProductMetaInput('46426');
 
 $server = new Server();
 $server->cloud_id = $cloud_metainput;
