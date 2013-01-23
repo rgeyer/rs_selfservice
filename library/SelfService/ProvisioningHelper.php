@@ -84,6 +84,8 @@ class ProvisioningHelper {
    */
   protected $_tags = array();
 
+  protected $_rs_acct;
+
   /**
    * @param array $tags The array of tags which will be set on every taggable resource created by this provisioning helper
    */
@@ -92,6 +94,7 @@ class ProvisioningHelper {
   }
 
   public function __construct($rs_account, $rs_email, $rs_password, $log, $owners = array()) {
+    $this->_rs_acct = $rs_account;
     $this->_now_ts = time();
     $this->log = $log;
     ClientFactory::setCredentials($rs_account, $rs_email, $rs_password);
@@ -220,7 +223,7 @@ class ProvisioningHelper {
         $api_server->nickname = $nickname;
         $api_server->ec2_ssh_key_href = $ssh_key->href;
         $api_server->ec2_security_groups_href = $server_secgrps;
-        $api_server->server_template_href = 'https://my.rightscale.com/api/server_templates/' . $st->id;
+        $api_server->server_template_href = 'https://my.rightscale.com/api/acct/' . $this->_rs_acct . '/server_templates/' . $st->id;
         $api_server->deployment_href = $deployment->href;
         $api_server->instance_type = $server->instance_type->getVal();
       }
