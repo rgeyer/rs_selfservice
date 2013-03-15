@@ -40,7 +40,7 @@ class JobberController extends \SelfService\controller\BaseController {
 		return $job;
 	}
 	
-	public function preDispatch() {
+	public function preDispatch(Zend_Controller_Request_Abstract $request) {
 		Zend_Session::start();
 		$this->_session_ns = new Zend_Session_Namespace('jobber');
 	}

@@ -30,7 +30,7 @@ class Application_Plugin_WebSessionLogger extends Zend_Controller_Plugin_Abstrac
 	 */
 	protected $log;
 	
-	public function preDispatch() { 
+	public function preDispatch(Zend_Controller_Request_Abstract $request) {
 		$bootstrap = Zend_Controller_Front::getInstance()->getParam('bootstrap');
 		
 		if ($bootstrap->hasResource('Log')) {

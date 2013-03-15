@@ -52,8 +52,6 @@ class CryptographerTest extends PHPUnit_Framework_TestCase {
 	 * Tests Cryptographer::getRandomKey()
 	 */
 	public function testGetRandomKey() {
-		
-		print Cryptographer::getRandomKey();
 	
 	}
 	

@@ -19,6 +19,5 @@
     <button>Login with Google</button>
   </fieldset>
 </form>
-<p>{$url}</p>
 </body>
 </html>

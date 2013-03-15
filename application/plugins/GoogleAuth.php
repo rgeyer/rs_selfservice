@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 class Application_Plugin_GoogleAuth extends Zend_Controller_Plugin_Abstract {
 	
-	public function preDispatch() {
+	public function preDispatch(Zend_Controller_Request_Abstract $request) {
 		$controller = $this->getRequest()->getControllerName();
 		$action = $this->getRequest()->getActionName();
 		if ($controller == 'login') {

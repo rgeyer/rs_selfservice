@@ -60,7 +60,7 @@ class Doctrineentitymanager extends \Zend_Application_Resource_ResourceAbstract
 		$em = \Doctrine\ORM\EntityManager::create($options['connection'], $config);		
 		
 		// Add the encrypted string type for entities and schema generation
-		Doctrine\DBAL\Types\Type::addType('encryptedstring', 'SelfService\Doctrine\DBAL\Types\EncryptedString');		
+		#Doctrine\DBAL\Types\Type::addType('encryptedstring', 'SelfService\Doctrine\DBAL\Types\EncryptedString');
 		#$conn = $em->getConnection();
 		#$conn->getDatabasePlatform()->registerDoctrineTypeMapping('db_mytype', 'mytype');
 

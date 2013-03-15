@@ -2,9 +2,12 @@
          colors="false"
          stopOnFailure="false"
          verbose="true">
-    <testsuite name="Application Test Suite">
+    <php>
+      <env name="APPLICATION_ENV" value="testing" />
+    </php>
+    <!--<testsuite name="Application Test Suite">
         <directory>./application</directory>
-    </testsuite>
+    </testsuite>-->
     <testsuite name="Library Test Suite">
         <directory suffix="Test.php">./library/</directory>
     </testsuite>
