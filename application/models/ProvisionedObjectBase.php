@@ -59,8 +59,17 @@ class ProvisionedObjectBase {
 	 */
 	public $href;
 
-  public function __construct(ModelBase $model) {
-    $model_params = $model->getParameters();
+  /**
+   * @param mixed $model Either a RGeyer\Guzzle\Rs\Model\ModelBase or an array with the (optional) keys "href" and "cloud_id"
+   */
+  public function __construct($model) {
+    $model_params = array();
+    if(!is_array($model) && $model instanceof ModelBase) {
+      $model_params = $model->getParameters();
+    } else {
+      $model_params = $model;
+      $model = (object)$model;
+    }
     if(array_key_exists('id', $model_params)) {
       $this->id = $model->id;
     }

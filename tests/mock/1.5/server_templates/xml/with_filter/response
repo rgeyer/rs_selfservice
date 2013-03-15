@@ -1,0 +1,172 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.15
+Date: Thu, 30 Aug 2012 01:18:15 GMT
+Content-Type: application/vnd.rightscale.server_template+xml;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 107
+Content-Length: 7750
+X-Request-Uuid: 02cb543867994d869860a96bcd76516f
+Set-Cookie: _session_id=611b6cb810e0dbdc3d6f817fee4a3077; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<server_templates>
+  <server_template>
+    <links>
+      <link href="/api/server_templates/12345" rel="self"/>
+      <link href="/api/server_templates/12345/multi_cloud_images" rel="multi_cloud_images"/>
+      <link href="/api/multi_cloud_images/12345" rel="default_multi_cloud_image"/>
+      <link href="/api/server_templates/12345/inputs" rel="inputs"/>
+      <link href="/api/publications/12345" rel="publication"/>
+      <link href="/api/server_templates/12345/alert_specs" rel="alert_specs"/>
+    </links>
+    <actions>
+      <action rel="clone"/>
+    </actions>
+    <description>This ServerTemplate is on the LTS Lineage. For the latest Infinity version, see the [Infinity Lineage](http://www.rightscale.com/library/server_templates/Database-Manager-for-Microsoft/lineage/12345)  
+For a description of the Infinity and LTS lineages, see [ServerTemplate Release Methodology](http://support.rightscale.com/12345-Guides/RightScale_Methodologies/ServerTemplate_Release_and_Lineage_Methodology)
+
+This ServerTemplate configures a Microsoft SQL Server stand-alone database server or pair of servers in a high-availability (HA) configuration (synchronous mirroring). The template supports graceful (no data loss) and forceful (possible data loss) manual failover, with the latter to be used for disaster-recovery situations. Also included are built-in monitoring and alerts on CPU, memory, and disk. 
+
+__Key Features:__
+* MS Best Practices for disk and database configuration.
+* Cloud-agnostic data storage on dynamic volumes or equivalent.
+* Striped data and log volumes (on supported clouds).
+* Automatically scheduled backups with data consistency.
+* Backup and restore to/from remote storage to enable data migration between clouds.
+
+__Related ServerTemplates:__  
+[Microsoft Active Directory](http://www.rightscale.com/library/server_templates/Microsoft-Active-Directory-v12/lineage/12345)  
+[Microsoft IIS App Server](http://www.rightscale.com/library/server_templates/Microsoft-IIS-App-Server-v12-1/lineage/12345)
+
+__Release Notes:__  
+[Database Manager for MS SQL Server Release Notes](http://support.rightscale.com/12345-Release_Notes/ServerTemplates_and_RightImages/12345-06-29#Database_Manager_for_Microsoft_SQL_Server)
+
+* * *
+
+__Application versions:__
+* .Net 4.0
+* SQL Server 2008 (on 2008 image)
+* SQL Server 2008R2 (on 2008R2 image)
+
+__Supported compute clouds:__
+* Amazon Web Services EC2
+* Citrix CloudStack (2.2)
+* Logicworks
+* Rackspace
+
+__Supported backup clouds:__
+* Amazon Web Services S3
+* Rackspace CloudFiles (US)
+
+__Supported MultiCloud Images:__
+* Windows 2008R2 - Amazon, CloudStack, Logicworks, Rackspace
+* Windows 2008 - Amazon</description>
+    <name>Database Manager for Microsoft SQL Server (v12.11.1-LTS)</name>
+    <revision>5</revision>
+  </server_template>
+  <server_template>
+    <links>
+      <link href="/api/server_templates/12345" rel="self"/>
+      <link href="/api/server_templates/12345/multi_cloud_images" rel="multi_cloud_images"/>
+      <link href="/api/multi_cloud_images/12345" rel="default_multi_cloud_image"/>
+      <link href="/api/server_templates/12345/inputs" rel="inputs"/>
+      <link href="/api/publications/12345" rel="publication"/>
+      <link href="/api/server_templates/12345/alert_specs" rel="alert_specs"/>
+    </links>
+    <actions>
+      <action rel="clone"/>
+    </actions>
+    <description>This ServerTemplate is on the LTS Lineage. For the latest Infinity version, see the [Infinity Lineage](http://www.rightscale.com/library/server_templates/PHP-App-Server/lineage/12345)  
+For a description of the Infinity and LTS lineages, see [ServerTemplate Release Methodology](http://support.rightscale.com/12345-Guides/RightScale_Methodologies/ServerTemplate_Release_and_Lineage_Methodology)
+
+This ServerTemplate configures a PHP application server with Apache. It is designed to work in a hybrid cloud setting, and with a CLB, ELB, or Load Balancer ServerTemplate and Database ServerTemplate as part of a three-tier web architecture. It also includes iptables management for clouds that do not have firewall services. 
+
+__Key Features:__
+* Firewall management within a three-tier scalable web architecture
+* Utilizes RightScale tag-based routing for connecting to load balancers
+* Pulls application code from an external repository (Git, SVN, or cloud storage)
+
+__Related ServerTemplates:__  
+[Load Balancer with HAProxy](http://www.rightscale.com/library/server_templates/Load-Balancer-with-HAProxy-v12/lineage/12345)  
+[Database Manager for MySQL 5.5](http://www.rightscale.com/library/server_templates/Database-Manager-for-MySQL-5-5/lineage/12345)
+
+__Release Notes:__  
+[PHP App Server Release Notes](http://support.rightscale.com/12345-Release_Notes/ServerTemplates_and_RightImages/12345-06-29#PHP_App_Server)
+
+* * *
+
+__Application versions:__
+* Apache 2.2.3
+* PHP 5.3.6
+* MySQL Client (5.1 or 5.5)
+
+__Supported compute clouds:__
+* Amazon Web Services EC2
+* Citrix CloudStack
+* Datapipe
+* IDC Frontier
+* Logicworks
+* OpenStack
+* Rackspace
+* SoftLayer
+
+__Supported MultiCloud Images:__
+* CentOS 5.8 - Amazon, CloudStack, Datapipe, IDC Frontier, Logicworks, OpenStack, Rackspace, SoftLayer
+* Ubuntu 10.04 - Amazon, CloudStack, Datapipe, IDC Frontier, Logicworks, Rackspace
+* RHEL 5.8 - Amazon</description>
+    <name>PHP App Server (v12.11.1-LTS)</name>
+    <revision>4</revision>
+  </server_template>
+  <server_template>
+    <links>
+      <link href="/api/server_templates/12345" rel="self"/>
+      <link href="/api/server_templates/12345/multi_cloud_images" rel="multi_cloud_images"/>
+      <link href="/api/multi_cloud_images/12345" rel="default_multi_cloud_image"/>
+      <link href="/api/server_templates/12345/inputs" rel="inputs"/>
+      <link href="/api/publications/12345" rel="publication"/>
+      <link href="/api/server_templates/12345/alert_specs" rel="alert_specs"/>
+    </links>
+    <actions>
+      <action rel="clone"/>
+    </actions>
+    <description>This ServerTemplate is on the LTS Lineage. For the latest Infinity version, see the [Infinity Lineage](http://www.rightscale.com/library/server_templates/Tomcat-App-Server/lineage/12345)  
+For a description of the Infinity and LTS lineages, see [ServerTemplate Release Methodology](http://support.rightscale.com/12345-Guides/RightScale_Methodologies/ServerTemplate_Release_and_Lineage_Methodology)
+
+This ServerTemplate configures a combined Tomcat and Apache application server, which uses the mod_jk connector plug-in. It creates an HTTP virtual host (vhost) and forwards requests to the specified application port to serve your web application.
+
+__Related ServerTemplates:__  
+[Load Balancer](http://www.rightscale.com/library/server_templates/Load-Balancer-with-HAProxy-v12/lineage/12345)  
+[Database Manager for MySQL 5.5](http://www.rightscale.com/library/server_templates/Database-Manager-for-MySQL-5-5/lineage/12345)
+
+__Release Notes:__  
+[Tomcat App Server Release Notes](http://support.rightscale.com/12345-Release_Notes/ServerTemplates_and_RightImages/12345-06-29#Tomcat_App_Server)
+
+* * *
+
+__Application versions:__
+* Apache 2.2.3
+* Tomcat 6.0.16
+* mod_jk 1.2.32
+* Java 1.6.0_31
+* MySQL Client (5.1 or 5.5)
+
+__Supported compute clouds:__
+* Amazon Web Services EC2
+* Citrix CloudStack
+* Datapipe
+* IDC Frontier
+* Logicworks
+* OpenStack
+* Rackspace
+* SoftLayer
+
+__Supported MultiCloud Images:__
+* CentOS 5.8 - Amazon, CloudStack, Datapipe, IDC Frontier, Logicworks, OpenStack, Rackspace, SoftLayer
+* Ubuntu 10.04 - Amazon, CloudStack, Datapipe, IDC Frontier, Logicworks, Rackspace
+* RHEL 5.8 - Amazon</description>
+    <name>Tomcat App Server (v12.11.1-LTS)</name>
+    <revision>4</revision>
+  </server_template>
+</server_templates>

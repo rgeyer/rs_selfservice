@@ -1,0 +1,8 @@
+GET /api/clouds.json?filter[]=name%3D%3DMyCloud%20-%20Cloud.com HTTP/1.1
+Accept: */*
+Accept-Encoding: deflate, gzip
+User-Agent: Guzzle/1.1 (Language=PHP/5.3.8; curl=7.19.7; Host=universal-apple-darwin10.0)
+Host: my.rightscale.com
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkM1ugkAYAN9lz5Lst99id0l6aKtUQAIGsZaLocuqtEHKb0TjuxeS3mfmMHeSEosUA5mRrCHWnXSNronFGaB4zEiriAWIHIQJXMxIno30EY4p0zo1BGfSANBgSMrRAIaAksJcKRh7rf53JcPJHfOkb_bJYKtMXZ2s3y0q-TTAMk5r169FdEakTufn9i4q-Pey9-jLJ1Ke5PvEO1H9FndlsUkgsfEIsdleXBtNT9_i91RtQ__GPf9rvXZlH6jwwEM32IA2Pn7355-cJsxsvMyIz1BE7qlZiYIuZKW8YFdLHPq-unavTrXJ5pe4XDnsEN7E87TkOi1JlSq7Szte4YD88fgDKKtbMQ==;_session_id=f709bd1a06c3c6f2d2794ecd3238ae62
+

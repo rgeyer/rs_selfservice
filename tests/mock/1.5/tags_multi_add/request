@@ -1,0 +1,8 @@
+POST /api/tags/multi_add HTTP/1.1
+Host: my.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.19.7 PHP/5.3.8 openssl/OpenSSL/12345.9.8r
+Content-Type: application/x-www-form-urlencoded
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNo1kMtygjAYRt8lazOTPwkSmelCQbxQabVjabtxIJCKJUK5KTq8e3HR_XfOzHfuKEQW0h0aobhC1h01VVIii1Ngoh-hWiILGBdkQhglI5TGw9qkZkIFk5jQEDBAQrEwJwQDZcAmJBJCwuCrk3_WNB7soEc54_rqbhym_GrPTQKOPVXTHLy1vGUFzLdpV6Tlu-9pbxVECmdpvSrCLHZLdZkH5DlfBC97r6x_E_oKl-o8O0VkhxsRHtwOvk6-o80P8VlTP13aB4NkW-c8luzYOPvYWJVT2h5nY6YaaA_K1utus47Y4vvGC42XpT6Owcnfgp-LW6iWPz2SXB9JQinz5lwPVfjwp-__ANhMW3o=; _session_id=a5581edd5e9af42351054a63c05e3104
+
+resource_hrefs%5B%5D=%2Fapi%2Fclouds%2F1869%2Finstances%2F6M4HQRAUFTCA5&tags%5B%5D=foo%3Abar%3Dbaz

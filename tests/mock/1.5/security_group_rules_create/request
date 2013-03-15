@@ -1,0 +1,8 @@
+POST /api/clouds/12345/security_groups/12345DIFIIA5AGRT/security_group_rules HTTP/1.1
+Host: my.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.19.7 PHP/5.3.8 openssl/OpenSSL/12345.9.8r
+Content-Type: application/x-www-form-urlencoded
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNo1kMtygjAYRt8la5nxTwIlzHRBLSIKVbSp2g3DrdYL4RbR6PjuxUX353wz37mjGFmoUGiAshZZd3Ru8wZZFAMxHwMkU2QBoQYAvOgwQPusp5PEZHEMWPsZxlgDyEEzKY01wAQIGzIjpbjfk_m_a7Kn288jn1XHovCUoJXMOZsvZ90cJ974tCBV4HK-3u1uGXTFIvBH01LwTu9EdKPn9ruqmTvpQQ_Y5zFw2nodddpQXfcR_jKuE5ZtiH_wGvIekkJN7TCkWUKFKLeUH-2prFu3Lj9k7TiMlcFMKla-NUZ-ufGV2G9P9sVVo0b_tcV2tdHHyj_w12eS6zNJnKblWci-Cu3_PB5_Q3td4Q==; _session_id=40db7720cef6441e03695c66d1796707
+
+security_group_rule%5Bcidr_ips%5D=0.0.0.0%2F0&security_group_rule%5Bprotocol%5D=tcp&security_group_rule%5Bprotocol_details%5D%5Bstart_port%5D=25&security_group_rule%5Bprotocol_details%5D%5Bend_port%5D=25&security_group_rule%5Bsource_type%5D=cidr_ips

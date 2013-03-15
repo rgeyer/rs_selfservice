@@ -1,0 +1,6 @@
+DELETE /api/clouds/12345/security_groups/ABC123/security_group_rules/12345 HTTP/1.1
+Host: my.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.24.0 PHP/5.3.17 openssl/OpenSSL/12345.9.8r
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkF1vgjAARf9LnyWhpastyR4kDNRJmcOPwQtpKaCLU1dAAeN_HyR7vMm9J7nnAQSwwU8HJkBVwH6Apso1sDGCFn1OQJ0BG1qYUZMwyCbgqIa2RQqGpMIGRFZuQJgjQxBijRFaDBVUIjTw6vx_CzEctwMe_C4Xt3R9Z1-hX1UNMdGqU9Kd-z7h7tJp9OwkeHA3z-_TrVN_J-tc7BcxDN8SHV8-TskhlL07K7nhKimCiHtbT6oVLqIN1_GmE0Q4RCUv0t0d-h0P02h3NIMgiyl33LSlt-qSHeb-tTRpoD190izq0uvm2DvXPU7ItL-Z66j6bEVZtPR1VNKOSkSWXZpzPVjBw5_n8w-M6VzQ; _session_id=2b5fd4ab41e1b21d5b4366b88593b4f3
+

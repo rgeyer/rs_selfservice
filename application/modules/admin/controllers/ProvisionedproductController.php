@@ -2,7 +2,7 @@
 use RGeyer\Guzzle\Rs\RightScaleClient;
 
 /*
- Copyright (c) 2012 Ryan J. Geyer <me@ryangeyer.com>
+ Copyright (c) 2012-2013 Ryan J. Geyer <me@ryangeyer.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -27,16 +27,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 use RGeyer\Guzzle\Rs\Model\Mc\Cloud;
 
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
-use Guzzle\Aws\Ec2\Command\DeleteKeyPair;
-use Guzzle\Aws\Ec2\Command\DescribeKeyPairs;
-use Guzzle\Aws\Ec2\Command\DeleteSecurityGroup;
-use Guzzle\Aws\Ec2\Command\RevokeSecurityGroupIngress;
-use Guzzle\Aws\Ec2\Command\DescribeSecurityGroups;
-use RGeyer\Guzzle\Rs\Model\Ec2\ServerArray;
-use RGeyer\Guzzle\Rs\Model\Ec2\Server;
-use RGeyer\Guzzle\Rs\Model\Ec2\SshKey;
-use RGeyer\Guzzle\Rs\Model\Ec2\Deployment;
-use Guzzle\Aws\Ec2\Ec2Client;
+use RGeyer\Guzzle\Rs\Model\Mc\ServerArray;
+use RGeyer\Guzzle\Rs\Model\Mc\Server;
+use RGeyer\Guzzle\Rs\Model\Mc\SshKey;
+use RGeyer\Guzzle\Rs\Model\Mc\Deployment;
 
 /**
  * ProvisionedproductController
@@ -175,18 +169,18 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
           # Create the new deployment
 					$deplname = sprintf ( "rsss-%s-%s", $product->name, $now );
           $deployment_params = array(
-            'deployment[nickname]' => $this->_request->getParam('deployment_name', $deplname),
+            'deployment[name]' => $this->_request->getParam('deployment_name', $deplname),
             'deployment[description]' => sprintf ( "Created by rs_selfservice for the '%s' product", $product->name )
           );
           $deployment = $prov_helper->provisionDeployment($deployment_params);
 
-          $this->log->debug(sprintf("After provisioning the deployment, it's properties are.. %s", print_r($deployment->getParameters(), true)));
+          $this->log->debug(sprintf("After provisioning the deployment, it's href is.. %s", $deployment->href, true));
 
           # Record the creation of the deployment
-					$prov_depl = new ProvisionedDeployment($deployment);
+					$prov_depl = new ProvisionedDeployment(array('href' => $deployment->href));
 					$prov_prod->provisioned_objects[] = $prov_depl;
 					
-					$this->log->info(sprintf("Created Deployment - Name: %s ID: %s", $deplname, $deployment->id));
+					$this->log->info(sprintf("Created Deployment - Name: %s href: %s", $deplname, $deployment->href));
 					
 					$this->log->info("About to provision " . count($product->security_groups) . " Security Groups");
 					// Create the Security Groups
@@ -214,13 +208,13 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					
 					foreach ( $product->servers as $server ) {
 						foreach($prov_helper->provisionServer($server, $deployment) as $provisioned_model) {
-              if($provisioned_model instanceof RGeyer\Guzzle\Rs\Model\Ec2\SshKey) {
+              # TODO: Shouldn't have to differentiate between the return types here, bad code smell.
+              if($provisioned_model instanceof RGeyer\Guzzle\Rs\Model\Mc\SshKey) {
                 $prov_key = new \ProvisionedSshKey($provisioned_model);
                 $prov_prod->provisioned_objects[] = $prov_key;
               }
 
-              if($provisioned_model instanceof RGeyer\Guzzle\Rs\Model\Ec2\Server ||
-                $provisioned_model instanceof RGeyer\Guzzle\Rs\Model\Mc\Server ) {
+              if($provisioned_model instanceof RGeyer\Guzzle\Rs\Model\Mc\Server ) {
                 $prov_svr = new \ProvisionedServer($provisioned_model);
                 $prov_prod->provisioned_objects[] = $prov_svr;
               }
@@ -338,17 +332,14 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 			$bootstrap = $this->getInvokeArg('bootstrap');				
 			$creds = $bootstrap->getResource('cloudCredentials');
 			ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
-			$api = ClientFactory::getClient();
-			$api15 = ClientFactory::getClient('1.5');
-			
-			$aws = array();
-			$aws[1] = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => \Guzzle\Aws\Ec2\Ec2Client::REGION_US_EAST_1));
-			$aws[2] = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => \Guzzle\Aws\Ec2\Ec2Client::REGION_EU_WEST_1));
-			$aws[3] = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => \Guzzle\Aws\Ec2\Ec2Client::REGION_US_WEST_1));
-			$aws[4] = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => \Guzzle\Aws\Ec2\Ec2Client::REGION_AP_SOUTHEAST_1));
-			$aws[5] = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => \Guzzle\Aws\Ec2\Ec2Client::REGION_AP_NORTHEAST_1));
-			$aws[6] = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => \Guzzle\Aws\Ec2\Ec2Client::REGION_US_WEST_2));
-			$aws[7] = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => \Guzzle\Aws\Ec2\Ec2Client::REGION_SA_EAST_1));
+			$client = ClientFactory::getClient('1.5');
+
+      $cleanup_helper = new \SelfService\CleanupHelper(
+        $creds->rs_acct,
+        $creds->rs_email,
+        $creds->rs_pass,
+        $this->log
+      );
 			
 			$product_id = $this->_request->getParam ( 'id' );
 			$dql = "SELECT p FROM ProvisionedProduct p WHERE p.id = " . $product_id;
@@ -383,36 +374,26 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					# Stop and destroy arrays
 					if(count($prov_arrays) > 0) {
 						foreach($prov_arrays as $prov_array) {
-							$array = new ServerArray();
-							$array->find_by_href($prov_array->href);
-							if($array->active_instances_count > 0) {
-								# TODO: This is a fire-and-forget terminate, then the array is deleted immediately
-								# afterward
-								$array->terminate_all();
-							}
-							$array->destroy();
-							$result[0]->provisioned_objects->removeElement($prov_array);
-							$this->em->remove($prov_array);
-							$this->em->flush();
+              if($cleanup_helper->cleanupServerArray($prov_array)) {
+                $result[0]->provisioned_objects->removeElement($prov_array);
+                $this->em->remove($prov_array);
+                $this->em->flush();
+              } else {
+                $response['wait_for_decom']['arrays'][] = $prov_array->href;
+              }
 						}
 					}
 					
 					# Stop and destroy the servers
 					if(count($prov_servers) > 0) {
 						foreach($prov_servers as $prov_server) {
-							$server = $prov_server->cloud_id > RS_MAX_AWS_CLOUD_ID ? $api15->newModel('Server') : $api->newModel('Server');							
-							$server->find_by_href($prov_server->href);
-							if(!in_array($server->state, array('inactive', 'stopped', 'decomissioning'))) {
-								$server->terminate();
-								$response['wait_for_decom']['servers'][] = $server->href;
-							} else if($server->state == 'decommissioning') {
-								$response['wait_for_decom']['servers'][] = $server->href;
-							} else {
-								$server->destroy();
+              if($cleanup_helper->cleanupServer($prov_server)) {
 								$result[0]->provisioned_objects->removeElement($prov_server);
 								$this->em->remove($prov_server);
 								$this->em->flush();
-							}						
+              } else {
+                $response['wait_for_decom']['servers'][] = $prov_server->href;
+              }
 						}
 					}
 					
@@ -423,9 +404,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					
 					# Destroy the deployment
 					if($prov_depl) {
-						$depl = new Deployment();
-						$depl->find_by_href($prov_depl->href);												
-						$depl->destroy();
+            $cleanup_helper->cleanupDeployment($prov_depl);
 						$result[0]->provisioned_objects->removeElement($prov_depl);
 						$this->em->remove($prov_depl);
 						$this->em->flush();						
@@ -434,9 +413,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					# Destroy SSH key
 					if(count($prov_sshkeys) > 0) {
 						foreach($prov_sshkeys as $prov_sshkey) {
-							$sshkey = new SshKey();
-							$sshkey->find_by_href($prov_sshkey->href);
-							$sshkey->destroy();
+              $cleanup_helper->cleanupSshKey($prov_sshkey);
 							$result[0]->provisioned_objects->removeElement($prov_sshkey);
 							$this->em->remove($prov_sshkey);
 							$this->em->flush();
@@ -445,82 +422,51 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 					
 					# Destroy SecurityGroups
 					if(count($prov_secgrps) > 0) {
-						$group_ids = array();
+            foreach($prov_secgrps as $prov_secgrp) {
+              $cleanup_helper->cleanupSecurityGroupRules($prov_secgrp);
+            }
+
+            foreach($prov_secgrps as $prov_secgrp) {
+              $cleanup_helper->cleanupSecurityGroup($prov_secgrp);
+							$result[0]->provisioned_objects->removeElement($prov_secgrp);
+							$this->em->remove($prov_secgrp);
+							$this->em->flush();
+            }
+
+						/*$group_ids = array();
 						
 						# Destroy the rules first
 						foreach($prov_secgrps as $prov_secgrp) {
-						  if($prov_secgrp->cloud_id <= RS_MAX_AWS_CLOUD_ID) {
-  							// TODO: This is expensive, making 2 calls simply to find the group
-  							$sec_grp = new \RGeyer\Guzzle\Rs\Model\Ec2\SecurityGroup(null);
-  							$sec_grp->find_by_href($prov_secgrp->href);
-  							
-  							$command = new DescribeSecurityGroups();
-  							$command->set('filters', array('group-name' => $sec_grp->aws_group_name));
-  							$grpz = $aws[$prov_secgrp->cloud_id]->execute($command);
-  							# Delete the group rules
-  							foreach($grpz->securityGroupInfo->item as $group) {
-  								$command = new RevokeSecurityGroupIngress();
-  								$command->set('group_id', (string)$group->groupId);
-  								$rules = array();
-  								foreach($group->ipPermissions->item as $rule) {
-  									if(count($rule->ipRanges->item) > 0) {
-  										$rlz = array('protocol' => $rule->ipProtocol, 'from_port' => $rule->fromPort, 'to_port' => $rule->toPort, 'cidr_ips' => $rule->ipRanges->item[0]->cidrIp);
-  										$rules[] = $rlz;
-  									}
-  								
-  									if(count($rule->groups->item) > 0){
-  										$rlz = array('user_id' => $rule->groups->item[0]->userId, 'group_id' => $rule->groups->item[0]->groupId, 'protocol' => $rule->ipProtocol, 'from_port' => $rule->fromPort, 'to_port' => $rule->toPort);
-  										$rules[] = $rlz;
-  									}
-  								}
-  								if(count($rules) > 0) {
-  									$command->set('rules', $rules);
-  									$aws[$prov_secgrp->cloud_id]->execute($command);
-  								}
-  								$group_ids[(string)$group->groupId] = $prov_secgrp;
-  							}
-							} else {
-							  $sec_grp = $api15->newModel('SecurityGroup');
-							  $sec_grp->find_by_href($prov_secgrp->href, array('cloud_id' => $prov_secgrp->cloud_id));
-							  # TODO: Delete the rule, may need an extension to the model in the lib
-							  $rules = $sec_grp->security_group_rules();
-							  foreach($rules as $rule) {
-							    $rule_links = array_filter($rule->links, function($var) {
-							      return $var->rel == 'self';
-							    });
-							    $rule_link = array_pop($rule_links)->href;
-							    
-							    $long_link = $sec_grp->href . str_replace('/api', '', $rule_link);
-							    
-							    $this->log->info("Long link be " . $long_link);
-							    
-							    $command = $api15->delete($long_link, array('X-API-VERSION' => '1.5'));
-							    $command->send();
-							    
-							    #$command = $api15->getCommand('security_group_rules_destroy', array('id' => (string)RightScaleClient::getIdFromRelativeHref($rule_link)));
-							    #$command->execute();
-							    $this->log->info("I wanna delete a security group of ID " . $rule_link);
-							  }
-							}
+              $sec_grp = $client->newModel('SecurityGroup');
+              $sec_grp->find_by_href($prov_secgrp->href, array('cloud_id' => $prov_secgrp->cloud_id));
+              # TODO: Delete the rule, may need an extension to the model in the lib
+              $rules = $sec_grp->security_group_rules();
+              foreach($rules as $rule) {
+                $rule_links = array_filter($rule->links, function($var) {
+                  return $var->rel == 'self';
+                });
+                $rule_link = array_pop($rule_links)->href;
+
+                $long_link = $sec_grp->href . str_replace('/api', '', $rule_link);
+
+                $this->log->info("Long link be " . $long_link);
+
+                $command = $client->delete($long_link, array('X-API-VERSION' => '1.5'));
+                $command->send();
+              }
 						}
 						
 						# Destroy the actual groups
 						foreach($group_ids as $groupid => $prov_secgrp) {
-						  if($prov_secgrp->cloud_id <= RS_MAX_AWS_CLOUD_ID) {
-  							$command = new DeleteSecurityGroup();
-  							$command->set('group_id', $groupid);
-  							$aws[$prov_secgrp->cloud_id]->execute($command);
-						  } else {
-						    $sec_grp = $api15->newModel('SecurityGroup');
-						    $sec_grp->find_by_href($prov_secgrp->href, array('cloud_id' => $prov_secgrp->cloud_id));
-						    $sec_grp->destroy();
-						  }
+              $sec_grp = $client->newModel('SecurityGroup');
+              $sec_grp->find_by_href($prov_secgrp->href, array('cloud_id' => $prov_secgrp->cloud_id));
+              $sec_grp->destroy();
 							
 							# Remove the provisioned object DB record
 							$result[0]->provisioned_objects->removeElement($prov_secgrp);
 							$this->em->remove($prov_secgrp);
 							$this->em->flush();
-						}					
+						}*/
 						
 					}
 				} while ($keep_going);
@@ -530,115 +476,6 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 			
 			$this->_helper->json->sendJson($response);
 		}
-	}
-	
-	public function debugAction() {
-		$response = array ('result' => 'success' );		
-		$bootstrap = $this->getInvokeArg('bootstrap');
-		$creds = $bootstrap->getResource('cloudCredentials');
-		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
-		$api = ClientFactory::getClient();
-		
-		$aws = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret));
-		
-		if($this->_request->has ( 'id' )) {				
-			$product_id = $this->_request->getParam ( 'id' );
-			$dql = "SELECT p FROM ProvisionedProduct p WHERE p.id = " . $product_id;
-			$result = $this->em->createQuery($dql)->getResult();
-				
-			if(count($result) == 1) {
-				$response['foobar'] = array();
-				foreach($result[0]->provisioned_objects as $prov_obj) {
-					$response['foobar'][] = get_class($prov_obj);
-					$result[0]->provisioned_objects->removeElement($prov_obj);
-					$this->em->remove($prov_obj);
-					$this->em->flush();
-				}
-			}
-						
-			$this->_helper->json->sendJson($response);
-		} else {
-			$deplz = new Deployment();
-			foreach($deplz->index() as $depl) {
-				if(preg_match('/^rsss-.*/', $depl->nickname)) {
-					foreach($depl->servers as $server) {
-						$server->destroy();						
-					}
-
-					$arrayz = new ServerArray();
-					foreach($arrayz->index() as $array) {
-						if($array->deployment_href == $depl->href) {
-							$array->destroy();
-						}
-					}
-					
-					$depl->destroy();
-				}
-			}
-		}
-		
-		
-		$regions = array();
-		$regions[1] = \Guzzle\Aws\Ec2\Ec2Client::REGION_US_EAST_1;
-		$regions[2] = \Guzzle\Aws\Ec2\Ec2Client::REGION_EU_WEST_1;
-		$regions[3] = \Guzzle\Aws\Ec2\Ec2Client::REGION_US_WEST_1;
-		$regions[4] = \Guzzle\Aws\Ec2\Ec2Client::REGION_AP_SOUTHEAST_1;
-		$regions[5] = \Guzzle\Aws\Ec2\Ec2Client::REGION_AP_NORTHEAST_1;
-		$regions[6] = \Guzzle\Aws\Ec2\Ec2Client::REGION_US_WEST_2;
-		$regions[7] = \Guzzle\Aws\Ec2\Ec2Client::REGION_SA_EAST_1;
-		
-		foreach($regions as $region) {
-			$aws_secgrp = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => $region));
-			$response['grpz'] = array();
-			$command = new DescribeSecurityGroups();
-			$command->set('filters', array('group-name' => 'rsss-*'));
-			$grpz = $aws_secgrp->execute($command);
-			# Delete the group rules
-			foreach($grpz->securityGroupInfo->item as $group) {			
-				$command = new RevokeSecurityGroupIngress();
-				$command->set('group_id', (string)$group->groupId);
-				$rules = array();
-				foreach($group->ipPermissions->item as $rule) {
-					if(count($rule->ipRanges->item) > 0) {
-						$rlz = array('protocol' => $rule->ipProtocol, 'from_port' => $rule->fromPort, 'to_port' => $rule->toPort, 'cidr_ips' => $rule->ipRanges->item[0]->cidrIp);
-						$rules[] = $rlz;						
-					}
-					
-					if(count($rule->groups->item) > 0){
-						$rlz = array('user_id' => $rule->groups->item[0]->userId, 'group_id' => $rule->groups->item[0]->groupId, 'protocol' => $rule->ipProtocol, 'from_port' => $rule->fromPort, 'to_port' => $rule->toPort);
-						$rules[] = $rlz;
-					}
-				}				
-				if(count($rules) > 0) {
-					$command->set('rules', $rules);
-					$aws_secgrp->execute($command);
-				}
-			}
-			
-			# Delete the groups
-			foreach($grpz->securityGroupInfo->item as $group) {				
-				$command = new DeleteSecurityGroup();
-				$command->set('group_id', (string)$group->groupId);
-				$aws_secgrp->execute($command);
-			}
-		}
-	
-		# Delete the keys		
-		$response['keyz'] = array();
-		
-		foreach($regions as $region) {
-			$aws_keyz = \Guzzle\Aws\Ec2\Ec2Client::factory(array('access_key' => $creds->aws_key, 'secret_key' => $creds->aws_secret, 'region' => $region));
-			$command = new DescribeKeyPairs();
-			$command->set('filters', array('key-name' => 'rsss*'));
-			$keyz = $aws_keyz->execute($command);
-			foreach($keyz->keySet->item as $key) {
-				$command = new DeleteKeyPair();
-				$command->set('key_name', (string)$key->keyName);
-				$aws_keyz->execute($command);
-			}
-		}
-		
-		$this->_helper->json->sendJson($response);
 	}
 
   public function showAction() {

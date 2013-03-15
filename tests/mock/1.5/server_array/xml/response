@@ -1,0 +1,47 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Tue, 30 Oct 2012 20:55:35 GMT
+Content-Type: application/vnd.rightscale.server_array+xml;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 175
+Content-Length: 1265
+X-Request-Uuid: 6b6ce4bfd86446bb918c3091ea535a91
+Set-Cookie:
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<server_array>
+  <actions>
+    <action rel="launch"/>
+    <action rel="clone"/>
+  </actions>
+  <elasticity_params>
+    <alert_specific_params>
+      <voters_tag_predicate>Apache-Rails-Passenger App Server (v12.11.0-LTS)</voters_tag_predicate>
+      <decision_threshold>51</decision_threshold>
+    </alert_specific_params>
+    <bounds>
+      <min_count>1</min_count>
+      <max_count>20</max_count>
+    </bounds>
+    <pacing>
+      <resize_calm_time>5</resize_calm_time>
+      <resize_up_by>1</resize_up_by>
+      <resize_down_by>1</resize_down_by>
+    </pacing>
+    <schedule_entries></schedule_entries>
+  </elasticity_params>
+  <array_type>alert</array_type>
+  <description></description>
+  <instances_count>0</instances_count>
+  <name>Apache-Rails-Passenger App Server (v12.11.0-LTS)</name>
+  <links>
+    <link href="/api/server_arrays/12345" rel="self"/>
+    <link href="/api/deployments/12345" rel="deployment"/>
+    <link href="/api/server_arrays/12345/current_instances" rel="current_instances"/>
+    <link href="/api/clouds/12345/instances/EP09UB032D7KS" rel="next_instance"/>
+    <link href="/api/server_arrays/12345/alert_specs" rel="alert_specs"/>
+  </links>
+  <state>disabled</state>
+</server_array>

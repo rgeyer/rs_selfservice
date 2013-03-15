@@ -1,0 +1,6 @@
+GET /api/clouds/12345/security_groups/12345I8FG7HTFVJ.xml HTTP/1.1
+Host: my.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.19.7 PHP/5.3.8 openssl/OpenSSL/12345.9.8r
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNo1kF1vgjAYRv9Lr23St63QkuzCMYO64UyAqdws0ML4GBgEnWD878LF7p9zkufcUYQsVPVohnSLrDu6tMkZWZwCE48Z6hSygHEDTMqFMUO5HteUJTIlJsEpMIIBEsAi1goDZcAkiWNDktHXJf-sNCZ21KN2FTZ611Ur7DG7XDtlvy---uP6ta0PfaO9ha1-82vYRf75ffjYUrHfro0ouBbZPA9zArbgTZAd65sDh8yuQp5m6ocvo2Oji60OSy2Fl2m1r_2T0hu_5pwqBUE631XqwL4NwP1yoQcw06AvzE9a5p0r35yc6PpcYiazwU3SjYix-_cyJblNSSKlTpe6G6vw8c_j8QQvWVzM; _session_id=0000000000004b65becde60f6759754d
+

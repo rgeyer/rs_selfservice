@@ -1,0 +1,8 @@
+GET /api/servers/12345.xml HTTP/1.1
+Accept: */*
+Accept-Encoding: deflate, gzip
+User-Agent: Guzzle/1.1 (Language=PHP/5.3.8; curl=7.19.7; Host=universal-apple-darwin10.0)
+Host: my.rightscale.com
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkMGOgjAUAP-lZ0n6aC2VZA-KRkVlxagLXEgpaBDZ6opaa_x3Mdn7zBzmiQRyUf1AHZRfkPtE10vxh1xqA-GvDmokcoEQyjCnjHZQmbc0z_OC5JmwOMfEAijA4pCBBTYB0sNSMAJtryn-Xeiyj9vmkU69H7l7fM_HikWKCU_dBitdplUUn9bhYBTUBnvZefw4iQPbmJ0OLc-WS5bc9zALztTH9Zgf43luq71ttjEumLpLLe5pfHQqk8bOaGhqoYdzH0J_A0bPIFB1mSXHxa2KehPtx8NFUxfVoXKSieNPkylR6zK83sDaTrtB1F-OSrNK-_jrs0R_lggp1fW3aa9QIPT1egN5vl1t;_session_id=2ec0e550f6f887fd9df256d051ea0464
+

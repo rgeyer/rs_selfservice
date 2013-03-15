@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Wed, 13 Mar 2013 22:12:39 GMT
+Content-Type: application/vnd.rightscale.ssh_key+json;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 252
+Content-Length: 154
+X-Request-Uuid: 1ae850f2953345598ec179e90b03f4a4
+Set-Cookie:
+Cache-Control: private, max-age=0, must-revalidate
+
+{"actions":[],"resource_uid":"Anil SSH Key","links":[{"href":"/api/clouds/12345/ssh_keys/D0NKGETHDJIEU","rel":"self"},{"href":"/api/clouds/12345","rel":"cloud"}]}

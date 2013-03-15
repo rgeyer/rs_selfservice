@@ -1,0 +1,6 @@
+GET /api/server_templates.xml?filter[]=name%3D%3Dv12.11.1-LTS HTTP/1.1
+Host: my.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.19.7 PHP/5.3.8 openssl/OpenSSL/12345.9.8r
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkMtugkAARf9l1pI4LwokXWgrRSogYqm4IQPDw8I4WEFF478Xku7vOck9D8CAAUQPJoCfgfEA3Tn7BQZBEGvPCWhTYEBMVKTpRFMn4MCHtcbZlNI8VXJEpgqEGVSYTqgCEYZYRxrNEzz42uyf1VV1ZAc9WLHG5wWvOmv_rXkhqWv5waRsrtnJCdBdnnQFY9F3cusdp1KsGeptUsjlYmEtA1wyGlu03vsoDsLK4TSu_KgP7fdNKfIy2s3zwNnN8U9Tv8hylnzWX9760szRyd9yL0jMkCcmfhOFuXbubnqjTi8OpKRmtEmVm73au-wSiqh3qyJ0Zq9jktuYhKWp7I7tUIUMf57PP2-OXcs=; _session_id=611b6cb810e0dbdc3d6f817fee4a3077
+

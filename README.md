@@ -72,6 +72,7 @@ TODO:
 * Allow launching of servers once deployment is created
   * Create launch stages (tiers), launch all LB first, then DB, then App
   * Allow execution of scripts on servers once they become operational
+  * Enforce HA best practices by putting multiples of the same server type in different datacenters
 * DNS integration to generate DB records etc.
 * Support multiple AWS/RS accounts
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
@@ -85,6 +86,11 @@ TODO:
 * Cleaner handling of failure while provisioning.  Make sure that successfully provisioned stuff gets persisted so that it can be destroyed.
   * Cleaner handling of failure while destroying, make sure that destruction can be re-run until everything is gone.
 * Add vendor dependency downloads with composer in pre_activate.php for Zend Server
+* Store owners in the DB and provide a UI or CLI way to add new owners easily.
+* Create a meta input for instance type which is filtered/updated based on cloud selection.
+* Instrument *as though* it will consume CF
+  * Provisioning action(s) hit a controller with json metadata
+  * ProvisioningHelper hits controllers with json metadata on success to indicate completion, allowing the RSSS to delete DB records
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff

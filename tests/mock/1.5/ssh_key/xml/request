@@ -1,0 +1,6 @@
+GET /api/clouds/12345/ssh_keys/D0NKGETHDJIEU.xml HTTP/1.1
+Host: us-3.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.24.0 PHP/5.3.17 openssl/OpenSSL/12345.9.8r
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNo1kM1ugkAYRd9l1kzCN6PMQNJFFWLVioCi2A2BYYjWyih_FQ3vXlx0eZN7zuI8UYIs1FSYIg1lFbKew5AlskYEKO81VAtkATUoAcLGpoZO2fAHyaghmI65ICkGkASbxMgxEAo008HgOh98tfxnTfPFDnoUOkLgyaVLnLLNJzK6kZ8WwqWapu00CbB99Brq29uNSL31jm0y7tcfbWFXMFvno7jg510jQen3xbeb8vJexjm9jjf1mh1AkSNEeXpb_FZ1uDqeRLWFcLUYsZMTbd3LPmi7LpJUNWo5jwr7vUvNDvy2cefxV-I8PPdwZfvzp-_NLnEQd-rtleT-SpIIoZqiRpZBTM76_g9NE14M; _session_id=deadbeef0badf00dfeedfacec0ffee24
+

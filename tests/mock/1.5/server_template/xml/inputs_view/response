@@ -1,0 +1,212 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.15
+Date: Fri, 26 Oct 2012 16:10:52 GMT
+Content-Type: application/vnd.rightscale.server_template+xml;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 543
+Content-Length: 5921
+X-Request-Uuid: 8843250fc18b43bca6fb4526e9c169bc
+Set-Cookie:
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<server_template>
+  <inputs>
+    <input>
+      <value>text:</value>
+      <name>app_php/db_schema_name</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>app_php/modules_list</name>
+    </input>
+    <input>
+      <value>cred:DBADMIN_PASSWORD</value>
+      <name>db/admin/password</name>
+    </input>
+    <input>
+      <value>cred:DBADMIN_USER</value>
+      <name>db/admin/user</name>
+    </input>
+    <input>
+      <value>cred:DBAPPLICATION_PASSWORD</value>
+      <name>db/application/password</name>
+    </input>
+    <input>
+      <value>cred:DBAPPLICATION_USER</value>
+      <name>db/application/user</name>
+    </input>
+    <input>
+      <value>text:localhost</value>
+      <name>db/dns/master/fqdn</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>db/dump/container</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>db/dump/database_name</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>db/dump/prefix</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>db/dump/storage_account_id</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>db/dump/storage_account_provider</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>db/dump/storage_account_secret</name>
+    </input>
+    <input>
+      <value>ignore:$ignore</value>
+      <name>logging/remote_server</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>repo/default/container</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>repo/default/git_ssh_key</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>repo/default/prefix</name>
+    </input>
+    <input>
+      <value>text:git://github.com/rgeyer/rs_selfservice.git</value>
+      <name>repo/default/repository</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>repo/default/storage_account_id</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>repo/default/storage_account_provider</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>repo/default/storage_account_secret</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>repo/default/svn_password</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>repo/default/svn_username</name>
+    </input>
+    <input>
+      <value>ignore:$ignore</value>
+      <name>rightscale/process_list</name>
+    </input>
+    <input>
+      <value>ignore:$ignore</value>
+      <name>rightscale/process_match_list</name>
+    </input>
+    <input>
+      <value>cred:AWS_ACCESS_KEY_ID</value>
+      <name>rsss/aws_access_key</name>
+    </input>
+    <input>
+      <value>cred:AWS_SECRET_ACCESS_KEY</value>
+      <name>rsss/aws_secret_access_key</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>rsss/datapipe_owner</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>rsss/fqdn</name>
+    </input>
+    <input>
+      <value>text:/home/webapps/rsss</value>
+      <name>rsss/install_dir</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>rsss/rightscale_acct_num</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>rsss/rightscale_email</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>rsss/rightscale_password</name>
+    </input>
+    <input>
+      <value>text:</value>
+      <name>sys_firewall/rule/port</name>
+    </input>
+    <input>
+      <value>text:rsss</value>
+      <name>web_apache/application_name</name>
+    </input>
+  </inputs>
+  <actions>
+    <action rel="commit"/>
+    <action rel="clone"/>
+  </actions>
+  <description>This ServerTemplate is on the Infinity Lineage. For the latest LTS version, see the [12-LTS Release](http://www.rightscale.com/library/server_templates/LAMP-All-In-One-with-MySQL-5-5/lineage/12345)  
+For a description of the Infinity and LTS lineages, see [ServerTemplate Release Methodology](http://support.rightscale.com/12345-Guides/RightScale_Methodologies/ServerTemplate_Release_and_Lineage_Methodology)
+
+Basic all-in-one LAMP (Linux, Apache, MySQL, PHP) ServerTemplate designed to work in a hybrid cloud setting. This ServerTemplate takes regular backups of the MySQL 5.5 database and saves them to public cloud storage. Suitable for single-server test, development, and production (non-redundant) purposes.
+
+__Related ServerTemplates:__  
+[Database Manager for MySQL 5.5](http://www.rightscale.com/library/server_templates/Database-Manager-for-MySQL-5-5/lineage/12345)
+
+__Release Notes:__  
+[LAMP All-In-One with MySQL 5.5 Release Notes](http://support.rightscale.com/12345-Release_Notes/ServerTemplates_and_RightImages/12345-08-01#LAMP_All-In-One_with_MySQL_5.5)
+
+* * *
+
+__Application versions:__
+* Apache 2.2.3
+* MySQL 5.5.20
+* PHP 5.3.6
+
+__Supported compute clouds:__
+* Amazon Web Services EC2
+* Citrix CloudStack (2.2 and Acton)
+* Datapipe
+* Google Compute Engine
+* IDC Frontier
+* Logicworks
+* OpenStack
+* Rackspace
+* SoftLayer
+* Windows Azure
+
+__Supported backup clouds:__
+* Amazon Web Services S3
+* Azure Storage
+* Google Cloud Storage
+* Rackspace CloudFiles
+* SoftLayer Object Storage
+
+__Supported MultiCloud Images:__
+* CentOS 6.2 - Amazon, Google, Windows Azure
+* CentOS 5.8 - Amazon, CloudStack, Datapipe, IDC Frontier, Logicworks, OpenStack, Rackspace, SoftLayer
+* RHEL 5.8 - Amazon
+</description>
+  <name>RightScale SelfService Vending Machine (RSSS)</name>
+  <revision>0</revision>
+  <links>
+    <link href="/api/server_templates/12345" rel="self"/>
+    <link href="/api/server_templates/12345/multi_cloud_images" rel="multi_cloud_images"/>
+    <link href="/api/multi_cloud_images/12345" rel="default_multi_cloud_image"/>
+    <link href="/api/server_templates/12345/inputs" rel="inputs"/>
+    <link href="/api/server_templates/12345/alert_specs" rel="alert_specs"/>
+  </links>
+</server_template>

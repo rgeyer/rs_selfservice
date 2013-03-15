@@ -1,0 +1,11 @@
+POST /api/servers HTTP/1.1
+Accept: */*
+Accept-Encoding: deflate, gzip
+User-Agent: Guzzle/1.1 (Language=PHP/5.3.8; curl=7.19.7; Host=universal-apple-darwin10.0)
+Host: my.rightscale.com
+Content-Type: application/x-www-form-urlencoded
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkMGOgjAUAP-lZ0n6aC2VZA-KRkVlxagLXEgpaBDZ6opaa_x3Mdn7zBzmiQRyUf1AHZRfkPtE10vxh1xqA-GvDmokcoEQyjCnjHZQmbc0z_OC5JmwOMfEAijA4pCBBTYB0sNSMAJtryn-Xeiyj9vmkU69H7l7fM_HikWKCU_dBitdplUUn9bhYBTUBnvZefw4iQPbmJ0OLc-WS5bc9zALztTH9Zgf43luq71ttjEumLpLLe5pfHQqk8bOaGhqoYdzH0J_A0bPIFB1mSXHxa2KehPtx8NFUxfVoXKSieNPkylR6zK83sDaTrtB1F-OSrNK-_jrs0R_lggp1fW3aa9QIPT1egN5vl1t;_session_id=2ec0e550f6f887fd9df256d051ea0464
+Content-Length: 241
+
+server%5Bname%5D=Guzzle_Test_1334608466&server%5Bdeployment_href%5D=%2Fapi%2Fdeployments%2F104278&server%5Binstance%5D%5Bcloud_href%5D=%2Fapi%2Fclouds%2F232&server%5Binstance%5D%5Bserver_template_href%5D=%2Fapi%2Fserver_templates%2F230151001

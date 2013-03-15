@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Wed, 11 Apr 2012 22:59:16 GMT
+Content-Type: application/vnd.rightscale.cloud+json;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 59
+Content-Length: 671
+X-Request-Uuid: 53a3e86d9901483e9d690ac0417c34a9
+Set-Cookie: _session_id=f709bd1a06c3c6f2d2794ecd3238ae62; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+[{"links":[{"rel":"self","href":"/api/clouds/12345"},{"rel":"datacenters","href":"/api/clouds/12345/datacenters"},{"rel":"instance_types","href":"/api/clouds/12345/instance_types"},{"rel":"security_groups","href":"/api/clouds/12345/security_groups"},{"rel":"instances","href":"/api/clouds/12345/instances"},{"rel":"images","href":"/api/clouds/12345/images"},{"rel":"volume_attachments","href":"/api/clouds/12345/volume_attachments"},{"rel":"volume_snapshots","href":"/api/clouds/12345/volume_snapshots"},{"rel":"volume_types","href":"/api/clouds/12345/volume_types"},{"rel":"volumes","href":"/api/clouds/12345/volumes"}],"description":"Cloud.com Private Cloud","name":"MyCloud - Cloud.com"}]

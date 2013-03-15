@@ -1,0 +1,35 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.15
+Date: Tue, 09 Oct 2012 20:13:02 GMT
+Content-Type: application/vnd.rightscale.server_template+xml;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 165
+Content-Length: 1407
+X-Request-Uuid: ee6699591fd74352a2e6a4517442bc26
+Set-Cookie: _session_id=5834b7ff5806c751b2521f9232110df3; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<server_template>
+  <links>
+    <link href="/api/server_templates/12345" rel="self"/>
+    <link href="/api/server_templates/12345/multi_cloud_images" rel="multi_cloud_images"/>
+    <link href="/api/multi_cloud_images/12345" rel="default_multi_cloud_image"/>
+    <link href="/api/server_templates/12345/inputs" rel="inputs"/>
+    <link href="/api/publications/12345" rel="publication"/>
+    <link href="/api/server_templates/12345/alert_specs" rel="alert_specs"/>
+  </links>
+  <description>Basic MySQL 5.1 server that can be used for testing and troubleshooting purposes.  Use the template's operational RightScripts to perform various maintenance, test, and diagnostic tasks.  The use of this template's scripts requires the matching dbtools version for this compatibility release, which supports the striping of EBS volumes.  Be sure to include the _"DB Rightscale tools install"_ RightScript as boot script to properly install these required tools.
+*---*
+**ATTENTION: Do not use this 'Toolbox' ServerTemplate as a production server.**
+
+*----*
+This ServerTemplate is part of a [compatibility release.](http://support.rightscale.com/12345-Guides/RightScale_Methodologies/Compatibility_Release)
+</description>
+  <name>Database Manager with MySQL 5.1 Toolbox - 11H1</name>
+  <revision>15</revision>
+  <actions>
+    <action rel="clone"/>
+  </actions>
+</server_template>

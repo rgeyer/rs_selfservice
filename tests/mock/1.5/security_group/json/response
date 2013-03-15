@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Tue, 28 Aug 2012 16:49:53 GMT
+Content-Type: application/vnd.rightscale.security_group+json;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 115
+Content-Length: 298
+X-Request-Uuid: ee13a71226be4400bd09b094f363e5f3
+Set-Cookie: _session_id=0000000000004b65becde60f6759754d; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+{"links":[{"href":"/api/clouds/12345/security_groups/12345I8FG7HTFVJ","rel":"self"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/clouds/12345/security_groups/12345I8FG7HTFVJ/security_group_rules","rel":"security_group_rules"}],"actions":[],"name":"Guzzle_Test_1346172483","resource_uid":"948"}

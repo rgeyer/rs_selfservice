@@ -1,0 +1,28 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Mon, 16 Apr 2012 20:34:40 GMT
+Content-Type: application/vnd.rightscale.server+xml;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 177
+Content-Length: 523
+X-Request-Uuid: a000000000000baa874083dae360a49d
+Set-Cookie: _session_id=2ec0e550f6f887fd9df256d051ea0464; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<server>
+  <links>
+    <link href="/api/servers/12345" rel="self"/>
+    <link href="/api/deployments/12345" rel="deployment"/>
+    <link href="/api/clouds/12345/instances/BVRA61MDISLDR" rel="next_instance"/>
+  </links>
+  <state>inactive</state>
+  <description></description>
+  <actions>
+    <action rel="launch"/>
+  </actions>
+  <updated_at>2012/04/16 20:34:26 +0000</updated_at>
+  <created_at>2012/04/16 20:34:26 +0000</created_at>
+  <name>Guzzle_Test_1334608456</name>
+</server>

@@ -1,0 +1,366 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Tue, 09 Oct 2012 17:23:50 GMT
+Content-Type: application/vnd.rightscale.security_group_rule+xml;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 540
+Content-Length: 12367
+X-Request-Uuid: ef59e6d5048642489e97a4dc14a407e3
+Set-Cookie: _session_id=6f7bd495cd72d6fea553374b669955db; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<security_group_rules>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>80</start_port>
+    <end_port>80</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>443</start_port>
+    <end_port>443</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>80</start_port>
+    <end_port>80</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>3306</start_port>
+    <group_name>CloudChimps App Tier</group_name>
+    <end_port>3306</end_port>
+    <protocol>tcp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>80</start_port>
+    <end_port>80</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>8000</start_port>
+    <group_name>CloudChimps LB Tier</group_name>
+    <end_port>8000</end_port>
+    <protocol>tcp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>3306</start_port>
+    <group_name>CloudChimps App Tier</group_name>
+    <end_port>3306</end_port>
+    <protocol>tcp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>10085</start_port>
+    <group_name>CloudChimps App Tier</group_name>
+    <end_port>10085</end_port>
+    <protocol>tcp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>10085</start_port>
+    <group_name>CloudChimps App Tier</group_name>
+    <end_port>10085</end_port>
+    <protocol>udp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>10081</start_port>
+    <end_port>10082</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>10085</start_port>
+    <group_name>CloudChimps CM Tier</group_name>
+    <end_port>10085</end_port>
+    <protocol>tcp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>10081</start_port>
+    <group_name>CloudChimps CM Tier</group_name>
+    <end_port>10082</end_port>
+    <protocol>tcp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>10085</start_port>
+    <group_name>CloudChimps CM Tier</group_name>
+    <end_port>10085</end_port>
+    <protocol>udp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>0</start_port>
+    <group_name>salesdemo</group_name>
+    <end_port>65535</end_port>
+    <protocol>tcp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>0</start_port>
+    <group_name>salesdemo</group_name>
+    <end_port>65535</end_port>
+    <protocol>udp</protocol>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <group_owner>se</group_owner>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>3306</start_port>
+    <end_port>3306</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>0</start_port>
+    <end_port>65535</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>0</start_port>
+    <end_port>65535</end_port>
+    <protocol>udp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>1</start_port>
+    <end_port>65535</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>10.0.0.0/8</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>1</start_port>
+    <end_port>65535</end_port>
+    <protocol>udp</protocol>
+    <cidr_ips>10.0.0.0/8</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>0</start_port>
+    <end_port>65535</end_port>
+    <protocol>icmp</protocol>
+    <cidr_ips>10.0.0.0/8</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+  <security_group_rule>
+    <start_port>22</start_port>
+    <end_port>22</end_port>
+    <protocol>tcp</protocol>
+    <cidr_ips>0.0.0.0/0</cidr_ips>
+    <links>
+      <link href="/api/security_group_rules/12345" rel="self"/>
+      <link href="/api/clouds/12345/security_groups/ABC123" rel="security_group"/>
+    </links>
+    <actions></actions>
+  </security_group_rule>
+</security_group_rules>

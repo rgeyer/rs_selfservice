@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Wed, 13 Mar 2013 18:36:45 GMT
+Content-Type: application/vnd.rightscale.deployment+json;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 60
+Content-Length: 428
+X-Request-Uuid: f196b5ee751d49f5b009f46e3312a81d
+Set-Cookie:
+Cache-Control: private, max-age=0, must-revalidate
+
+{"server_tag_scope":"deployment","actions":[{"rel":"clone"}],"links":[{"href":"/api/deployments/12345","rel":"self"},{"href":"/api/deployments/12345/servers","rel":"servers"},{"href":"/api/deployments/12345/server_arrays","rel":"server_arrays"},{"href":"/api/deployments/12345/inputs","rel":"inputs"}],"description":"General deployment for testing and debugging, and to run individual servers.","name":"Default"}

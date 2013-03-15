@@ -1,0 +1,100 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.15
+Date: Fri, 26 Oct 2012 00:31:18 GMT
+Content-Type: application/vnd.rightscale.multi_cloud_image_setting+xml;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 1795
+Content-Length: 4001
+X-Request-Uuid: f0741c1326be4e3f96ddcb851d120c66
+Set-Cookie: _session_id=f44180b6e600de4ec57982aa6ee58287; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<multi_cloud_image_settings>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/12345UT37GUV4L3A6" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/12345CVBV0MIFCULK" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/clouds/12345/instance_types/12345F434DG63AEG7" rel="instance_type"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/12345JOOKSDNCA2F6" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/clouds/12345/instance_types/12345S7JCNPFIECPN" rel="instance_type"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/EGNGGH83NVUOH" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/clouds/12345/instance_types/12345HGRS0DE1RA27" rel="instance_type"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/AUQT719HEHU7M" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/clouds/12345/instance_types/12345HHSJAH9STPTG" rel="instance_type"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/12345JOOKSDNCA2F6" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/EGNGGH83NVUOH" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/AUQT719HEHU7M" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+  <multi_cloud_image_setting>
+    <links>
+      <link href="/api/multi_cloud_images/12345/settings/12345" rel="self"/>
+      <link href="/api/clouds/12345/images/12345CVBV0MIFCULK" rel="image"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+      <link href="/api/multi_cloud_images/12345" rel="multi_cloud_image"/>
+    </links>
+    <actions></actions>
+  </multi_cloud_image_setting>
+</multi_cloud_image_settings>

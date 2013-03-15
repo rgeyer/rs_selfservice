@@ -1,0 +1,172 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Wed, 11 Apr 2012 22:59:14 GMT
+Content-Type: application/vnd.rightscale.cloud+xml;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 105
+Content-Length: 8238
+X-Request-Uuid: e2beaccbb5f84d4f854bf75fab8ee697
+Set-Cookie: _session_id=f709bd1a06c3c6f2d2794ecd3238ae62; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<clouds>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="security_groups" href="/api/clouds/12345/security_groups"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+      <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+      <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+      <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+      <link rel="volumes" href="/api/clouds/12345/volumes"/>
+    </links>
+    <description>Cloud.com Private Cloud</description>
+    <name>MyCloud - Cloud.com</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+    </links>
+    <description>Rackspace cloud</description>
+    <name>Rackspace</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="security_groups" href="/api/clouds/12345/security_groups"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+      <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+      <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+      <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+      <link rel="volumes" href="/api/clouds/12345/volumes"/>
+    </links>
+    <description>This is your RightScale myCloud with CloudStack.</description>
+    <name>myCloud - CloudStack</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="security_groups" href="/api/clouds/12345/security_groups"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+      <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+      <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+      <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+      <link rel="volumes" href="/api/clouds/12345/volumes"/>
+    </links>
+    <description>New York Metro</description>
+    <name>Datapipe New York Metro</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="security_groups" href="/api/clouds/12345/security_groups"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+      <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+      <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+      <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+      <link rel="volumes" href="/api/clouds/12345/volumes"/>
+    </links>
+    <description>Datapipe Hong Kong</description>
+    <name>Datapipe Hong Kong</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+      <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+      <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+      <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+      <link rel="volumes" href="/api/clouds/12345/volumes"/>
+    </links>
+    <description></description>
+    <name>IDC Frontier - Tokyo</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+      <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+      <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+      <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+      <link rel="volumes" href="/api/clouds/12345/volumes"/>
+    </links>
+    <description></description>
+    <name>Logicworks</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+    </links>
+    <description>Rackspace Cloud Servers (UK)</description>
+    <name>Rackspace UK</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="security_groups" href="/api/clouds/12345/security_groups"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+      <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+      <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+      <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+      <link rel="volumes" href="/api/clouds/12345/volumes"/>
+    </links>
+    <description></description>
+    <name>Datapipe London</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="security_groups" href="/api/clouds/12345/security_groups"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+      <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+      <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+      <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+      <link rel="volumes" href="/api/clouds/12345/volumes"/>
+    </links>
+    <description></description>
+    <name>Datapipe Silicon Valley</name>
+  </cloud>
+  <cloud>
+    <links>
+      <link rel="self" href="/api/clouds/12345"/>
+      <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+      <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+      <link rel="instances" href="/api/clouds/12345/instances"/>
+      <link rel="images" href="/api/clouds/12345/images"/>
+    </links>
+    <description>SoftLayer Cloud</description>
+    <name>SoftLayer</name>
+  </cloud>
+</clouds>

@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Tue, 30 Oct 2012 20:55:36 GMT
+Content-Type: application/vnd.rightscale.server_array+json;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 611
+Content-Length: 821
+X-Request-Uuid: a4a5ac7d50e24a5fa288ab6be98477cd
+Set-Cookie:
+Cache-Control: private, max-age=0, must-revalidate
+
+{"actions":[{"rel":"launch"},{"rel":"clone"}],"elasticity_params":{"alert_specific_params":{"voters_tag_predicate":"Apache-Rails-Passenger App Server (v12.11.0-LTS)","decision_threshold":"51"},"bounds":{"min_count":"1","max_count":"20"},"pacing":{"resize_calm_time":"5","resize_up_by":"1","resize_down_by":"1"},"schedule_entries":[]},"array_type":"alert","description":null,"instances_count":0,"name":"Apache-Rails-Passenger App Server (v12.11.0-LTS)","links":[{"href":"/api/server_arrays/12345","rel":"self"},{"href":"/api/deployments/12345","rel":"deployment"},{"href":"/api/server_arrays/12345/current_instances","rel":"current_instances"},{"href":"/api/clouds/12345/instances/EP09UB032D7KS","rel":"next_instance"},{"href":"/api/server_arrays/12345/alert_specs","rel":"alert_specs"}],"state":"disabled"}

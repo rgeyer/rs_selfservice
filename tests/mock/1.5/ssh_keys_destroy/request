@@ -1,0 +1,6 @@
+DELETE /api/clouds/12345/ssh_keys/D4CQ49F45DP39 HTTP/1.1
+Host: us-3.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.24.0 PHP/5.3.17 openssl/OpenSSL/12345.9.8r
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkMuOgjAARf-la0hoy6MlmYWCgBJHXjLgxmBtA6jMKI9Bjf8-mMzyJvecxXmCApigb2UMJHBsgfmcBr8BU0UQk5cEOgZMiHWMoIqJIoHqOP25yoRGiC4ThrgMIUcygQcmqxgrB14IXCA0-Tr-zyKovdlJD87NUF5bXOnr1Vc049HQL67csLt4W4jfjAx6uKI1TC-JFlZ76AfbLnZQ5XnO5yyC975tBMt9mvtedJqLXVWP0JmL091NygBSloSpRVMn47nmzkj_SIvwVpediIx5bu8u8cYa18ZPVu7sB3URXe6jYDQ2lnU81HGp6GctWyztZF3f0n0ZfryTjO8kBWPffdMBU0eUGK_XH9DdXSU=; _session_id=deadbeef0badf00dfeedfacec0ffee24
+

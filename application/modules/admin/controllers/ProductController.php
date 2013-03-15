@@ -149,24 +149,12 @@ class Admin_ProductController extends \SelfService\controller\BaseController {
 		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
 		$api = ClientFactory::getClient('1.5');
 		
-		$clouds = array(
-			'AWS US-East' 			=> 1,
-			'AWS US-West' 			=> 3,
-			'AWS EU' 						=> 2,
-			'AWS AP-Singapore' 	=> 4,
-			'AWS AP-Tokyo' 			=> 5,
-			'AWS SA-Sao Paulo' 	=> 7,
-			'AWS US-Oregon' 		=> 6
-		);
-		
 		$cloud_obj = new Cloud();
-		$other_clouds = array();
+		$clouds = array();
 		
 		foreach($cloud_obj->index() as $cloud) {
-			$other_clouds[$cloud->name] = $cloud->id;
+			$clouds[$cloud->name] = $cloud->id;
 		}
-		
-		$clouds = array_merge($clouds, $other_clouds);		
 		
 		$this->view->assign('clouds', $clouds);
 		$this->view->assign('meta_inputs', $result[0]->meta_inputs);

@@ -3,9 +3,6 @@ resources.cloudCredentials.rightscale.email       = "<%= @rs_email %>"
 resources.cloudCredentials.rightscale.password    = "<%= @rs_pass %>"
 resources.cloudCredentials.rightscale.account_id  = <%= @rs_acct_num %>
 
-resources.cloudCredentials.aws.access_key_id      = "<%= @aws_access_key %>"
-resources.cloudCredentials.aws.secret_key         = "<%= @aws_secret_access_key %>"
-
 ; These are the user account IDs for these clouds.  You can find them by going to the security group found at;
 ; Clouds -> (cloud of your choice) -> Security Groups -> default
 ; Then under the add rules section, there should be an "Owner" input.  The default value in that input is
@@ -15,3 +12,11 @@ resources.cloudCredentials.owners[1998]           = "<%= @datapipe_owner %>" ; Y
 resources.cloudCredentials.owners[1874]           = "<%= @datapipe_owner %>" ; Your account ID for Datapipe New York Metro
 resources.cloudCredentials.owners[1999]           = "<%= @datapipe_owner %>" ; Your account ID for Datapipe Silicon Valley
 resources.cloudCredentials.owners[2175]           = "" ; Your account ID for Google (which actually doesn't exist)
+resources.cloudCredentials.owners[1]              = "<%= @aws_owner %>"
+resources.cloudCredentials.owners[2]              = "<%= @aws_owner %>"
+resources.cloudCredentials.owners[3]              = "<%= @aws_owner %>"
+resources.cloudCredentials.owners[4]              = "<%= @aws_owner %>"
+resources.cloudCredentials.owners[5]              = "<%= @aws_owner %>"
+resources.cloudCredentials.owners[6]              = "<%= @aws_owner %>"
+resources.cloudCredentials.owners[7]              = "<%= @aws_owner %>"
+resources.cloudCredentials.owners[8]              = "<%= @aws_owner %>"
