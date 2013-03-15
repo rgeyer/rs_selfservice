@@ -432,42 +432,6 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 							$this->em->remove($prov_secgrp);
 							$this->em->flush();
             }
-
-						/*$group_ids = array();
-						
-						# Destroy the rules first
-						foreach($prov_secgrps as $prov_secgrp) {
-              $sec_grp = $client->newModel('SecurityGroup');
-              $sec_grp->find_by_href($prov_secgrp->href, array('cloud_id' => $prov_secgrp->cloud_id));
-              # TODO: Delete the rule, may need an extension to the model in the lib
-              $rules = $sec_grp->security_group_rules();
-              foreach($rules as $rule) {
-                $rule_links = array_filter($rule->links, function($var) {
-                  return $var->rel == 'self';
-                });
-                $rule_link = array_pop($rule_links)->href;
-
-                $long_link = $sec_grp->href . str_replace('/api', '', $rule_link);
-
-                $this->log->info("Long link be " . $long_link);
-
-                $command = $client->delete($long_link, array('X-API-VERSION' => '1.5'));
-                $command->send();
-              }
-						}
-						
-						# Destroy the actual groups
-						foreach($group_ids as $groupid => $prov_secgrp) {
-              $sec_grp = $client->newModel('SecurityGroup');
-              $sec_grp->find_by_href($prov_secgrp->href, array('cloud_id' => $prov_secgrp->cloud_id));
-              $sec_grp->destroy();
-							
-							# Remove the provisioned object DB record
-							$result[0]->provisioned_objects->removeElement($prov_secgrp);
-							$this->em->remove($prov_secgrp);
-							$this->em->flush();
-						}*/
-						
 					}
 				} while ($keep_going);
 				$this->em->remove($result[0]);
@@ -482,8 +446,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$creds = $bootstrap->getResource('cloudCredentials');
 		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
-		$ec2 = ClientFactory::getClient();
-    $mc = ClientFactory::getClient('1.5');
+    $client = ClientFactory::getClient('1.5');
 
 		if($this->_request->has ( 'id' )) {
 			$product_id = $this->_request->getParam ( 'id' );
@@ -504,29 +467,7 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 
         $servers = array();
 
-        # Aggregate the servers from API 1 and API 1.5
-        $depl_ec2 = $ec2->newModel('Deployment');
-        $depl_ec2->find_by_href($prov_depl->href);
-        foreach($depl_ec2->servers as $server) {
-          if(!$server->server_type == 'ec2') { continue; }
-          $stdServer = new stdClass();
-          $stdServer->name = $server->nickname;
-          $stdServer->state = $server->state;
-          $stdServer->created_at = $server->created_at;
-          $stdServer->href = $server->href;
-          $stdServer->api = 'ec2';
-
-          if(!in_array($server->state, array('inactive', 'stopped'))){
-            $api_server_model = $ec2->newModel('Server');
-            $api_server_model->find_by_href($stdServer->href);
-
-            $stdServer->ip = $api_server_model->current_settings()->ip_address;
-          }
-
-          $servers[] = $stdServer;
-        }
-
-        $mc_srv_model = $mc->newModel('Server');
+        $mc_srv_model = $client->newModel('Server');
         $mc_depl_href = \RGeyer\Guzzle\Rs\RightScaleClient::convertHrefFrom1to15($prov_depl->href);
         foreach($mc_srv_model->index($mc_depl_href) as $server) {
           $stdServer = new stdClass();
@@ -534,10 +475,9 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
           $stdServer->state = $server->state;
           $stdServer->created_at = $server->created_at;
           $stdServer->href = $server->href;
-          $stdServer->api = 'mc';
 
           if(!in_array($server->state, array('inactive', 'stopped'))){
-            $api_server_model = $mc->newModel('Server');
+            $api_server_model = $client->newModel('Server');
             $api_server_model->find_by_href($stdServer->href);
 
             $stdServer->ip = $api_server_model->current_instance()->public_ip_addresses[0];
@@ -574,13 +514,10 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$creds = $bootstrap->getResource('cloudCredentials');
 		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
-		$ec2 = ClientFactory::getClient();
-    $mc = ClientFactory::getClient('1.5');
+    $client = ClientFactory::getClient('1.5');
 
-		if($this->_request->has('href') && $this->_request->has('api')) {
+		if($this->_request->has('href')) {
       $href = $this->_request->getParam('href');
-      $api = $this->_request->getParam('api');
-      $client = $api == 'ec2' ? $ec2 : $mc;
       $server = $client->newModel('Server');
       $server->find_by_href($href);
       $server->launch();
@@ -594,13 +531,10 @@ class Admin_ProvisionedproductController extends \SelfService\controller\BaseCon
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$creds = $bootstrap->getResource('cloudCredentials');
 		ClientFactory::setCredentials( $creds->rs_acct, $creds->rs_email, $creds->rs_pass );
-		$ec2 = ClientFactory::getClient();
-    $mc = ClientFactory::getClient('1.5');
+    $client = ClientFactory::getClient('1.5');
 
-		if($this->_request->has('href') && $this->_request->has('api')) {
+		if($this->_request->has('href')) {
       $href = $this->_request->getParam('href');
-      $api = $this->_request->getParam('api');
-      $client = $api == 'ec2' ? $ec2 : $mc;
       $server = $client->newModel('Server');
       $server->find_by_href($href);
       $this->log->debug(print_r($server->getParameters(), true));
