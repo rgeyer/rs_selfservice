@@ -10,8 +10,8 @@
   
   {block name=script}{/block}
 <link type="text/css" href="jquery/css/start/jquery-ui-1.8.16.custom.css" rel="stylesheet" /> 
-<script type="text/javascript" src="jquery/js/jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="jquery/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 <script>
 // 988 x 568
 // 2.8 x 1.972

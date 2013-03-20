@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rgeyer/rs_selfservice.png)](https://travis-ci.org/rgeyer/rs_selfservice)
+
 # Installation instructions
 
 ## For a LAMP All-in-One or PHP App server

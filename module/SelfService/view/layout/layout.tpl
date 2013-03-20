@@ -19,8 +19,8 @@
   {assign var="conditional_scripts_ary" value=['conditional' => 'lt IE 9']}
   {$this->headScript()->prependFile($this->basePath()|cat:'/js/html5.js', 'text/javascript', $conditional_scripts_ary)
   ->prependFile($this->basePath()|cat:'/js/bootstrap.min.js')
-  ->prependFile($this->basePath()|cat:'/jquery/js/jquery-1.6.2.min.js')
-  ->appendFile($this->basePath()|cat:'/jquery/js/jquery-ui-1.10.2.custom.js')}
+  ->prependFile('http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
+  ->appendFile('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js')}
 
   {literal}
   <script>
