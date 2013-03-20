@@ -1,3 +1,7 @@
+dbproject
+._*
+.~lock.*
+.vagrant
 application/configs/db.ini
 application/configs/rsss.ini
 application/configs/cloud_creds.ini
@@ -17,3 +21,4 @@ vendor
 .DS_Store
 *.zpk
 *.depl.properties
+data

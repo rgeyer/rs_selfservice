@@ -10,8 +10,8 @@
     <dependencies>
     <required>
       <zendframework>
-        <min>1.11.0</min>
-        <max>1.12.0</max>
+        <min>2.0</min>
+        <max>2.1</max>
       </zendframework>
     </required>
   </dependencies>
@@ -35,8 +35,5 @@
     <parameter display="RightScale Account Email" id="rs_email" readonly="false" required="true" type="email"/>
     <parameter display="RightScale Account Password" id="rs_pass" readonly="false" required="true" type="password"/>
     <parameter display="RightScale Account Number" id="rs_acctnum" readonly="false" required="true" type="string"/>
-    <parameter display="AWS Access Key ID" id="aws_key_id" readonly="false" required="true" type="string"/>
-    <parameter display="AWS Secret Key" id="aws_key_secret" readonly="false" required="true" type="password"/>
-    <parameter display="Datapipe Owner" id="dp_owner" readonly="false" required="false" type="string"/>
   </parameters>
     </package>

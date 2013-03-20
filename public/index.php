@@ -1,7 +1,12 @@
 <?php
+/**
+ * This makes our life easier when dealing with paths. Everything is relative
+ * to the application root now.
+ */
+chdir(dirname(__DIR__));
 
-require_once __DIR__ . '/../application/scripts/bootstrapEnvironment.php';
+// Setup autoloading
+require 'init_autoloader.php';
 
-// $application is instantiated in bootstrapEnvironment above
-$application->bootstrap()
-            ->run();
+// Run the application!
+Zend\Mvc\Application::init(require 'config/application.config.php')->run();

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="Bootstrap.php">
+  <php>
+        <env name="APPLICATION_ENV" value="testing" />
+  </php>
+    <testsuites>
+        <testsuite name="rs_selfservice">
+            <directory>./</directory>
+            <exclude>./SelfService/Helpers.php</exclude>
+        </testsuite>
+    </testsuites>
+</phpunit>

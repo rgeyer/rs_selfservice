@@ -9,22 +9,18 @@
 
         php composer.phar install
 
-3. Install the pear/pyrus managed dependencies:
+3. Make sure that /path/to/rsss/logs exists, and is writable by apache2/httpd
 
-        pear channel-discover zend.googlecode.com/svn
-        pear install zend/zend-1.12.0
+4. Copy config/autoload/local.php.dist to config/autoload/local.php, and enter your values.
 
-4. Make sure that /path/to/rsss/logs exists, and is writable by apache2/httpd
+5. Run the following commands which will create the schema in the DB specified in config/autoload/local.php and populate the 3 "standard" products.
 
-5. Copy application/configs/db.ini.tpl and application/configs/cloud_creds.ini.tpl to their *.ini equivalents, and enter your values.
+        vendor/bin/doctrine-module orm:schema-tool:create
+        php public/index.php product add
 
-6. Run application/scripts/zap_schema.sh script which will create the schema in the DB specified in application/configs/db.ini and populate the 3 "standard" products.
+6. Enjoy.. Hopefully!
 
-7. Edit library/SelfService/GoogleAuthAdapter.php to use your servers hostname/ip rather than "local.rsss.com"
-
-8. Enjoy.. Hopefully!
-
-## For Zend Server
+## For Zend Server (Temporarily deprecated/untested)
 1. Download and install Composer:
 
         curl -s http://getcomposer.org/installer | php
@@ -41,22 +37,13 @@
 
 5. Change the vhost for your application to allow overrides, either manually or by changing the templates at /usr/local/zend/share/
 
-DEPENDENCIES:
-In addition to the dependencies defined in composer.json, these don't play well with composer and will need to be installed manually
-
-* Zend Framework 1.12.0
-
 TODO:
-* Create and verify support for SQLite for dev and test
 * Soft deletes for products, provisioned products, perhaps others?
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
 * Handle "cloud not supported" errors when provisioning servers or arrays
-  * Be smarter about picking the MCI that supports the requested cloud.
-  * Initial provisioning succeeds without issue. Will not be able to launch
+  * Select default InstanceType when not specified
+  * Select default Datacenter when not specified
 * Tokenize all paths
-* Refactor
-  * Lots of confusion of methods in controllers that are unrelated, not enough controllers, etc
-  * Build services for common tasks like product provisioning and deletion, and user interactions (fetch, cache, create) 
 * Accept (meta, not dashboard) inputs for products.  Customized form during provisioning.  Also self referencing variables
   * Multiple Choice (dropdown)
   * If/Else options, like MySQL 5.1 or 5.5 with logic (use one ST over another depending upon selection)
@@ -67,8 +54,6 @@ TODO:
 * Shared sessions - Horizontal Scalability
 * Cache commonly read data (user profiles/oauth uris, etc)
   * Frequently query the RS API and cache status for provisioned product show screen(s)
-* Use API 1.5 to support additional clouds
-  * In progress...
 * Allow launching of servers once deployment is created
   * Create launch stages (tiers), launch all LB first, then DB, then App
   * Allow execution of scripts on servers once they become operational
@@ -78,15 +63,12 @@ TODO:
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
 * Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
 * Add Authorization functionality (admin, read_all, act_all, read_mine, act_mine, etc)
-* Move Cloud Credential Management into the DB and UI and away from the *.ini config files
 * Filter cloud menu based on product ST support?
-* Tests, and continuous integration/deployment
 * Make sure ServerTemplate is done importing before starting servers
 * Make the windows product work by properly passing inputs into the server or deployment.
 * Cleaner handling of failure while provisioning.  Make sure that successfully provisioned stuff gets persisted so that it can be destroyed.
   * Cleaner handling of failure while destroying, make sure that destruction can be re-run until everything is gone.
 * Add vendor dependency downloads with composer in pre_activate.php for Zend Server
-* Store owners in the DB and provide a UI or CLI way to add new owners easily.
 * Create a meta input for instance type which is filtered/updated based on cloud selection.
 * Instrument *as though* it will consume CF
   * Provisioning action(s) hit a controller with json metadata
