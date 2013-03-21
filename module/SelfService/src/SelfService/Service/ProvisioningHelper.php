@@ -248,7 +248,8 @@ class ProvisioningHelper {
     if(!$instance_type_href) {
       $cloud = $this->client->newModel('Cloud');
       $cloud->find_by_id($cloud_id);
-      $instance_type = array_pop($cloud->instance_types());
+      $instance_types = $cloud->instance_types();
+      $instance_type = array_pop($instance_types);
       $instance_type_href = $instance_type->href;
       # TODO: Maybe allow some metadata for a "default" for private clouds.
     }
