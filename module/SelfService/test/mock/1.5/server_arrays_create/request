@@ -1,0 +1,8 @@
+POST /api/server_arrays HTTP/1.1
+Host: my.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.24.0 PHP/5.3.17 openssl/OpenSSL/12345.9.8r
+Content-Type: application/x-www-form-urlencoded
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkM1ugkAYAN9lz5Dw7X4LQtIDKFW0VoJCWy8El1VbtfytFTS-u5j0PjOHuZGMOOTUEY3kDXFu5NzImjhIgQ3uGlGCOMA4mIxTZBr5znsahOQso6hTmm91AEl1W1qgA2XAbGPDMRd9T8l_Fyk-3T5PDu9J8If-WNodHD2z_QCVHoxyF1lzf2dNw3ZfVgBxFURJa-6qicRr5ydKDTPzx0-KIlR1WNOt3hzqvfxcrk51XK_dbPZ6LopFHnupC1e3CYp1aH9Jf7MyFjxC97JPLw2Gy2jxhsNWuEfvdIWRJyZGUMXdMJ3rA15eUj5SQVJWMcym3jh-eS5pn0syIYrzr-qvIDC83x8Iy1yg
+
+server_array%5Barray_type%5D=alert&server_array%5Bname%5D=GuzzleTest&server_array%5Bstate%5D=disabled&server_array%5Binstance%5D%5Bcloud_href%5D=%2Fapi%2Fclouds%2F2175&server_array%5Binstance%5D%5Bserver_template_href%5D=%2Fapi%2Fserver_templates%2F268091001&server_array%5Belasticity_params%5D%5Bbounds%5D%5Bmax_count%5D=10&server_array%5Belasticity_params%5D%5Bbounds%5D%5Bmin_count%5D=5&server_array%5Belasticity_params%5D%5Bpacing%5D%5Bresize_up_by%5D=1&server_array%5Belasticity_params%5D%5Bpacing%5D%5Bresize_down_by%5D=1&server_array%5Belasticity_params%5D%5Bpacing%5D%5Bresize_calm_time%5D=1&server_array%5Belasticity_params%5D%5Balert_specific_params%5D%5Bdecision_threshold%5D=51&server_array%5Bdeployment_href%5D=%2Fapi%2Fdeployments%2F213131001

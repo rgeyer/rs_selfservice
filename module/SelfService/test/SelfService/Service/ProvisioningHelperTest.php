@@ -6,6 +6,7 @@ use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
 use SelfService\Service\ProvisioningHelper;
 use SelfService\Entity\Provisionable\Server;
+use SelfService\Entity\Provisionable\ServerArray;
 use SelfService\Entity\Provisionable\SecurityGroup;
 use SelfService\Entity\Provisionable\ServerTemplate;
 use SelfService\Entity\Provisionable\SecurityGroupRule;
@@ -353,6 +354,96 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
   }
 
   public function testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI() {
+    $this->markTestSkipped("Kinda untestable becase there are nearly 600 results in the mock file, need mocks specific to these tests");
+  }
+
+  public function testCanProvisionServerArray() {
+    $log = $this->getMock('Zend\Log\Logger');
+    # TODO: This breaks if github.com/rgeyer/rs_guzzle_client mocks change, probably an improvement
+    # for Guzzle 3 mocks..
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $server_template_model = new ServerTemplate();
+    $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
+    $server_template_model->publication_id = new TextProductMetaInput("1234");
+    $server_template_model->version = new NumberProductMetaInput(5);
+    $array_model = new ServerArray();
+    $array_model->cloud_id = new NumberProductMetaInput(11111);
+    $array_model->max_count = new NumberProductMetaInput(10);
+    $array_model->min_count = new NumberProductMetaInput(2);
+    $array_model->type = new TextProductMetaInput("alert");
+    $array_model->tag = new TextProductMetaInput("tag");
+    $array_model->nickname = new TextProductMetaInput("DB");
+    $array_model->server_template = $server_template_model;
+    $array_model->security_groups = array();
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $this->assertEquals(count($request_paths), count($this->_guzzletestcase->getMockedRequests()));
+  }
+
+  public function testProvisionServerArrayImportsTemplateIfMissing() {
+    $log = $this->getMock('Zend\Log\Logger');
+    # TODO: This breaks if github.com/rgeyer/rs_guzzle_client mocks change, probably an improvement
+    # for Guzzle 3 mocks..
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/publications_import/response',
+      '1.5/server_template/json/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/servers_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[22222]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[22222];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $server_template_model = new ServerTemplate();
+    $server_template_model->nickname = new TextProductMetaInput("foo");
+    $server_template_model->publication_id = new TextProductMetaInput("1234");
+    $server_template_model->version = new NumberProductMetaInput(5);
+    $server_model = new Server();
+    $server_model->cloud_id = new NumberProductMetaInput(22222);
+    $server_model->count = new NumberProductMetaInput(1);
+    $server_model->nickname = new TextProductMetaInput("DB");
+    $server_model->server_template = $server_template_model;
+    $server_model->security_groups = array();
+    $provisioned_stuff = $helper->provisionServer($server_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    $this->assertEquals(count($request_paths), count($this->_guzzletestcase->getMockedRequests()));
+  }
+
+  public function testProvisionServerArrayThrowsErrorIfTemplateNotImported() {
+    $this->markTestSkipped("Impossible to get this error, since an ST will either be found, or imported.  If import fails, a different and more nasty error is thrown");
+  }
+
+  public function testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI() {
     $this->markTestSkipped("Kinda untestable becase there are nearly 600 results in the mock file, need mocks specific to these tests");
   }
 

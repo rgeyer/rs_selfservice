@@ -29,7 +29,11 @@ use RGeyer\Guzzle\Rs\Common\ClientFactory;
 use RGeyer\Guzzle\Rs\Model\Mc\Deployment;
 
 use SelfService\Entity\Provisionable\Server;
+use SelfService\Entity\Provisionable\ServerArray;
 use SelfService\Entity\Provisionable\SecurityGroup;
+use SelfService\Entity\Provisionable\ServerTemplate as OrmServerTemplate;
+
+use RGeyer\Guzzle\Rs\Model\Mc\ServerTemplate as ApiServerTemplate;
 
 class ProvisioningHelper {
 
@@ -162,20 +166,17 @@ class ProvisioningHelper {
 	}
 
   /**
-   * Provisions one or many Servers of the specified type
-   *
-   * @throws \InvalidArgumentException if there are ServerTemplate discovery or import issues.
-   * @param SelfService\Entity\Provisionable\Server $server An rsss Doctrine ORM Model describing the desired server.
-   * @param \RGeyer\Guzzle\Rs\Model\Mc\Deployment $deployment The previously provisioned deployment the server(s) should be created in
-   * @return array A mix of RGeyer\Guzzle\Rs\Model\Mc\Server and RGeyer\Guzzle\Rs\Model\Mc\SshKey objects which were created during the process
+   * @throws \InvalidArgumentException when the template cannot be found or imported
+   * @param $nickname
+   * @param $version
+   * @param $publication_id
+   * @return null|RGeyer\Guzzle\Rs\Model\Mc\ServerTemplate
    */
-  public function provisionServer(Server $server, Deployment $deployment) {
-    $result = array();
+  protected function _findOrImportServerTemplate($nickname, $version, $publication_id) {
     $st = null;
-    $cloud_id = $server->cloud_id->getVal();
     foreach( $this->_server_templates as $api_st ) {
-      if (strtolower(trim($api_st->name)) == strtolower(trim($server->server_template->nickname->getVal())) &&
-          $api_st->revision == $server->server_template->version->getVal()) {
+      if (strtolower(trim($api_st->name)) == strtolower(trim($nickname)) &&
+          $api_st->revision == $version) {
         $st = $api_st;
       }
     }
@@ -186,26 +187,34 @@ class ProvisioningHelper {
       $command = $this->client->getCommand(
         'publications_import',
         array(
-          'id' => $server->server_template->publication_id->getVal()
+          'id' => $publication_id
         )
       );
       $command->execute();
 
-      $this->log->info("Imported");
       $mc_href = (string)$command->getResponse()->getHeader('Location');
-      $this->log->info(sprintf("href be %s", $mc_href));      
       $st = $this->client->newModel('ServerTemplate');
       $st->find_by_href($mc_href);
-      $this->log->info(sprintf("The available properties are %s", print_r($st->getParameters(), true)));
       $this->_server_templates[] = $st;
     }
 
     if (!$st) {
-      throw new \InvalidArgumentException('A server template with nickname "' . $server->server_template->nickname->getVal() . '" and version "' . $server->server_template->version->getVal() . '" was not found!');
+      throw new \InvalidArgumentException('A server template with nickname "' . $nickname . '" and version "' . $version . '" was not found!');
     }
 
     # TODO: Ideally wait for the ST to be imported here, not sure there is a mechanism for that tho?
+    return $st;
+  }
 
+  /**
+   * @throws \InvalidArgumentException if the specified ServerTemplate does not support the specified cloud
+   * @param \RGeyer\Guzzle\Rs\Model\Mc\ServerTemplate $st
+   * @param $cloud_id
+   * @param $mci_href A reference variable which gets set to the HREF of a supported MCI
+   * @param $instance_type_href A reference variable which gets set to the HREF of a supported instance type
+   * @return void
+   */
+  protected function _selectMciAndInstanceType(ApiServerTemplate $st, $cloud_id, &$mci_href, &$instance_type_href) {
     # Detect the right MultiCloudImage and select it, or throw an exception if there isn't a match
     $mci_href = null;
     $instance_type_href = null;
@@ -233,22 +242,54 @@ class ProvisioningHelper {
       $message = sprintf('The ServerTemplate "%s" does not have an image which supports the cloud "%s"', $st->name, $this->_clouds[$cloud_id]->name);
       throw new \InvalidArgumentException($message);
     }
+
     if(!$instance_type_href) {
-      # TODO: List them, and grab the first one, maybe allow some metadata for a "default"
-      # for private clouds.
+      # TODO: Maybe allow some metadata for a "default" for private clouds.
     }
+  }
 
-    # TODO: Handle all defaulted things such as datacenters and instance types
-
-    $server_secgrps = array();
-    foreach ( $server->security_groups as $secgrp ) {
+  /**
+   * @param \SelfService\Entity\Provisionable\SecurityGroup[] $groups A list of provisionable groups for which you'd like hrefs
+   * @return String[] the href for each provisioned security group
+   */
+  protected function _getProvisionedSecurityGroupHrefs(array $groups) {
+    $secgrps = array();
+    foreach ( $groups as $secgrp ) {
       // This is as good as checking Cloud::supportsSecurityGroups because $this->_security_groups only
       // contains security groups for clouds where they're supported, and have already been created in the
       // ProvisioningHelper::provisionSecurityGroup method
       if (array_key_exists( $secgrp->id, $this->_security_groups )) {
-        $server_secgrps[] = $this->_security_groups[$secgrp->id]['api']->href;
+        $secgrps[] = $this->_security_groups[$secgrp->id]['api']->href;
       }
     }
+    return $secgrps;
+  }
+
+  /**
+   * Provisions one or many Servers of the specified type
+   *
+   * @throws \InvalidArgumentException if there are ServerTemplate discovery or import issues.
+   * @param SelfService\Entity\Provisionable\Server $server An rsss Doctrine ORM Model describing the desired server.
+   * @param \RGeyer\Guzzle\Rs\Model\Mc\Deployment $deployment The previously provisioned deployment the server(s) should be created in
+   * @return array A mix of RGeyer\Guzzle\Rs\Model\Mc\Server and RGeyer\Guzzle\Rs\Model\Mc\SshKey objects which were created during the process
+   */
+  public function provisionServer(Server $server, Deployment $deployment) {
+    $result = array();
+    $cloud_id = $server->cloud_id->getVal();
+
+    $st = $this->_findOrImportServerTemplate(
+      $server->server_template->nickname->getVal(),
+      $server->server_template->version->getVal(),
+      $server->server_template->publication_id->getVal()
+    );
+
+    $mci_href = null;
+    $instance_type_href = null;
+    $this->_selectMciAndInstanceType($st, $cloud_id, $mci_href, $instance_type_href);
+
+    # TODO: Handle all defaulted things such as datacenters and instance types
+
+    $server_secgrps = $this->_getProvisionedSecurityGroupHrefs($server->security_groups);
 
     $this->log->info("About to provision " . $server->count->getVal() . " servers of type " . $server->nickname->getVal());
 
@@ -262,8 +303,8 @@ class ProvisioningHelper {
       $api_server = $this->client->newModel('Server');
 
       $params['server[name]'] = $nickname;
-      $params['server[deployment_href]'] = '/api/deployments/' . $deployment->id;
-      $params['server[instance][server_template_href]'] = '/api/server_templates/' . $st->id;
+      $params['server[deployment_href]'] = $deployment->href;
+      $params['server[instance][server_template_href]'] = $st->href;
       $params['server[instance][cloud_href]'] = $this->_clouds[$cloud_id]->href;
       if(count($server_secgrps) > 0) {
         $params['server[instance][security_group_hrefs]'] = $server_secgrps;
@@ -385,9 +426,10 @@ class ProvisioningHelper {
           $ingress_group = $this->_security_groups[$rule->ingress_group->id];
 
           $other_model = $ingress_group['model'];
+          $other_api = $ingress_group['api'];
 
           $api->createGroupRule(
-            $other_model->name->getVal(),
+            $other_api->resource_uid,
             $owner,
             $rule->ingress_protocol->getVal(),
             $rule->ingress_from_port->getVal(),
@@ -418,6 +460,63 @@ class ProvisioningHelper {
       );
     }
     return true;
+  }
+
+  public function provisionServerArray(ServerArray $array, Deployment $deployment) {
+    $result = array();
+    $cloud_id = $array->cloud_id->getVal();
+
+    $st = $this->_findOrImportServerTemplate(
+      $array->server_template->nickname->getVal(),
+      $array->server_template->version->getVal(),
+      $array->server_template->publication_id->getVal()
+    );
+
+    $mci_href = null;
+    $instance_type_href = null;
+    $this->_selectMciAndInstanceType($st, $cloud_id, $mci_href, $instance_type_href);
+
+    $secgrps = $this->_getProvisionedSecurityGroupHrefs($array->security_groups);
+
+    $params = array(
+      'server_array[name]' => $array->nickname->getVal(),
+      'server_array[state]' => 'disabled',
+      # TODO: These params assume an alert type, might want to be smarter or
+      # not allow any type besides alert
+      'server_array[array_type]' => $array->type->getVal(),
+      'server_array[elasticity_params][alert_specific_params][voters_tag_predicate]' => $array->tag->getVal(),
+      'server_array[elasticity_params][pacing][resize_calm_time]' => '10',
+      'server_array[elasticity_params][pacing][resize_up_by]' => '3',
+      'server_array[elasticity_params][pacing][resize_down_by]' => '1',
+      'server_array[elasticity_params][bounds][max_count]' => strval($array->max_count->getVal()),
+      'server_array[elasticity_params][bounds][min_count]' => strval($array->min_count->getVal()),
+      'server_array[deployment_href]' => $deployment->href,
+      'server_array[instance][cloud_href]' => $this->_clouds[$cloud_id]->href,
+      'server_array[instance][server_template_href]' => $st->href,
+      'server_array[instance][multi_cloud_image_href]' => $mci_href,
+    );
+    if(count($secgrps) > 0) {
+      $params['server_array[instance][security_group_hrefs]'] = $secgrps;
+    }
+    $ssh_key = $this->_getSshKey($cloud_id, $deployment->name, $result);
+    if($ssh_key) {
+      $params['server_array[instance][ssh_key_href]'] = $ssh_key->href;
+    }
+
+    $api_array = $this->client->newModel('ServerArray');
+    $api_array->create($params);
+    $command = $this->client->getCommand('tags_multi_add',
+      array(
+        'resource_hrefs' => array($api_array->href),
+        'tags' => $this->_tags
+      )
+    );
+    $command->execute();
+    $command->getResult();
+
+    $result[] = $api_array;
+    $this->log->info(sprintf("Created Array - Name: %s ID: %s", $array->nickname->getVal(), $api_array->id));
+    return $result;
   }
 
   public function launchServers() {
