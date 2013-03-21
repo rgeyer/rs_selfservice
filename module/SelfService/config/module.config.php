@@ -131,7 +131,7 @@ return array(
       'routes' => array(
         'product' => array(
           'options' => array(
-            'route' => 'product add [--name=<name>]',
+            'route' => 'product add [<name>]',
             'defaults' => array(
               'controller' => 'SelfService\Controller\Product',
               'action' => 'consoleadd'
