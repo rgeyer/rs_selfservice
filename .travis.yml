@@ -5,4 +5,6 @@ php:
 before_script:
   - wget --quiet http://getcomposer.org/composer.phar
   - php composer.phar install
+  - mkdir logs
+  - touch logs/application.log
 script: phpunit -c module/SelfService/test/phpunit.xml
