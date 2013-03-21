@@ -270,6 +270,51 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $helper->provisionSecurityGroupRules($security_group);
   }
 
+  public function testCanProvisionSecurityGroupRulesWithIngressGroup() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $responses = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/security_groups_create/response',
+      '1.5/security_group/json/response',
+      '1.5/security_groups_create/response',
+      '1.5/security_group/json/response',
+      '1.5/security_group_rules_create/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$responses);
+    $helper = new ProvisioningHelper(
+      '123',
+      'foo@bar.baz',
+      'password',
+      $log,
+      array(11111 => 'owner')
+    );
+    $security_group = new SecurityGroup();
+    $security_group->cloud_id = new NumberProductMetaInput(11111);
+    $security_group->description = new TextProductMetaInput("desc");
+    $security_group->name = new TextProductMetaInput("foo");
+    $security_group->id = 1;
+
+    $ingress_group = new SecurityGroup();
+    $ingress_group->cloud_id = new NumberProductMetaInput(11111);
+    $ingress_group->description = new TextProductMetaInput("desc");
+    $ingress_group->name = new TextProductMetaInput("ingress");
+    $ingress_group->id = 2;
+
+    $security_group_rule = new SecurityGroupRule();
+    $security_group_rule->ingress_group = $ingress_group;
+    $security_group_rule->ingress_from_port = new NumberProductMetaInput(22);
+    $security_group_rule->ingress_to_port = new NumberProductMetaInput(22);
+    $security_group_rule->ingress_protocol = new TextProductMetaInput("tcp");
+    $security_group->rules = array($security_group_rule);
+
+    $helper->provisionSecurityGroup($security_group);
+    $helper->provisionSecurityGroup($ingress_group);
+    $helper->provisionSecurityGroupRules($security_group);
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($responses), count($requests));
+  }
+
   public function testCanProvisionServer() {
     $log = $this->getMock('Zend\Log\Logger');
     # TODO: This breaks if github.com/rgeyer/rs_guzzle_client mocks change, probably an improvement
@@ -359,8 +404,6 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
 
   public function testCanProvisionServerArray() {
     $log = $this->getMock('Zend\Log\Logger');
-    # TODO: This breaks if github.com/rgeyer/rs_guzzle_client mocks change, probably an improvement
-    # for Guzzle 3 mocks..
     $request_paths = array(
       '1.5/clouds/json/with_different_ids/response',
       '1.5/server_templates/json/response',
@@ -401,8 +444,6 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
 
   public function testProvisionServerArrayImportsTemplateIfMissing() {
     $log = $this->getMock('Zend\Log\Logger');
-    # TODO: This breaks if github.com/rgeyer/rs_guzzle_client mocks change, probably an improvement
-    # for Guzzle 3 mocks..
     $request_paths = array(
       '1.5/clouds/json/with_different_ids/response',
       '1.5/server_templates/json/response',
@@ -412,7 +453,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/server_template/json/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/response',
-      '1.5/servers_create/response',
+      '1.5/server_arrays_create/response',
       '1.5/tags_multi_add/response'
     );
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
@@ -427,13 +468,16 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $server_template_model->nickname = new TextProductMetaInput("foo");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
     $server_template_model->version = new NumberProductMetaInput(5);
-    $server_model = new Server();
-    $server_model->cloud_id = new NumberProductMetaInput(22222);
-    $server_model->count = new NumberProductMetaInput(1);
-    $server_model->nickname = new TextProductMetaInput("DB");
-    $server_model->server_template = $server_template_model;
-    $server_model->security_groups = array();
-    $provisioned_stuff = $helper->provisionServer($server_model, $deployment);
+    $array_model = new ServerArray();
+    $array_model->cloud_id = new NumberProductMetaInput(22222);
+    $array_model->max_count = new NumberProductMetaInput(10);
+    $array_model->min_count = new NumberProductMetaInput(2);
+    $array_model->type = new TextProductMetaInput("alert");
+    $array_model->tag = new TextProductMetaInput("tag");
+    $array_model->nickname = new TextProductMetaInput("DB");
+    $array_model->server_template = $server_template_model;
+    $array_model->security_groups = array();
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
     # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
     $this->assertEquals(1, count($provisioned_stuff));
     $this->assertEquals(count($request_paths), count($this->_guzzletestcase->getMockedRequests()));

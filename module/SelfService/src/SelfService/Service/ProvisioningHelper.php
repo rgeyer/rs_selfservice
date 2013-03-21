@@ -28,6 +28,8 @@ use RGeyer\Guzzle\Rs\RightScaleClient;
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
 use RGeyer\Guzzle\Rs\Model\Mc\Deployment;
 
+use Doctrine\ORM\PersistentCollection;
+
 use SelfService\Entity\Provisionable\Server;
 use SelfService\Entity\Provisionable\ServerArray;
 use SelfService\Entity\Provisionable\SecurityGroup;
@@ -249,10 +251,10 @@ class ProvisioningHelper {
   }
 
   /**
-   * @param \SelfService\Entity\Provisionable\SecurityGroup[] $groups A list of provisionable groups for which you'd like hrefs
+   * @param array|Doctrine\ORM\PersistentCollection of \SelfService\Entity\Provisionable\SecurityGroup[] $groups A list of provisionable groups for which you'd like hrefs
    * @return String[] the href for each provisioned security group
    */
-  protected function _getProvisionedSecurityGroupHrefs(array $groups) {
+  protected function _getProvisionedSecurityGroupHrefs($groups) {
     $secgrps = array();
     foreach ( $groups as $secgrp ) {
       // This is as good as checking Cloud::supportsSecurityGroups because $this->_security_groups only
@@ -288,7 +290,6 @@ class ProvisioningHelper {
     $this->_selectMciAndInstanceType($st, $cloud_id, $mci_href, $instance_type_href);
 
     # TODO: Handle all defaulted things such as datacenters and instance types
-
     $server_secgrps = $this->_getProvisionedSecurityGroupHrefs($server->security_groups);
 
     $this->log->info("About to provision " . $server->count->getVal() . " servers of type " . $server->nickname->getVal());
@@ -376,7 +377,7 @@ class ProvisioningHelper {
 
     $this->_security_groups[$security_group->id] = array(
       'api' => $secGrp,
-      'model' => $security_group // TODO: Probably don't need to store the model?
+      'model' => $security_group
     );
 
     $this->log->info(sprintf("Created Security Group - Name: %s ID: %s", $security_group->name->getVal(), $secGrp->id));
@@ -429,7 +430,7 @@ class ProvisioningHelper {
           $other_api = $ingress_group['api'];
 
           $api->createGroupRule(
-            $other_api->resource_uid,
+            $other_model->name->getVal(),
             $owner,
             $rule->ingress_protocol->getVal(),
             $rule->ingress_from_port->getVal(),
@@ -484,6 +485,7 @@ class ProvisioningHelper {
       # TODO: These params assume an alert type, might want to be smarter or
       # not allow any type besides alert
       'server_array[array_type]' => $array->type->getVal(),
+      'server_array[elasticity_params][alert_specific_params][decision_threshold]' => '51',
       'server_array[elasticity_params][alert_specific_params][voters_tag_predicate]' => $array->tag->getVal(),
       'server_array[elasticity_params][pacing][resize_calm_time]' => '10',
       'server_array[elasticity_params][pacing][resize_up_by]' => '3',

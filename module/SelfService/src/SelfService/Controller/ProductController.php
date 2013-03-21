@@ -268,7 +268,7 @@ class ProductController extends BaseController {
           $product->meta_inputs = array($cloud_metainput, $count_metainput);
           $product->launch_servers = true;
           break;
-        case "3tier":
+        case "php3tier":
           // START Cloud ProductMetaInput
           $cloud_metainput = new CloudProductMetaInput();
           $cloud_metainput->default_value = 1;
@@ -360,29 +360,29 @@ class ProductController extends BaseController {
 
           $idx = 0;
 
-//          $php_app_sg->rules[$idx] = new SecurityGroupRule();
-//          $php_app_sg->rules[$idx]->ingress_group = $php_lb_sg;
-//          $php_app_sg->rules[$idx]->ingress_from_port = new NumberProductMetaInput(8000);
-//          $php_app_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(8000);
-//          $php_app_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
-//
+          $php_app_sg->rules[$idx] = new SecurityGroupRule();
+          $php_app_sg->rules[$idx]->ingress_group = $php_lb_sg;
+          $php_app_sg->rules[$idx]->ingress_from_port = new NumberProductMetaInput(8000);
+          $php_app_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(8000);
+          $php_app_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
+
           $em->persist($php_app_sg);
-//
-//          $idx = 0;
-//
-//          $php_mysql_sg->rules[$idx] = new SecurityGroupRule();
-//          $php_mysql_sg->rules[$idx]->ingress_group = $php_app_sg;
-//          $php_mysql_sg->rules[$idx]->ingress_from_port = new NumberProductMetaInput(3306);
-//          $php_mysql_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(3306);
-//          $php_mysql_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
-//          $idx++;
-//
-//          $php_mysql_sg->rules[$idx] = new SecurityGroupRule();
-//          $php_mysql_sg->rules[$idx]->ingress_group =  $php_mysql_sg;
-//          $php_mysql_sg->rules[$idx]->ingress_from_port = new NumberProductMetaInput(3306);
-//          $php_mysql_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(3306);
-//          $php_mysql_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
-//          $idx++;
+
+          $idx = 0;
+
+          $php_mysql_sg->rules[$idx] = new SecurityGroupRule();
+          $php_mysql_sg->rules[$idx]->ingress_group = $php_app_sg;
+          $php_mysql_sg->rules[$idx]->ingress_from_port = new NumberProductMetaInput(3306);
+          $php_mysql_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(3306);
+          $php_mysql_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
+          $idx++;
+
+          $php_mysql_sg->rules[$idx] = new SecurityGroupRule();
+          $php_mysql_sg->rules[$idx]->ingress_group =  $php_mysql_sg;
+          $php_mysql_sg->rules[$idx]->ingress_from_port = new NumberProductMetaInput(3306);
+          $php_mysql_sg->rules[$idx]->ingress_to_port = new NumberProductMetaInput(3306);
+          $php_mysql_sg->rules[$idx]->ingress_protocol = new TextProductMetaInput('tcp');
+          $idx++;
 
           $em->persist($php_mysql_sg);
           // END Add security group rules
