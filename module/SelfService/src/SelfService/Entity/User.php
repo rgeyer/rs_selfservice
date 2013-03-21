@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="users",indexes={@ORM\index(name="oid_url", columns={"oid_url"})})
+ * @ORM\Table(name="users",indexes={@ORM\Index(name="oid_url", columns={"oid_url"})})
  * @author Ryan J. Geyer <me@ryangeyer.com>
  *
  */
