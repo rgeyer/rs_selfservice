@@ -43,7 +43,7 @@ TODO:
 * Soft deletes for products, provisioned products, perhaps others?
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
 * Handle "cloud not supported" errors when provisioning servers or arrays
-  * Select default Datacenter when not specified
+  * Select default Datacenter when not specified and supported/required by the cloud
 * Tokenize all paths
 * Accept (meta, not dashboard) inputs for products.  Customized form during provisioning.  Also self referencing variables
   * Multiple Choice (dropdown)

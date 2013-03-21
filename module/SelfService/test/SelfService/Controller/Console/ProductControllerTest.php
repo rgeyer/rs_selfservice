@@ -30,9 +30,6 @@ class ProductControllerTest extends AbstractConsoleControllerTestCase {
   public function testConsoleAddActionCanBeAccessed() {
     $this->dispatch('product add');
 
-    print "This is just to see what the response is that's failing exclusively in travis-ci\n";
-    print strval($this->getResponse()->getContent());
-
     $this->assertActionName('consoleadd');
     $this->assertControllerName('selfservice\controller\product');
     $this->assertResponseStatusCode(0);
