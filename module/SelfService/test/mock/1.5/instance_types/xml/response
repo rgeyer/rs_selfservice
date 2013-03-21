@@ -1,0 +1,271 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Thu, 21 Mar 2013 19:41:51 GMT
+Content-Type: application/vnd.rightscale.instance_type+xml;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 746
+Content-Length: 8215
+X-Request-Uuid: 7faba50abe5f47d0b7248d5be5afe271
+Set-Cookie:
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<instance_types>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>c1.medium</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>1.7 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345U7NRRI3I0UM" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>c1.medium</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>c1.xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>7 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345D94P25AT18U5" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>c1.xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>cc1.4xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>23 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/FLPP21R6O0P6R" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>cc1.4xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>cc2.8xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>60.5 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/BMA1JLMD2RCEO" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>cc2.8xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>cg1.4xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>22 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345DHS3DVOJ9IS6" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>cg1.4xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>hi1.4xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>60.5 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345OM7P0QU51LV2" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>hi1.4xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m1.large</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>7.5 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/OUQRFL1LE28V" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m1.large</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m1.medium</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>3.75 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/F3R1QHSGLNSBF" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m1.medium</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m1.small</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>1.7 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/CQQV62T389R32" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m1.small</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m1.xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>15 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/B1C29CHMENG3F" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m1.xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m2.2xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>34.2 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/FVIV59N0DFM4G" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m2.2xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m2.4xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>68.4 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345RJCRLA6NT6IE" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m2.4xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m2.xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>17.1 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345JE7JU4GE39HA" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m2.xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m3.2xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>30 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345C6AF0FT2L6S9" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m3.2xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>m3.xlarge</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>15 GB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345GVBDECE59HJ" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>m3.xlarge</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+  <instance_type>
+    <actions></actions>
+    <cpu_count></cpu_count>
+    <local_disks></local_disks>
+    <cpu_architecture></cpu_architecture>
+    <resource_uid>t1.micro</resource_uid>
+    <cpu_speed></cpu_speed>
+    <memory>613 MB</memory>
+    <description></description>
+    <links>
+      <link href="/api/clouds/12345/instance_types/12345OPP9B9RLTDK5" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>t1.micro</name>
+    <local_disk_size></local_disk_size>
+  </instance_type>
+</instance_types>

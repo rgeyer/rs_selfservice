@@ -1,0 +1,6 @@
+GET /api/clouds/12345/instance_types.json HTTP/1.1
+Host: us-3.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.24.0 PHP/5.3.17 openssl/OpenSSL/12345.9.8r
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNolkMtugkAARf9l1pLMi8eQdKECrQpWa6SFTTPMMHFUQAqIieHfhXR5k3vO4jwBBy7oGoOAGZANcJ_jyP-ASzEizjADrQAuIhZxGGXQmgEtx78pJeWK5AbDpjIQyrGRCUQNhAkiDGYS2Wr0tfk_yyBGEzvqQfBQ5W4BNfWv17T1qdLcTqNt7yWH8FL37MdbpfyO5t0hNPcFfpflqhERhV5vbw7roinyeWlE60Iwvu_CgpKPUwOLM8Re_HUji6AMOtsyiblLLkv_u7cCv9JKq-i62d4rxCpR4TWRq6Q8OdtFooX8fVyONd3Fmh_lLauczziufX5eRvu3KcljSsKFqLqyBa6FmWMPwwtMblzW; _session_id=deadbeef0badf00dfeedfacec0ffee24
+

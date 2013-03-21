@@ -1,5 +1,5 @@
 {
-    "hash": "0b3e6b7882f436814fec39251a1af584",
+    "hash": "19ca17e8e6c96faa7d6b68e437bd0f5b",
     "packages": [
         {
             "name": "doctrine/common",
@@ -531,12 +531,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rgeyer/rs_guzzle_client.git",
-                "reference": "66bcadbe4bd1abc6db531180e78a09da289cbeff"
+                "reference": "ba4ab958a93a09fa4238165e49a1e0d55bf2dc5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rgeyer/rs_guzzle_client/zipball/66bcadbe4bd1abc6db531180e78a09da289cbeff",
-                "reference": "66bcadbe4bd1abc6db531180e78a09da289cbeff",
+                "url": "https://api.github.com/repos/rgeyer/rs_guzzle_client/zipball/ba4ab958a93a09fa4238165e49a1e0d55bf2dc5a",
+                "reference": "ba4ab958a93a09fa4238165e49a1e0d55bf2dc5a",
                 "shasum": ""
             },
             "require": {
@@ -570,7 +570,7 @@
                 "api",
                 "client"
             ],
-            "time": "2013-03-15 01:34:14"
+            "time": "2013-03-21 21:31:18"
         },
         {
             "name": "smarty/smarty",
@@ -1226,65 +1226,6 @@
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
             "time": "2013-01-27 16:49:19"
-        },
-        {
-            "name": "zendframework/zend-developer-tools",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "341015914744a58501cd5e2cc53ee4fcb055348e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/341015914744a58501cd5e2cc53ee4fcb055348e",
-                "reference": "341015914744a58501cd5e2cc53ee4fcb055348e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "zendframework/zend-eventmanager": "2.*",
-                "zendframework/zend-mvc": "2.*",
-                "zendframework/zend-servicemanager": "2.*",
-                "zendframework/zend-stdlib": "2.*",
-                "zendframework/zend-version": "2.*"
-            },
-            "suggest": {
-                "bjyoungblood/bjy-profiler": "Version: dev-master, allows the usage of the (Zend) Db collector."
-            },
-            "type": "zf-module",
-            "autoload": {
-                "psr-0": {
-                    "ZendDeveloperTools": "src/"
-                },
-                "classmap": [
-                    "./Module.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Evan Coury",
-                    "email": "me@evancoury.com",
-                    "homepage": "http://blog.evan.pro/"
-                },
-                {
-                    "name": "Eric Boh",
-                    "email": "cossish@gmail.com"
-                }
-            ],
-            "description": "Module for developer and debug tools for working with the ZF2 MVC layer.",
-            "homepage": "https://github.com/zendframework/ZendDeveloperTools",
-            "keywords": [
-                "debug",
-                "developer",
-                "module",
-                "zf2"
-            ],
-            "time": "2013-03-06 22:15:40"
         }
     ],
     "aliases": [
@@ -1293,8 +1234,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "fp/lightopenid": 20,
-        "rgeyer/guzzle-rs": 20,
-        "zendframework/zend-developer-tools": 20
+        "rgeyer/guzzle-rs": 20
     },
     "platform": {
         "php": ">=5.3.3"

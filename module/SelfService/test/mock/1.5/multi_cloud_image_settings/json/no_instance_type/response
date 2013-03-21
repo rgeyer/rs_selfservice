@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Fri, 26 Oct 2012 00:31:51 GMT
+Content-Type: application/vnd.rightscale.multi_cloud_image_setting+json;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 1070
+Content-Length: 2819
+X-Request-Uuid: b1ad0ec600f34562a85381ebc3015d66
+Set-Cookie: _session_id=f0764c8786ad6c85db46deef7374dd07; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+[{"links":[{"href":"/api/multi_cloud_images/12345/settings/12345","rel":"self"},{"href":"/api/clouds/12345/images/12345CVBV0MIFCULK","rel":"image"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/multi_cloud_images/12345","rel":"multi_cloud_image"}],"actions":[]},{"links":[{"href":"/api/multi_cloud_images/12345/settings/12345","rel":"self"},{"href":"/api/clouds/12345/images/12345JOOKSDNCA2F6","rel":"image"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/multi_cloud_images/12345","rel":"multi_cloud_image"}],"actions":[]},{"links":[{"href":"/api/multi_cloud_images/12345/settings/12345","rel":"self"},{"href":"/api/clouds/12345/images/EGNGGH83NVUOH","rel":"image"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/multi_cloud_images/12345","rel":"multi_cloud_image"}],"actions":[]},{"links":[{"href":"/api/multi_cloud_images/12345/settings/12345","rel":"self"},{"href":"/api/clouds/12345/images/AUQT719HEHU7M","rel":"image"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/multi_cloud_images/12345","rel":"multi_cloud_image"}],"actions":[]},{"links":[{"href":"/api/multi_cloud_images/12345/settings/12345","rel":"self"},{"href":"/api/clouds/12345/images/12345JOOKSDNCA2F6","rel":"image"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/multi_cloud_images/12345","rel":"multi_cloud_image"}],"actions":[]},{"links":[{"href":"/api/multi_cloud_images/12345/settings/12345","rel":"self"},{"href":"/api/clouds/12345/images/EGNGGH83NVUOH","rel":"image"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/multi_cloud_images/12345","rel":"multi_cloud_image"}],"actions":[]},{"links":[{"href":"/api/multi_cloud_images/12345/settings/12345","rel":"self"},{"href":"/api/clouds/12345/images/AUQT719HEHU7M","rel":"image"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/multi_cloud_images/12345","rel":"multi_cloud_image"}],"actions":[]},{"links":[{"href":"/api/multi_cloud_images/12345/settings/12345","rel":"self"},{"href":"/api/clouds/12345/images/12345CVBV0MIFCULK","rel":"image"},{"href":"/api/clouds/12345","rel":"cloud"},{"href":"/api/multi_cloud_images/12345","rel":"multi_cloud_image"}],"actions":[]}]

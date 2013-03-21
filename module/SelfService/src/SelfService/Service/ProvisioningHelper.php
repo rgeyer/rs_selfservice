@@ -246,6 +246,10 @@ class ProvisioningHelper {
     }
 
     if(!$instance_type_href) {
+      $cloud = $this->client->newModel('Cloud');
+      $cloud->find_by_id($cloud_id);
+      $instance_type = array_pop($cloud->instance_types());
+      $instance_type_href = $instance_type->href;
       # TODO: Maybe allow some metadata for a "default" for private clouds.
     }
   }
@@ -307,6 +311,7 @@ class ProvisioningHelper {
       $params['server[deployment_href]'] = $deployment->href;
       $params['server[instance][server_template_href]'] = $st->href;
       $params['server[instance][cloud_href]'] = $this->_clouds[$cloud_id]->href;
+      $params['server[instance][instance_type_href]'] = $instance_type_href;
       if(count($server_secgrps) > 0) {
         $params['server[instance][security_group_hrefs]'] = $server_secgrps;
       }
@@ -496,6 +501,7 @@ class ProvisioningHelper {
       'server_array[instance][cloud_href]' => $this->_clouds[$cloud_id]->href,
       'server_array[instance][server_template_href]' => $st->href,
       'server_array[instance][multi_cloud_image_href]' => $mci_href,
+      'server_array[instance][instance_type_href]' => $instance_type_href,
     );
     if(count($secgrps) > 0) {
       $params['server_array[instance][security_group_hrefs]'] = $secgrps;

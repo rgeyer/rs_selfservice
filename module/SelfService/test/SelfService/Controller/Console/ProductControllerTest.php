@@ -28,7 +28,7 @@ class ProductControllerTest extends AbstractConsoleControllerTestCase {
   }
 
   public function testConsoleAddActionCanBeAccessed() {
-    $this->dispatch('product add');
+    $this->dispatch('product add baselinux');
 
     $this->assertActionName('consoleadd');
     $this->assertControllerName('selfservice\controller\product');

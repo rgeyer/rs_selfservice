@@ -1,0 +1,29 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Wed, 11 Apr 2012 22:59:20 GMT
+Content-Type: application/vnd.rightscale.cloud+xml;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 93
+Content-Length: 814
+X-Request-Uuid: c9ff1139e003450d80d3cadc5a0240c0
+Set-Cookie: _session_id=f709bd1a06c3c6f2d2794ecd3238ae62; path=/; Secure; HttpOnly
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<cloud>
+  <links>
+    <link rel="self" href="/api/clouds/12345"/>
+    <link rel="datacenters" href="/api/clouds/12345/datacenters"/>
+    <link rel="instance_types" href="/api/clouds/12345/instance_types"/>
+    <link rel="security_groups" href="/api/clouds/12345/security_groups"/>
+    <link rel="instances" href="/api/clouds/12345/instances"/>
+    <link rel="images" href="/api/clouds/12345/images"/>
+    <link rel="volume_attachments" href="/api/clouds/12345/volume_attachments"/>
+    <link rel="volume_snapshots" href="/api/clouds/12345/volume_snapshots"/>
+    <link rel="volume_types" href="/api/clouds/12345/volume_types"/>
+    <link rel="volumes" href="/api/clouds/12345/volumes"/>
+  </links>
+  <description>Cloud.com Private Cloud</description>
+  <name>MyCloud - Cloud.com</name>
+</cloud>
