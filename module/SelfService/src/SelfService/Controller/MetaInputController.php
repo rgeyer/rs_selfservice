@@ -40,6 +40,7 @@ class MetaInputController extends BaseController {
       $thisclass->name = $itype->name;
       $retval[] = $thisclass;
     }
+
     return new JsonModel(array('instance_types' => $retval, 'instance_type_ids' => $this->params()->fromPost('instance_type_ids')));
   }
 

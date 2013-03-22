@@ -38,6 +38,11 @@ return array(
       )
     )
   ),
+  'caching' => array(
+    'servers' => array(<% @memcached_servers.each do |memcached_server| %>
+      array('host' => '<%= memcached_server.split(':').first %>', 'port' => <%= memcached_server.split(':').last %>)
+    <% end %>),
+  ),
   'rsss' => array(
     'hostname' => '<%= @hostname %>',
     'cloud_credentials' => array(

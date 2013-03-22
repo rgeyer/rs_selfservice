@@ -12,6 +12,7 @@ use Zend\Log\Logger;
 use Zend\Log\Writer\Stream;
 use SelfService\Service\ProvisioningHelper;
 use SelfService\Service\CleanupHelper;
+use SelfService\Guzzle\Common\Cache\Zf2CacheAdapter;
 
 return array(
   'router' => array(
@@ -158,19 +159,43 @@ return array(
   'service_manager' => array(
     'factories' => array(
       'translator' => 'Zend\I18n\Translator\TranslatorServiceFactory',
+      'RightScaleAPIClient.cache_adapter' => function($serviceManager) {
+        $config = $serviceManager->get('Configuration');
+        $caching = $config['caching'];
+
+        $zend_cache_adapter = new \Zend\Cache\Storage\Adapter\Memcached($caching);
+        $guzzle_cache_adapter = new Zf2CacheAdapter($zend_cache_adapter);
+        return $guzzle_cache_adapter;
+      },
       'RightScaleAPIClient' => function($serviceManager) {
         $config = $serviceManager->get('Configuration');
         $rscreds = $config['rsss']['cloud_credentials']['rightscale'];
         # TODO: Client factory is redudant, eventually should be deprecated
         \RGeyer\Guzzle\Rs\Common\ClientFactory::setCredentials($rscreds['account_id'], $rscreds['email'], $rscreds['password']);
-        return \RGeyer\Guzzle\Rs\RightScaleClient::factory(
+
+        # TODO: Caching GET and HEAD, probably need to work out a sane expiration policy
+        # and exclude certain requests
+        $cache_adapter = $serviceManager->get('RightScaleAPIClient.cache_adapter');
+        $cache_plugin = new \Guzzle\Http\Plugin\CachePlugin($cache_adapter);
+
+        # TODO: Don't really get a lot of performance benefit because the cache isn't even
+        # checked for a response until after the authentication dance has happened, which
+        # is the most time consuming part anyway!
+        $client = \RGeyer\Guzzle\Rs\RightScaleClient::factory(
           array(
             'acct_num' => $rscreds['account_id'],
             'email' => $rscreds['email'],
             'password' => $rscreds['password'],
-            'version' => '1.5'
+            'version' => '1.5',
+            'params.cache.override_ttl' => 3600,
+            'params.cache.revalidate' => 'skip',
+            'params.cache.key_filter' => 'header=Cookie;'
           )
         );
+
+        $client->getEventDispatcher()->addSubscriber($cache_plugin);
+
+        return $client;
       },
       'rs_provisioning_helper' => function ($serviceManager) {
         $config = $serviceManager->get('Configuration');
