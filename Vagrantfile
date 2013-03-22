@@ -1,70 +1,46 @@
 require 'berkshelf/vagrant'
+require 'rs_vagrant_shim'
 
 Vagrant::Config.run do |config|
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
 
-  # The path to the Berksfile to use with Vagrant Berkshelf
-  # config.berkshelf.berksfile_path = "./Berksfile"
+  config.vm.define :centos do |default_config|
+    default_config.berkshelf.berksfile_path = "Berksfile"
 
-  # An array of symbols representing groups of cookbook described in the Vagrantfile
-  # to skip installing and copying to Vagrant's shelf.
-  # config.berkshelf.only = []
+    default_config.vm.host_name = "centos"
 
-  # An array of symbols representing groups of cookbook described in the Vagrantfile
-  # to skip installing and copying to Vagrant's shelf.
-  # config.berkshelf.except = []
+    default_config.vm.box = "ri_centos6.3_v5.8.8"
+    default_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_centos6.3_v5.8.8_vagrant.box"
 
-  config.vm.host_name = "zf2_skeleton-berkshelf"
+    default_config.vm.network :hostonly, "33.33.33.9"
 
-  config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal"
-  config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box"
+    default_config.ssh.max_tries = 40
+    default_config.ssh.timeout   = 120
 
-  # Boot with a GUI so you can see the screen. (Default is headless)
-  # config.vm.boot_mode = :gui
-
-  # Assign this VM to a host-only network IP, allowing you to access it
-  # via the IP. Host-only networks can talk to the host machine as well as
-  # any other machines on the same network, but cannot be accessed (through this
-  # network interface) by any external networks.
-  config.vm.network :hostonly, "33.33.33.10"
-
-  # Assign this VM to a bridged network, allowing you to connect directly to a
-  # network using the host's network device. This makes the VM appear as another
-  # physical device on your network.
-
-  # config.vm.network :bridged
-
-  # Forward a port from the guest to the host, which allows for outside
-  # computers to access the VM, whereas host only networking does not.
-  # config.vm.forward_port 80, 8080
-
-  # Share an additional folder to the guest VM. The first argument is
-  # an identifier, the second is the path on the guest to mount the
-  # folder, and the third is the path on the host to the actual folder.
-  # config.vm.share_folder "v-data", "/vagrant_data", "../data"
-
-  config.ssh.max_tries = 40
-  config.ssh.timeout   = 120
-
-  config.vm.provision :chef_solo do |chef|
-    chef.json = {
-      :mysql => {
-        :server_root_password => 'password',
-        :server_debian_password => 'debpass',
-        :server_repl_password => 'replpass'
-      },
-      :zf2_vagrant_aio => {
-        :db => {
-          :schema => "zf2_skeleton"
-        }
-      }
-    }
-
-    chef.run_list = [
-      "recipe[yum::epel]",
-      "recipe[zf2_vagrant_aio::default]"
-    ]
+    default_config.vm.provision Vagrant::RsVagrantShim::Provisioners::RsVagrantShim do |chef|
+      chef.run_list_dir = "runlists/centos"
+      chef.shim_dir = "rs_vagrant_shim/centos"
+      #chef.data_bags_path = "~/Code/Chef/me/ryangeyer_com_org/data_bags"
+    end
   end
+
+  config.vm.define :ubuntu do |ubuntu_config|
+    ubuntu_config.berkshelf.berksfile_path = "Berksfile"
+
+    ubuntu_config.vm.host_name = "ubuntu"
+
+    ubuntu_config.vm.box = "ri_ubuntu12.04_v5.8.8_vagrant"
+    ubuntu_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_ubuntu12.04_v5.8.8_vagrant.box"
+
+    ubuntu_config.vm.network :hostonly, "33.33.33.10"
+
+    ubuntu_config.ssh.max_tries = 40
+    ubuntu_config.ssh.timeout   = 120
+
+    ubuntu_config.vm.provision Vagrant::RsVagrantShim::Provisioners::RsVagrantShim do |chef|
+      chef.run_list_dir = "runlists/ubuntu"
+      chef.shim_dir = "rs_vagrant_shim/ubuntu"
+      #chef.data_bags_path = "~/Code/Chef/me/ryangeyer_com_org/data_bags"
+    end
+  end
+  
 end
