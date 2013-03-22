@@ -28,7 +28,6 @@ use Zend\Mvc\MvcEvent;
 use Zend\Session\Container;
 use Zend\Console\Request as ConsoleRequest;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Authentication\AuthenticationService;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class GoogleAuthPlugin extends AbstractPlugin {
@@ -51,7 +50,7 @@ class GoogleAuthPlugin extends AbstractPlugin {
 		}
 		# TODO: Look up the user in the DB. If they're not there, still force a login.
 		$redirect_to_auth = false;
-		$auth = new AuthenticationService();
+		$auth = $serviceManager->get('AuthenticationService');
 		if(!$auth->hasIdentity()) {
 			$redirect_to_auth = true;
 		} else {

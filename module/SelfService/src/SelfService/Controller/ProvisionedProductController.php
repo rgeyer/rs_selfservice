@@ -32,7 +32,6 @@ use SelfService\Entity\ProvisionedSshKey;
 use SelfService\Entity\ProvisionedServer;
 use SelfService\Entity\ProvisionedProduct;
 use SelfService\Entity\ProvisionedDeployment;
-use Zend\Authentication\AuthenticationService;
 use SelfService\Entity\ProvisionedSecurityGroup;
 
 /**

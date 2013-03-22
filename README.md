@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/rgeyer/rs_selfservice.png)](https://travis-ci.org/rgeyer/rs_selfservice)
+Travis-CI Build Status [![Build Status](https://travis-ci.org/rgeyer/rs_selfservice.png)](https://travis-ci.org/rgeyer/rs_selfservice)
 
 # Installation instructions
 
@@ -53,6 +53,7 @@ TODO:
   * As a named credential
   * As a named credential (only in absence of a same named credential)
 * Shared sessions - Horizontal Scalability
+  * Sorta implemented, the authentication bits are stored in memcached, but other session data still stored in "sessions"
 * Cache commonly read data (user profiles/oauth uris, etc)
   * Frequently query the RS API and cache status for provisioned product show screen(s)
 * Allow launching of servers once deployment is created

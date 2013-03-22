@@ -10,8 +10,9 @@ namespace SelfService;
 
 use Zend\Log\Logger;
 use Zend\Log\Writer\Stream;
-use SelfService\Service\ProvisioningHelper;
 use SelfService\Service\CleanupHelper;
+use SelfService\Service\ProvisioningHelper;
+use Zend\Authentication\AuthenticationService;
 use SelfService\Guzzle\Common\Cache\Zf2CacheAdapter;
 
 return array(
@@ -159,11 +160,14 @@ return array(
   'service_manager' => array(
     'factories' => array(
       'translator' => 'Zend\I18n\Translator\TranslatorServiceFactory',
-      'RightScaleAPIClient.cache_adapter' => function($serviceManager) {
+      'cache_storage_adapter' => function($serviceManager) {
         $config = $serviceManager->get('Configuration');
         $caching = $config['caching'];
-
-        $zend_cache_adapter = new \Zend\Cache\Storage\Adapter\Memcached($caching);
+        return new \Zend\Cache\Storage\Adapter\Memcached($caching);
+      },
+      'RightScaleAPIClient.cache_adapter' => function($serviceManager) {
+        $zend_cache_adapter = $serviceManager->get('cache_storage_adapter');
+        $zend_cache_adapter->getOptions()->setNamespace("rsapi");
         $guzzle_cache_adapter = new Zf2CacheAdapter($zend_cache_adapter);
         return $guzzle_cache_adapter;
       },
@@ -229,6 +233,15 @@ return array(
         #$writer->setFormatter($formatter);
         $logger->addWriter($writer);
         return $logger;
+      },
+      'AuthenticationService' => function($serviceManager) {
+        $storage_adapter = $serviceManager->get('cache_storage_adapter');
+        $storage_adapter->getOptions()->setNamespace('auth');
+        $cache_save_handler = new \Zend\Session\SaveHandler\Cache($storage_adapter);
+        $manager = new \Zend\Session\SessionManager();
+        $manager->setSaveHandler($cache_save_handler);
+        $storage = new \Zend\Authentication\Storage\Session("auth", null, $manager);
+        return new AuthenticationService($storage);
       },
     ),
   ),

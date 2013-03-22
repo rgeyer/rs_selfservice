@@ -27,7 +27,6 @@ namespace SelfService\Controller;
 use Zend\Session\Container;
 use Zend\View\Model\JsonModel;
 use Zend\Authentication\Result;
-use Zend\Authentication\AuthenticationService;
 use SelfService\Zend\Authentication\Adapter\GoogleAuthAdapter;
 
 /**
@@ -51,7 +50,7 @@ class LoginController extends BaseController {
     } elseif ($authAdapter->getOidMode() == 'cancel') {
       $response['message'] = 'You cancelled authenticating with Google, refresh if you\'d like to try again';
     } else {
-      $authSvc = new AuthenticationService;
+      $authSvc = $this->getServiceLocator()->get('AuthenticationService');
       $result = $authSvc->authenticate($authAdapter);
       if ($result->getCode() == Result::SUCCESS) {
         #$sess = new Container('auth');
@@ -65,7 +64,7 @@ class LoginController extends BaseController {
   }
 
   public function logoutAction() {
-    $authSvc = new AuthenticationService();
+    $authSvc = $this->getServiceLocator()->get('AuthenticationService');
     $authSvc->clearIdentity();
     $this->redirect()->toRoute('login');
   }

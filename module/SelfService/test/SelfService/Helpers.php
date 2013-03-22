@@ -4,7 +4,6 @@ namespace SelfServiceTest;
 
 use SelfService\Entity\User;
 use Zend\Authentication\Result;
-use Zend\Authentication\AuthenticationService;
 use Zend\ServiceManager\ServiceManager;
 
 class Helpers {
@@ -49,7 +48,7 @@ class Helpers {
     $adapter->expects($test->once())
       ->method('authenticate')
       ->will($test->returnValue(new Result(Result::SUCCESS, $user)));
-    $auth = new AuthenticationService();
+    $auth = $sm->get('AuthenticationService');
     $auth->authenticate($adapter);
   }
 

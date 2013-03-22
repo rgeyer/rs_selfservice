@@ -48,7 +48,6 @@ use SelfService\Entity\ProvisionedSshKey;
 use SelfService\Entity\ProvisionedServer;
 use SelfService\Entity\ProvisionedProduct;
 use SelfService\Entity\ProvisionedDeployment;
-use Zend\Authentication\AuthenticationService;
 use SelfService\Entity\ProvisionedArray;
 use SelfService\Entity\ProvisionedSecurityGroup;
 
@@ -82,7 +81,7 @@ class ProductController extends BaseController {
       $prov_helper = $this->getServiceLocator()->get('rs_provisioning_helper');
       $product = $em->getRepository('SelfService\Entity\Provisionable\Product')->find($product_id);
       if(count($product) == 1) {
-        $authSvc = new AuthenticationService();
+        $authSvc = $this->getServiceLocator()->get('AuthenticationService');
 
         $product->mergeMetaInputs($this->params()->fromPost());
         $prov_prod = new ProvisionedProduct();
