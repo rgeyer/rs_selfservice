@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (c) 2012-2013 Ryan J. Geyer <me@ryangeyer.com>
+ Copyright (c) 2013 Ryan J. Geyer <me@ryangeyer.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -25,64 +25,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Entity\Provisionable\MetaInputs;
 
 use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity
- * @ORM\Table(name="product_meta_inputs")
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({
- * 	"cloud" = "CloudProductMetaInput",
- * 	"text" = "TextProductMetaInput",
- * 	"number" = "NumberProductMetaInput",
- *  "instance_type" = "InstanceTypeProductMetaInput"
- * }) 
+ * @ORM\Entity @ORM\Table(name="instance_type_product_meta_inputs")
  * @author Ryan J. Geyer <me@ryangeyer.com>
  *
  */
-class ProductMetaInputBase {
-	
-	private $_val;
-		
-	/**
-	 * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
-	 * @var integer
-	 */
-	public $id;
-	
-	/**
-	 * @ORM\Column(type="string", nullable=true)
-	 * @var string
-	 */
-	public $input_name;
-	
-	/**
-	 * @ORM\Column(type="string", nullable=true)
-	 * @var string
-	 */
-	public $display_name;
-	
-	/**
-	 * @ORM\Column(type="string", nullable=true)
-	 * @var string
-	 */
-	public $description;
+class InstanceTypeProductMetaInput extends ProductMetaInputBase {
 
-	/**
-	 * @ORM\Column(type="string")
-	 * @var string
-	 */
-	public $default_value;
-	
-	public function getVal() {
-		if($this->_val == null) {
-			return $this->default_value;
-		} else {
-			return $this->_val;
-		}
-	}
-	
-	public function setVal($val) {
-		$this->_val = $val;
-	}
+  /**
+   * @ORM\OneToOne(targetEntity="CloudProductMetaInput", fetch="EAGER", cascade={"persist"})
+   * @var CloudProductMetaInput
+   */
+  public $cloud;
+
 }

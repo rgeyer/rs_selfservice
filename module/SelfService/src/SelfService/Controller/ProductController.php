@@ -36,6 +36,7 @@ use SelfService\Zend\Log\Writer\Collection as CollectionWriter;
 use SelfService\Entity\Provisionable\MetaInputs\TextProductMetaInput;
 use SelfService\Entity\Provisionable\MetaInputs\CloudProductMetaInput;
 use SelfService\Entity\Provisionable\MetaInputs\NumberProductMetaInput;
+use SelfService\Entity\Provisionable\MetaInputs\InstanceTypeProductMetaInput;
 
 
 use DateTime;
@@ -92,7 +93,7 @@ class ProductController extends BaseController {
         $em->persist($prov_prod);
         $em->flush();
 
-        $response['url'] = $this->url()->fromRoute('admin/provisionedproducts', array('action' => 'show', 'id' => $prov_prod->id));
+        $response['url'] = $this->url()->fromRoute('admin/provisionedproducts').'/provisionedproducts/show'.$prov_prod->id;
         $prov_helper->setTags(array('rsss:provisioned_product_id='.$prov_prod->id));
         try {
           # Provision and record deployment
@@ -218,10 +219,21 @@ class ProductController extends BaseController {
           $cloud_metainput->default_value = 1;
           $cloud_metainput->input_name = 'cloud';
           $cloud_metainput->display_name = 'Cloud';
-          $cloud_metainput->description = 'The target cloud for the 3-Tier';
+          $cloud_metainput->description = 'The target cloud for the servers';
 
           $em->persist($cloud_metainput);
           // END Cloud ProductMetaInput
+
+          // START InstanceType ProductMetaInput
+          $instance_metainput = new InstanceTypeProductMetaInput();
+          $instance_metainput->cloud = $cloud_metainput;
+          $instance_metainput->default_value = '/api/clouds/1/instance_types/foo';
+          $instance_metainput->input_name = 'instance_type';
+          $instance_metainput->display_name = 'Instance Type';
+          $instance_metainput->description = 'The instance type for the servers';
+
+          $em->persist($instance_metainput);
+          // END InstanceType ProductMetaInput
 
           // START default security group
           $securityGroup = new SecurityGroup();
@@ -265,7 +277,7 @@ class ProductController extends BaseController {
           $product->icon_filename = "redhat.png";
           $product->security_groups = array($securityGroup);
           $product->servers = array($server);
-          $product->meta_inputs = array($cloud_metainput, $count_metainput);
+          $product->meta_inputs = array($cloud_metainput, $instance_metainput, $count_metainput);
           $product->launch_servers = true;
           break;
         case "php3tier":

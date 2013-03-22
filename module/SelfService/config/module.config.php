@@ -94,6 +94,20 @@ return array(
           )
         )
       ),
+      'metainput' => array(
+        'type' => 'Segment',
+        'options' => array(
+          'route' => '/metainput[/:action][/:id]',
+          'constraints' => array(
+              'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+              'id' => '[0-9]+'
+          ),
+          'defaults' => array(
+            '__NAMESPACE__' => 'SelfService\Controller',
+            'controller'    => 'MetaInput',
+          )
+        )
+      ),
       // The following is a route to simplify getting started creating
       // new controllers and actions without needing to create a new
       // module. Simply drop new controllers in, and you can access them
@@ -208,7 +222,8 @@ return array(
       'SelfService\Controller\Index' => 'SelfService\Controller\IndexController',
       'SelfService\Controller\Login' => 'SelfService\Controller\LoginController',
       'SelfService\Controller\ProvisionedProduct' => 'SelfService\Controller\ProvisionedProductController',
-      'SelfService\Controller\Product' => 'SelfService\Controller\ProductController'
+      'SelfService\Controller\Product' => 'SelfService\Controller\ProductController',
+      'SelfService\Controller\MetaInput' => 'SelfService\Controller\MetaInputController'
     ),
   ),
   'view_manager' => array(

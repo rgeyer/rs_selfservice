@@ -32,8 +32,8 @@ $(function() {
   }); 
   
   $( "#dialog-modal" ).dialog({
-    height: 180,
-    width: 350,
+    height: 750,
+    width: 500,
     modal: true,
     autoOpen: false
   });
@@ -78,7 +78,7 @@ $(function() {
   showHideControls();
   
   $('#product-dialog').dialog({
-	    height: 180,
+	    height: 750,
 	    width: 500,
 	    modal: true,
 	    autoOpen: false
@@ -93,7 +93,7 @@ $(function() {
   });
   
   $('#finished-dialog').dialog({
-      height: 180,
+      height: 350,
       width: 500,
       modal: true,
       autoOpen: false
