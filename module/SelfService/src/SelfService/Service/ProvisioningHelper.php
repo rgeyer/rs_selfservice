@@ -294,7 +294,7 @@ class ProvisioningHelper {
     $instance_type_href = null;
     $this->_selectMciAndInstanceType($st, $cloud_id, $mci_href, $instance_type_href);
 
-    # TODO: Handle all defaulted things such as datacenters and instance types
+    # TODO: Handle all defaulted things such as datacenters
     $server_secgrps = $this->_getProvisionedSecurityGroupHrefs($server->security_groups);
 
     $this->log->info("About to provision " . $server->count->getVal() . " servers of type " . $server->nickname->getVal());
@@ -312,7 +312,7 @@ class ProvisioningHelper {
       $params['server[deployment_href]'] = $deployment->href;
       $params['server[instance][server_template_href]'] = $st->href;
       $params['server[instance][cloud_href]'] = $this->_clouds[$cloud_id]->href;
-      $params['server[instance][instance_type_href]'] = $instance_type_href;
+      $params['server[instance][instance_type_href]'] = $server->instance_type != null ? $server->instance_type->getVal() : $instance_type_href;
       if(count($server_secgrps) > 0) {
         $params['server[instance][security_group_hrefs]'] = $server_secgrps;
       }

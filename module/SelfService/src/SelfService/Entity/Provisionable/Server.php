@@ -64,12 +64,8 @@ class Server extends AlertSubjectBase {
 	public $cloud_id;
 	
 	/**
-	 * This is a string, rather than an integer because the API 1.5
-	 * docs suggest that a hexidecimal number is possible, and
-	 * because AWS instance types are just strings (I.E. t1.micro, m1.small)
-	 * 
-	 * @ORM\ManyToOne(targetEntity="SelfService\Entity\Provisionable\MetaInputs\TextProductMetaInput", fetch="EAGER", cascade={"all"})
-	 * @var TextProductMetaInput
+	 * @ORM\ManyToOne(targetEntity="SelfService\Entity\Provisionable\MetaInputs\InstanceTypeProductMetaInput", fetch="EAGER", cascade={"all"})
+	 * @var InstanceTypeProductMetaInput
 	 */
 	public $instance_type;
 	

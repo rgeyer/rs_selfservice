@@ -92,7 +92,7 @@ class ProductController extends BaseController {
         $em->persist($prov_prod);
         $em->flush();
 
-        $response['url'] = $this->url()->fromRoute('admin/provisionedproducts').'/provisionedproducts/show'.$prov_prod->id;
+        $response['url'] = $this->url()->fromRoute('admin/provisionedproducts').'/provisionedproducts/show/'.$prov_prod->id;
         $prov_helper->setTags(array('rsss:provisioned_product_id='.$prov_prod->id));
         try {
           # Provision and record deployment
@@ -226,7 +226,7 @@ class ProductController extends BaseController {
           // START InstanceType ProductMetaInput
           $instance_metainput = new InstanceTypeProductMetaInput();
           $instance_metainput->cloud = $cloud_metainput;
-          $instance_metainput->default_value = '/api/clouds/1/instance_types/foo';
+          $instance_metainput->default_value = 'default';
           $instance_metainput->input_name = 'instance_type';
           $instance_metainput->display_name = 'Instance Type';
           $instance_metainput->description = 'The instance type for the servers';
@@ -267,7 +267,7 @@ class ProductController extends BaseController {
           $server = new ProvisionableServer();
           $server->cloud_id = $cloud_metainput;
           $server->count = $count_metainput;
-          $server->instance_type = new TextProductMetaInput('m1.small');
+          $server->instance_type = $instance_metainput;
           $server->security_groups = array($securityGroup);
           $server->server_template = $serverTemplate;
           $server->nickname = new TextProductMetaInput('Base ST');
@@ -407,7 +407,7 @@ class ProductController extends BaseController {
           $app_server = new ProvisionableServer();
           $app_server->cloud_id = $cloud_metainput;
           $app_server->count = new NumberProductMetaInput(1);
-          $app_server->instance_type = new TextProductMetaInput('m1.medium');
+          #$app_server->instance_type = new TextProductMetaInput('m1.medium');
           $app_server->security_groups = array($php_default_sg, $php_app_sg);
           $app_server->server_template = $app_server_st;
           $app_server->nickname = new TextProductMetaInput("App1");
@@ -424,7 +424,7 @@ class ProductController extends BaseController {
           $php_db = new ProvisionableServer();
           $php_db->cloud_id = $cloud_metainput;
           $php_db->count = new NumberProductMetaInput(2);
-          $php_db->instance_type = new TextProductMetaInput("m1.large");
+          #$php_db->instance_type = new TextProductMetaInput("m1.large");
           $php_db->security_groups = array($php_default_sg, $php_mysql_sg);
           $php_db->server_template = $php_db_st;
           // This is really just a prefix, it'll get an index numeral appended to it.
@@ -442,7 +442,7 @@ class ProductController extends BaseController {
           $php_lb = new ProvisionableServer();
           $php_lb->cloud_id = $cloud_metainput;
           $php_lb->count = new NumberProductMetaInput(2);
-          $php_lb->instance_type = new TextProductMetaInput("m1.small");
+          #$php_lb->instance_type = new TextProductMetaInput("m1.small");
           $php_lb->security_groups = array($php_default_sg, $php_lb_sg);
           $php_lb->server_template = $php_lb_st;
           // This is really just a prefix, it'll get an index numeral appended to it.
@@ -458,7 +458,7 @@ class ProductController extends BaseController {
           $php_server_ary->max_count = new NumberProductMetaInput(10);
           $php_server_ary->type = new TextProductMetaInput("alert");
           $php_server_ary->tag = $text_metainput;
-          $php_server_ary->instance_type = new TextProductMetaInput('m1.medium');
+          #$php_server_ary->instance_type = new TextProductMetaInput('m1.medium');
           $php_server_ary->security_groups = array($php_default_sg, $php_app_sg);
           $php_server_ary->server_template = $app_server_st;
           $php_server_ary->nickname = new TextProductMetaInput("PHPArray");

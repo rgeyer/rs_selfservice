@@ -68,6 +68,7 @@ $(function() {
 	});
 
   $('.cloud_meta').change(function(evt) {
+    $("#product_{$id}_submit").attr('disabled', 'disabled');
     instance_type_selects = $(this).data('instance_type_selects');
     instance_type_select_ids = [];
     cloud_id = $(this).val();
@@ -81,6 +82,7 @@ $(function() {
           $("#"+instance_type_id).append("<option value='"+instance_type.href+"'>"+instance_type.name+"</option>");
         });
       });
+      $("#product_{$id}_submit").removeAttr('disabled');
     });
   });
 
