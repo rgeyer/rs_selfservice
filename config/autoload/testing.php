@@ -31,6 +31,9 @@ return array(
       )
     )
   ),
+  'caching' => array(
+    'servers' => array(array('host' => 'localhost', 'port' => 11211)),
+  ),
   'rsss' => array(
     'hostname' => '33.33.33.10',
     'cloud_credentials' => array(

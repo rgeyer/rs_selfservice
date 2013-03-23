@@ -29,6 +29,12 @@ class GoogleAuthPluginTest extends AbstractHttpControllerTestCase {
   }
 
   public function testRedirectsToLoginWhenNotAuthenticated() {
+    $storage_adapter = $this->getMockForAbstractClass('Zend\Cache\Storage\Adapter\AbstractAdapter');
+
+    $sm = $this->getApplicationServiceLocator();
+    $sm->setAllowOverride(true);
+    $sm->setService('cache_storage_adapter', $storage_adapter);
+
     $this->dispatch('/');
 
     $this->assertRedirect();
@@ -44,6 +50,12 @@ class GoogleAuthPluginTest extends AbstractHttpControllerTestCase {
   }
 
   public function testDoesNotRedirectWhenAuthenticated() {
+    $storage_adapter = $this->getMockForAbstractClass('Zend\Cache\Storage\Adapter\AbstractAdapter');
+
+    $sm = $this->getApplicationServiceLocator();
+    $sm->setAllowOverride(true);
+    $sm->setService('cache_storage_adapter', $storage_adapter);
+
     \SelfServiceTest\Helpers::authenticateAsAdmin($this->getApplicationServiceLocator());
     $this->dispatch('/');
 
