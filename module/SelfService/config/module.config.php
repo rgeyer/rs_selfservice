@@ -1,12 +1,5 @@
 <?php
 namespace SelfService;
-/**
- * Zend Framework (http://framework.zend.com/)
- *
- * @link      http://github.com/zendframework/ZendSkeletonApplication for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- */
 
 use Zend\Log\Logger;
 use Zend\Log\Writer\Stream;
@@ -197,6 +190,7 @@ return array(
       'rs_provisioning_helper' => function ($serviceManager) {
         $config = $serviceManager->get('Configuration');
         $owners = $config['rsss']['cloud_credentials']['owners'];
+        # TODO: Further refactor this so all it needs is the serviceManager
         return new ProvisioningHelper(
           $serviceManager,
           $serviceManager->get('logger'),
@@ -206,6 +200,7 @@ return array(
       'rs_cleanup_helper' => function ($serviceManager) {
         $config = $serviceManager->get('Configuration');
         $rscreds = $config['rsss']['cloud_credentials']['rightscale'];
+        # TODO: Refactor this to be like rs_provisioning_helper
         return new CleanupHelper(
           $rscreds['account_id'],
           $rscreds['email'],
