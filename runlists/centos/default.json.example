@@ -1,0 +1,89 @@
+{
+  "cloud": { "provider": "vagrant", "public_ips": [], "private_ips": [] },
+  "rightscale": { "instance_uuid": "uuid-default" },
+  "sys": {
+    "swap_size": "0.5",
+    "swap_file": "/mnt/ephemeral/swapfile"
+  },
+  "block_device": {
+    "devices": {
+      "device1": {
+        "backup": {
+          "lineage": "lineage"
+        }
+      }
+    }
+  },
+  "db": {
+    "admin": {
+      "user": "user",
+      "password": "password"
+    },
+    "application": {
+      "user": "user",
+      "password": "password"
+    },
+    "dns": {
+      "master": {
+        "fqdn": "localhost"
+      }
+    }
+  },
+  "repo": {
+    "default": {
+      "repository": "git://github.com/rgeyer/rs_selfservice.git",
+      "branch": "master",
+      "destination": "/home/webapps/rsss"
+    }
+  },
+  "app_php": {
+    "modules_list": ["php53-pdo","php53u-mysql","php53u-pecl-memcached"]
+  },
+  "web_apache": {
+    "application_name": "rsss"
+  },
+  "rsss": {
+    "install_dir": "/home/webapps/rsss",
+    "rightscale_email": "foo@bar.baz",
+    "rightscale_password": "password",
+    "rightscale_acct_num": "12345",
+    "fqdn": "33.33.33.9",
+    "owners": [
+      "1:9999-9999-9999",
+      "2:9999-9999-9999",
+      "3:9999-9999-9999",
+      "4:9999-9999-9999",
+      "5:9999-9999-9999",
+      "6:9999-9999-9999",
+      "7:9999-9999-9999",
+      "8:9999-9999-9999"]
+  },
+  "system": {
+    "short_hostname": "vg",
+    "domain_name": "wordpressaio"
+  },
+  "run_list": [
+    "recipe[rs_vagrant_shim]",
+    "recipe[system::hostname]",
+    "recipe[logging::default]",
+    "recipe[sys_firewall::default]",
+    "recipe[sys_ntp::default]",
+    "recipe[rightscale::default]",
+    "recipe[rightscale::install_tools]",
+    "recipe[block_device::setup_ephemeral]",
+    "recipe[sys::setup_swap]",
+    "recipe[db_mysql::setup_server_5_5]",
+    "recipe[db::install_server]",
+    "recipe[repo::default]",
+    "recipe[web_apache::default]",
+    "recipe[app_php::setup_server_5_3]",
+    "recipe[app::install_server]",
+    "recipe[lamp::default]",
+    "recipe[app::do_update_code]",
+    "recipe[app::setup_vhost]",
+    "recipe[web_apache::setup_monitoring]",
+    "recipe[db::setup_monitoring]",
+    "recipe[memcached::install_server]",
+    "recipe[rsss::setup_rsss]"
+  ]
+}
