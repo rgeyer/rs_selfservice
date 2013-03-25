@@ -23,3 +23,4 @@ vendor
 *.depl.properties
 data
 rs_vagrant_shim
+runlists/centos/default.json
