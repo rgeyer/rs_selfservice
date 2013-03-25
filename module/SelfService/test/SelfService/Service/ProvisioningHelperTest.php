@@ -29,6 +29,9 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $this->_guzzletestcase->setMockBasePath(__DIR__.'/../../mock');
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"), '1.5/login');
 		ClientFactory::getClient("1.5")->post('/api/session')->send();
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPIClient', ClientFactory::getClient("1.5"));
+    $this->getApplicationServiceLocator()->setService('cache_storage_adapter', new \Zend\Cache\Storage\Adapter\Memory());
   }
 
   public function testCanProvisionDeployment() {
@@ -40,7 +43,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
         '1.5/tags_multi_add/response'
       )
     );
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', new \stdClass(), array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), new \stdClass(), array());
     $helper->setTags(array('foo', 'bar', 'baz'));
     $deployment = $helper->provisionDeployment(array('deployment[description]' => 'description', 'deployment[name]' => 'name'));
     $requests = $this->_guzzletestcase->getMockedRequests();
@@ -60,7 +63,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
         '1.5/security_group/json/response'
       )
     );
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $security_group = new SecurityGroup();
     $security_group->cloud_id = new NumberProductMetaInput(11111);
     $security_group->description = new TextProductMetaInput("desc");
@@ -81,7 +84,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
         '1.5/server_templates/json/response'
       )
     );
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $security_group = new SecurityGroup();
     $security_group->cloud_id = new NumberProductMetaInput(44444);
     $security_group->description = new TextProductMetaInput("desc");
@@ -101,9 +104,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       )
     );
     $helper = new ProvisioningHelper(
-      '123',
-      'foo@bar.baz',
-      'password',
+      $this->getApplicationServiceLocator(),
       $log,
       array(11111 => 'owner')
     );
@@ -139,9 +140,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       )
     );
     $helper = new ProvisioningHelper(
-      '123',
-      'foo@bar.baz',
-      'password',
+      $this->getApplicationServiceLocator(),
       $log,
       array(11111 => 'owner')
     );
@@ -181,9 +180,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       )
     );
     $helper = new ProvisioningHelper(
-      '123',
-      'foo@bar.baz',
-      'password',
+      $this->getApplicationServiceLocator(),
       $log,
       array()
     );
@@ -226,9 +223,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       )
     );
     $helper = new ProvisioningHelper(
-      '123',
-      'foo@bar.baz',
-      'password',
+      $this->getApplicationServiceLocator(),
       $log,
       array(11111 => 'owner')
     );
@@ -264,7 +259,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
         '1.5/server_templates/json/response'
       )
     );
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $security_group = new SecurityGroup();
     $security_group->cloud_id = new NumberProductMetaInput(44444);
     $helper->provisionSecurityGroupRules($security_group);
@@ -283,9 +278,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     );
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$responses);
     $helper = new ProvisioningHelper(
-      '123',
-      'foo@bar.baz',
-      'password',
+      $this->getApplicationServiceLocator(),
       $log,
       array(11111 => 'owner')
     );
@@ -330,7 +323,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response'
     );
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $clouds = $helper->getClouds();
     # TODO: Hacky, hacky, hacky...
     $clouds[11111]->href = '/api/clouds/12345';
@@ -365,13 +358,14 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response',
       '1.5/publications_import/response',
       '1.5/server_template/json/response',
+      '1.5/server_templates/json/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/response',
       '1.5/servers_create/response',
       '1.5/tags_multi_add/response'
     );
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $clouds = $helper->getClouds();
     # TODO: Hacky, hacky, hacky...
     $clouds[22222]->href = '/api/clouds/12345';
@@ -405,13 +399,12 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/no_instance_type/response',
-      '1.5/cloud/json/response',
       '1.5/instance_types/json/response',
       '1.5/servers_create/response',
       '1.5/tags_multi_add/response'
     );
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $clouds = $helper->getClouds();
     # TODO: Hacky, hacky, hacky...
     $clouds[11111]->href = '/api/clouds/12345';
@@ -428,13 +421,17 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $server_model->nickname = new TextProductMetaInput("DB");
     $server_model->server_template = $server_template_model;
     $server_model->security_groups = array();
+
+    $cache_adapter = $this->getApplicationServiceLocator()->get('cache_storage_adapter');
+    $this->assertFalse($cache_adapter->hasItem('instance_types_11111'));
+
     $provisioned_stuff = $helper->provisionServer($server_model, $deployment);
     # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
     $this->assertEquals(1, count($provisioned_stuff));
     # Make sure the helper made all of the expected API calls
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains('instance_type_href%5D=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[8]));
+    $this->assertContains('instance_type_href%5D=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[7]));
   }
 
   public function testProvisionServerThrowsErrorIfTemplateNotImported() {
@@ -458,7 +455,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response'
     );
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $clouds = $helper->getClouds();
     # TODO: Hacky, hacky, hacky...
     $clouds[11111]->href = '/api/clouds/12345';
@@ -494,13 +491,14 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response',
       '1.5/publications_import/response',
       '1.5/server_template/json/response',
+      '1.5/server_templates/json/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/response',
       '1.5/server_arrays_create/response',
       '1.5/tags_multi_add/response'
     );
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $clouds = $helper->getClouds();
     # TODO: Hacky, hacky, hacky...
     $clouds[22222]->href = '/api/clouds/12345';
@@ -535,13 +533,12 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/no_instance_type/response',
-      '1.5/cloud/json/response',
       '1.5/instance_types/json/response',
       '1.5/server_arrays_create/response',
       '1.5/tags_multi_add/response'
     );
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
-    $helper = new ProvisioningHelper('123', 'foo@bar.baz', 'password', $log, array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $clouds = $helper->getClouds();
     # TODO: Hacky, hacky, hacky...
     $clouds[11111]->href = '/api/clouds/12345';
@@ -567,7 +564,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     # Make sure the helper made all of the expected API calls
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains('instance_type_href%5D=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[8]));
+    $this->assertContains('instance_type_href%5D=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[7]));
   }
 
   public function testProvisionServerArrayThrowsErrorIfTemplateNotImported() {

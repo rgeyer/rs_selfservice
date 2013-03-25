@@ -1,0 +1,6 @@
+GET /api/clouds/12345/datacenters.json HTTP/1.1
+Host: us-3.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.24.0 PHP/5.3.17 openssl/OpenSSL/12345.9.8r
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNo1kMtygjAARf8la5nJA0PCTBdSHxS1IlQ0bJwA4VGrgoBKHf-9uOjyzpxzFvcBJDBBW2sEDEBSA_PRD3UBpo4RYc8BaGJgIkIJh5AZcACKpOd1SHmkpNI4pomGkMIaQ_pQQ5ignowJVLDvNerfZfDl9nkg_Wtr14K8h-nKvs1xl88T2yCG2F0mvjc6HneSTSe1hUTU-b9puQ-cTWftN5U3boPF5iQLvGS6xw7laZf-hNvteJRFh8-AJs5BDGO-ziVycUirsGmU5Uaz0rU_XEt8TVG-GF7PdCHEPl8fvUz6BaF6t5q331HrcKe6z7I1CfP0xsfLoMPw7XXJ_XWJjONze2qASTFnxvP5BwU6XJw=; _session_id=deadbeef0badf00dfeedfacec0ffee24
+

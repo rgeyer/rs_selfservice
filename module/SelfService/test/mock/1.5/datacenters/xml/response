@@ -1,0 +1,65 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Thu, 21 Mar 2013 21:21:16 GMT
+Content-Type: application/vnd.rightscale.datacenter+xml;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 648
+Content-Length: 1758
+X-Request-Uuid: 095b511a70294e449a15191a2e2609f2
+Set-Cookie:
+Cache-Control: private, max-age=0, must-revalidate
+
+<?xml version="1.0" encoding="UTF-8"?>
+<datacenters>
+  <datacenter>
+    <actions></actions>
+    <resource_uid>us-east-1a</resource_uid>
+    <description>us-east-1a zone in us-east-1 region</description>
+    <links>
+      <link href="/api/clouds/12345/datacenters/DBHME7BQV63MI" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>us-east-1a</name>
+  </datacenter>
+  <datacenter>
+    <actions></actions>
+    <resource_uid>us-east-1b</resource_uid>
+    <description>us-east-1b zone in us-east-1 region</description>
+    <links>
+      <link href="/api/clouds/12345/datacenters/12345F8AT46B08LN" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>us-east-1b</name>
+  </datacenter>
+  <datacenter>
+    <actions></actions>
+    <resource_uid>us-east-1c</resource_uid>
+    <description>us-east-1c zone in us-east-1 region</description>
+    <links>
+      <link href="/api/clouds/12345/datacenters/12345BFHL6M8K8FHH" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>us-east-1c</name>
+  </datacenter>
+  <datacenter>
+    <actions></actions>
+    <resource_uid>us-east-1d</resource_uid>
+    <description>us-east-1d zone in us-east-1 region</description>
+    <links>
+      <link href="/api/clouds/12345/datacenters/A7V425724OQDM" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>us-east-1d</name>
+  </datacenter>
+  <datacenter>
+    <actions></actions>
+    <resource_uid>us-east-1e</resource_uid>
+    <description>us-east-1e zone in us-east-1 region</description>
+    <links>
+      <link href="/api/clouds/12345/datacenters/BM5CQVB5DLC67" rel="self"/>
+      <link href="/api/clouds/12345" rel="cloud"/>
+    </links>
+    <name>us-east-1e</name>
+  </datacenter>
+</datacenters>

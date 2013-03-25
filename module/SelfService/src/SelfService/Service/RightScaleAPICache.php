@@ -43,7 +43,7 @@ class RightScaleAPICache {
   protected $service_manager;
 
   /**
-   * @var CacheAdapterInterface
+   * @var \Zend\Cache\Storage\Adapter\AbstractAdapter
    */
   protected $adapter;
 
@@ -55,15 +55,8 @@ class RightScaleAPICache {
   public function getClouds() {
     $clouds = $this->adapter->getItem('clouds');
     if(!isset($clouds)) {
-      $cloud = $this->client->newModel('Cloud');
-      $clouds = $cloud->index();
-      $cache_clouds = array();
-      foreach($clouds as $idx => $cloud) {
-        $cache_clouds[$idx] = $cloud->getParameters();
-      }
-      $this->adapter->setItem('clouds',$cache_clouds);
+      $clouds = $this->updateClouds(false);
     } else {
-      $retval = array();
       foreach($clouds as $idx => $cloud) {
         $clouds[$idx] = $this->client->newModel('Cloud', (object)$cloud);
       }
@@ -71,23 +64,132 @@ class RightScaleAPICache {
     return $clouds;
   }
 
+  public function removeClouds() {
+    $this->adapter->removeItem('clouds');
+  }
+
+  /**
+   * @param bool $assumeExists A boolean indicating if the clouds key already exists in the cache.  This prevents (re)checking when this method is called to set cache the value for the first time, such as from getClouds()
+   */
+  public function updateClouds($assumeExists = true) {
+    $cloud = $this->client->newModel('Cloud');
+    $clouds = $cloud->index();
+    $cache_clouds = array();
+    foreach($clouds as $idx => $cloud) {
+      $cache_clouds[$idx] = $cloud->getParameters();
+    }
+    if($assumeExists) {
+      $this->adapter->replaceItem('clouds',$cache_clouds);
+    } else if ($this->adapter->hasItem('clouds')) {
+      $this->adapter->replaceItem('clouds',$cache_clouds);
+    } else {
+      $this->adapter->setItem('clouds',$cache_clouds);
+    }
+    return $clouds;
+  }
+
   public function getInstanceTypes($cloud_id) {
     $instance_types = $this->adapter->getItem('instance_types_'.$cloud_id);
     if(!isset($instance_types)) {
-      $instance_type = $this->client->newModel('InstanceType');
-      $instance_type->cloud_id = $cloud_id;
-      $instance_types = $instance_type->index();
-      $cache_instance_types = array();
-      foreach($instance_types as $idx => $instance_type) {
-        $cache_instance_types[$idx] = $instance_type->getParameters();
-      }
-      $this->adapter->setItem('instance_types_'.$cloud_id,$cache_instance_types);
+      $instance_types = $this->updateInstanceTypes($cloud_id, false);
     } else {
       foreach($instance_types as $idx => $instance_type) {
         $instance_types[$idx] = $this->client->newModel('InstanceType', (object)$instance_type);
       }
     }
     return $instance_types;
+  }
+
+  public function removeInstanceTypes($cloud_id) {
+    $this->adapter->removeItem("instance_types_".$cloud_id);
+  }
+
+  public function updateInstanceTypes($cloud_id, $assumeExists = true) {
+    $instance_type = $this->client->newModel('InstanceType');
+    $instance_type->cloud_id = $cloud_id;
+    $instance_types = $instance_type->index();
+    $cache_instance_types = array();
+    foreach($instance_types as $idx => $instance_type) {
+      $cache_instance_types[$idx] = $instance_type->getParameters();
+    }
+    if($assumeExists) {
+      $this->adapter->replaceItem('instance_types_'.$cloud_id,$cache_instance_types);
+    } else if ($this->adapter->hasItem('instance_types_'.$cloud_id)) {
+      $this->adapter->replaceItem('instance_types_'.$cloud_id,$cache_instance_types);
+    } else {
+      $this->adapter->setItem('instance_types_'.$cloud_id,$cache_instance_types);
+    }
+    return $instance_types;
+  }
+
+  public function getDatacenters($cloud_id) {
+    $dcs = $this->adapter->getItem('datacenters_'.$cloud_id);
+    if(!isset($dcs)) {
+      $dcs = $this->updateDatacenters($cloud_id, false);
+    } else {
+      foreach($dcs as $idx => $dc) {
+        $dcs[$idx] = $this->client->newModel('DataCenter', (object)$dc);
+      }
+    }
+    return $dcs;
+  }
+
+  public function removeDatacenters($cloud_id) {
+    $this->adapter->removeItem("datacenters_".$cloud_id);
+  }
+
+  public function updateDatacenters($cloud_id, $assumeExists = true) {
+    $dc = $this->client->newModel('DataCenter');
+    $dc->cloud_id = $cloud_id;
+    $dcs = $dc->index();
+    $cache_dcs = array();
+    foreach($dcs as $idx => $dc) {
+      $cache_dcs[$idx] = $dc->getParameters();
+    }
+    if($assumeExists) {
+      $this->adapter->replaceItem('datacenters_'.$cloud_id,$cache_dcs);
+    } else if ($this->adapter->hasItem('datacenters_'.$cloud_id)) {
+      $this->adapter->replaceItem('datacenters_'.$cloud_id,$cache_dcs);
+    } else {
+      $this->adapter->setItem('datacenters_'.$cloud_id,$cache_dcs);
+    }
+    return $dcs;
+  }
+
+  public function getServerTemplates() {
+    $sts = $this->adapter->getItem('server_templates');
+    if(!isset($sts)) {
+      $sts = $this->updateServerTemplates(false);
+    } else {
+      foreach($sts as $idx => $st) {
+        $sts[$idx] = $this->client->newModel('ServerTemplate', (object)$st);
+      }
+    }
+    return $sts;
+  }
+
+  public function removeServerTemplates() {
+    $this->adapter->removeItem('server_templates');
+  }
+
+  /**
+   * @param bool $assumeExists A boolean indicating if the server_templates key already exists in the cache.  This prevents (re)checking when this method is called to set cache the value for the first time, such as from getServerTemplates()
+   */
+  public function updateServerTemplates($assumeExists = true) {
+    $st = $this->client->newModel('ServerTemplate');
+    $sts = $st->index();
+    $cache_sts = array();
+    foreach($sts as $idx => $st) {
+      $cache_sts[$idx] = $st->getParameters();
+    }
+    if($assumeExists) {
+      $this->adapter->replaceItem('server_templates',$cache_sts);
+    } else if ($this->adapter->hasItem('server_templates')) {
+      $this->adapter->replaceItem('server_templates',$cache_sts);
+    } else {
+      $this->adapter->setItem('server_templates',$cache_sts);
+    }
+    return $sts;
   }
 
 }

@@ -42,9 +42,14 @@ class ProvisioningHelper {
   /**
    * A RightScale 1.5 API client.  This is public to allow mocking for unit testing. Likely
    * won't want to much with this much
-   * @var RGeyer\Guzzle\Rs\RightScaleClient
+   * @var \RGeyer\Guzzle\Rs\RightScaleClient
    */
   public $client;
+
+  /**
+   * @var \SelfService\Service\RightScaleAPICache
+   */
+  public $api_cache;
 
   /**
    * @var int The current timestamp, used for appending to the names of provisioned resources
@@ -52,7 +57,7 @@ class ProvisioningHelper {
   protected $_now_ts;
 
   /**
-   * @var Zend_Log
+   * @var \Zend\Log\Logger
    */
   protected $log;
 
@@ -72,9 +77,9 @@ class ProvisioningHelper {
   protected $_security_groups = array();
 
   /**
-   * An associative array (hash) of clouds as returned by RGeyer\Guzzle\Rs\Model\Cloud::indexAsHash
+   * An associative array (hash) of clouds as returned by \RGeyer\Guzzle\Rs\Model\Cloud::indexAsHash
    *
-   * @var array An associative array (hash) of clouds as returned by RGeyer\Guzzle\Rs\Model\Cloud::indexAsHash
+   * @var array An associative array (hash) of clouds as returned by \RGeyer\Guzzle\Rs\Model\Cloud::indexAsHash
    */
   protected $_clouds;
 
@@ -92,19 +97,19 @@ class ProvisioningHelper {
   protected $_owners;
 
   /**
-   * @var RGeyer\Guzzle\Rs\Model\Ec2\ServerTemplate[] The response of the RightScale API Client 1.0 servertemplate index
+   * @var \RGeyer\Guzzle\Rs\Model\Ec2\ServerTemplate[] The response of the RightScale API Client 1.0 servertemplate index
    */
   protected $_server_templates;
 
   /**
 	 * An array of SshKey API models provisioned for a provision product request
 	 *
-	 * @var RGeyer\Guzzle\Rs\Model\Ec2\SshKey[]
+	 * @var \RGeyer\Guzzle\Rs\Model\Ec2\SshKey[]
 	 */
   protected $_ssh_keys = array();
 
   /**
-   * @var RGeyer\Guzzle\Rs\Model\AbstractServer[] The complete list of servers provisioned by this helper
+   * @var \RGeyer\Guzzle\Rs\Model\AbstractServer[] The complete list of servers provisioned by this helper
    */
   protected $_servers;
 
@@ -113,6 +118,9 @@ class ProvisioningHelper {
    */
   protected $_tags = array();
 
+  /**
+   * @var string The RightScale Account ID
+   */
   protected $_rs_acct;
 
   /**
@@ -122,17 +130,27 @@ class ProvisioningHelper {
     $this->_tags = $tags;
   }
 
-  public function __construct($rs_account, $rs_email, $rs_password, $log, $owners = array()) {
-    $this->_rs_acct = $rs_account;
+  public function __construct($sm, $log, $owners = array()) {
+    $config = $sm->get('Configuration');
+    $this->_rs_acct = $config['rsss']['cloud_credentials']['rightscale']['account_id'];
     $this->_now_ts = time();
     $this->log = $log;
-    ClientFactory::setCredentials($rs_account, $rs_email, $rs_password);
-    $this->client = ClientFactory::getClient('1.5');
+    $this->client = $sm->get('RightScaleAPIClient');
+    $this->api_cache = $sm->get('RightScaleAPICache');
 
-    $this->_clouds = $this->client->newModel('Cloud')->indexAsHash();
+    # TODO: This is a direct copy/paste from \RGeyer\Guzzle\Rs\Model\Mc\Cloud
+    # Should refactor this somehow, or have the APICache store/fetch something
+    # in the hash format.
+    $clouds = $this->api_cache->getClouds();
+    $hash = array();
+		foreach($clouds as $cloud) {
+			$hash[$cloud->id] = $cloud;
+		}
+
+    $this->_clouds = $hash;
     $this->_owners = $owners;
 
-    $this->_server_templates = $this->client->newModel('ServerTemplate')->index();
+    $this->_server_templates = $this->api_cache->getServerTemplates();
   }
 
   /**
@@ -197,7 +215,7 @@ class ProvisioningHelper {
       $mc_href = (string)$command->getResponse()->getHeader('Location');
       $st = $this->client->newModel('ServerTemplate');
       $st->find_by_href($mc_href);
-      $this->_server_templates[] = $st;
+      $this->_server_templates = $this->api_cache->updateServerTemplates();
     }
 
     if (!$st) {
@@ -246,9 +264,7 @@ class ProvisioningHelper {
     }
 
     if(!$instance_type_href) {
-      $cloud = $this->client->newModel('Cloud');
-      $cloud->find_by_id($cloud_id);
-      $instance_types = $cloud->instance_types();
+      $instance_types = $this->api_cache->getInstanceTypes($cloud_id);
       $instance_type = array_pop($instance_types);
       $instance_type_href = $instance_type->href;
       # TODO: Maybe allow some metadata for a "default" for private clouds.

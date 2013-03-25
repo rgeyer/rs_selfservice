@@ -56,10 +56,11 @@ TODO:
   * Sorta implemented, the authentication bits are stored in memcached, but other session data still stored in "sessions"
 * Cache commonly read data (user profiles/oauth uris, etc)
   * Implemented caching for all RS API GET and HEAD calls, but should create a service which smartly (as in can be invalidated when new records are imported etc) caches
-    * Clouds
-    * Instance Types
-    * DataCenters
-    * ServerTemplates
+    * Clouds (Done, could use an "as index" option)
+    * Instance Types (Done)
+    * DataCenters (Done)
+    * ServerTemplates (Done)
+    * MultiCloudImages & Settings?
   * Frequently query the RS API and cache status for provisioned product show screen(s)
   * Create a cache controller to show;
     * Stats

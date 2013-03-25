@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Server: nginx/1.0.14
+Date: Thu, 21 Mar 2013 21:21:14 GMT
+Content-Type: application/vnd.rightscale.datacenter+json;type=collection;charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-Runtime: 254
+Content-Length: 1141
+X-Request-Uuid: 48321be9c2ec4a7c924e0efbcc0e8795
+Set-Cookie:
+Cache-Control: private, max-age=0, must-revalidate
+
+[{"actions":[],"resource_uid":"us-east-1a","description":"us-east-1a zone in us-east-1 region","links":[{"href":"/api/clouds/12345/datacenters/DBHME7BQV63MI","rel":"self"},{"href":"/api/clouds/12345","rel":"cloud"}],"name":"us-east-1a"},{"actions":[],"resource_uid":"us-east-1b","description":"us-east-1b zone in us-east-1 region","links":[{"href":"/api/clouds/12345/datacenters/12345F8AT46B08LN","rel":"self"},{"href":"/api/clouds/12345","rel":"cloud"}],"name":"us-east-1b"},{"actions":[],"resource_uid":"us-east-1c","description":"us-east-1c zone in us-east-1 region","links":[{"href":"/api/clouds/12345/datacenters/12345BFHL6M8K8FHH","rel":"self"},{"href":"/api/clouds/12345","rel":"cloud"}],"name":"us-east-1c"},{"actions":[],"resource_uid":"us-east-1d","description":"us-east-1d zone in us-east-1 region","links":[{"href":"/api/clouds/12345/datacenters/A7V425724OQDM","rel":"self"},{"href":"/api/clouds/12345","rel":"cloud"}],"name":"us-east-1d"},{"actions":[],"resource_uid":"us-east-1e","description":"us-east-1e zone in us-east-1 region","links":[{"href":"/api/clouds/12345/datacenters/BM5CQVB5DLC67","rel":"self"},{"href":"/api/clouds/12345","rel":"cloud"}],"name":"us-east-1e"}]

@@ -196,12 +196,9 @@ return array(
       },
       'rs_provisioning_helper' => function ($serviceManager) {
         $config = $serviceManager->get('Configuration');
-        $rscreds = $config['rsss']['cloud_credentials']['rightscale'];
         $owners = $config['rsss']['cloud_credentials']['owners'];
         return new ProvisioningHelper(
-          $rscreds['account_id'],
-          $rscreds['email'],
-          $rscreds['password'],
+          $serviceManager,
           $serviceManager->get('logger'),
           $owners
         );

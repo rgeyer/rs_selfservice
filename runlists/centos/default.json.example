@@ -33,7 +33,7 @@
     "default": {
       "repository": "git://github.com/rgeyer/rs_selfservice.git",
       "branch": "master",
-      "destination": "/home/webapps/rsss"
+      "destination": "/home/webapps"
     }
   },
   "app_php": {
@@ -48,6 +48,7 @@
     "rightscale_password": "password",
     "rightscale_acct_num": "12345",
     "fqdn": "33.33.33.9",
+    "products": ["baselinux","php3tier"],
     "owners": [
       "1:9999-9999-9999",
       "2:9999-9999-9999",
