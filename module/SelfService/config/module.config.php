@@ -177,11 +177,6 @@ return array(
         # TODO: Client factory is redudant, eventually should be deprecated
         \RGeyer\Guzzle\Rs\Common\ClientFactory::setCredentials($rscreds['account_id'], $rscreds['email'], $rscreds['password']);
 
-        # TODO: Caching GET and HEAD, probably need to work out a sane expiration policy
-        # and exclude certain requests
-        $cache_adapter = $serviceManager->get('RightScaleAPIClient.cache_adapter');
-        $cache_plugin = new \Guzzle\Http\Plugin\CachePlugin($cache_adapter);
-
         # TODO: Don't really get a lot of performance benefit because the cache isn't even
         # checked for a response until after the authentication dance has happened, which
         # is the most time consuming part anyway!
@@ -190,16 +185,14 @@ return array(
             'acct_num' => $rscreds['account_id'],
             'email' => $rscreds['email'],
             'password' => $rscreds['password'],
-            'version' => '1.5',
-            'params.cache.override_ttl' => 3600,
-            'params.cache.revalidate' => 'skip',
-            'params.cache.key_filter' => 'header=Cookie;'
+            'version' => '1.5'
           )
         );
 
-        $client->getEventDispatcher()->addSubscriber($cache_plugin);
-
         return $client;
+      },
+      'RightScaleAPICache' => function($serviceManager) {
+        return new \SelfService\Service\RightScaleAPICache($serviceManager);
       },
       'rs_provisioning_helper' => function ($serviceManager) {
         $config = $serviceManager->get('Configuration');

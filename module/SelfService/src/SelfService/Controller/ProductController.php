@@ -59,13 +59,12 @@ use SelfService\Entity\ProvisionedSecurityGroup;
 class ProductController extends BaseController {
 
   public function rendermetaformAction() {
-    $client = $this->getServiceLocator()->get('RightScaleAPIClient');
+    $client = $this->getServiceLocator()->get('RightScaleAPICache');
     $id = $this->params('id');
     $product = $this->getEntityManager()->getRepository('SelfService\Entity\Provisionable\Product')->find($id);
-    $cloud_obj = $client->newModel('Cloud');
     $clouds = array();
 
-    foreach($cloud_obj->index() as $cloud) {
+    foreach($client->getClouds() as $cloud) {
       $clouds[$cloud->name] = $cloud->id;
     }
 

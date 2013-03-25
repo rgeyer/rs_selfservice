@@ -72,20 +72,20 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "2.3.2",
+            "version": "2.3.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/doctrine/dbal",
-                "reference": "2.3.2"
+                "url": "https://github.com/doctrine/dbal.git",
+                "reference": "2.3.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/doctrine/dbal/archive/2.3.2.zip",
-                "reference": "2.3.2",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/2.3.3",
+                "reference": "2.3.3",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": "2.3.*",
+                "doctrine/common": ">=2.3.0,<2.5-dev",
                 "php": ">=5.3.2"
             },
             "type": "library",
@@ -131,7 +131,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2013-01-07 20:03:43"
+            "time": "2013-03-24 19:16:29"
         },
         {
             "name": "doctrine/doctrine-module",
@@ -299,16 +299,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "2.3.2",
+            "version": "2.3.3",
             "source": {
                 "type": "git",
-                "url": "git://github.com/doctrine/doctrine2.git",
-                "reference": "2.3.2"
+                "url": "https://github.com/doctrine/doctrine2.git",
+                "reference": "2.3.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/doctrine/doctrine2/archive/2.3.2.zip",
-                "reference": "2.3.2",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/2.3.3",
+                "reference": "2.3.3",
                 "shasum": ""
             },
             "require": {
@@ -365,7 +365,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-01-07 20:05:04"
+            "time": "2013-03-24 20:43:58"
         },
         {
             "name": "fp/lightopenid",
@@ -531,12 +531,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rgeyer/rs_guzzle_client.git",
-                "reference": "50a406b6d716c8a666d5847f98f625db712adfa4"
+                "reference": "9b73736575cf76d9c4b8875464cd1900a32157d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rgeyer/rs_guzzle_client/zipball/50a406b6d716c8a666d5847f98f625db712adfa4",
-                "reference": "50a406b6d716c8a666d5847f98f625db712adfa4",
+                "url": "https://api.github.com/repos/rgeyer/rs_guzzle_client/zipball/9b73736575cf76d9c4b8875464cd1900a32157d4",
+                "reference": "9b73736575cf76d9c4b8875464cd1900a32157d4",
                 "shasum": ""
             },
             "require": {
@@ -570,7 +570,7 @@
                 "api",
                 "client"
             ],
-            "time": "2013-03-22 16:32:25"
+            "time": "2013-03-25 02:13:47"
         },
         {
             "name": "smarty/smarty",

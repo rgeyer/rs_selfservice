@@ -29,10 +29,8 @@ use Zend\View\Model\JsonModel;
 class MetaInputController extends BaseController {
 
   public function instancetypesAction() {
-    $client = $this->getServiceLocator()->get('RightScaleAPIClient');
-    $cloud = $client->newModel('Cloud');
-    $cloud->find_by_id($this->params('id'));
-    $instance_types = $cloud->instance_types();
+    $client = $this->getServiceLocator()->get('RightScaleAPICache');
+    $instance_types = $client->getInstanceTypes($this->params('id'));
     $retval = array();
     foreach($instance_types as $itype) {
       $thisclass = new \stdClass();

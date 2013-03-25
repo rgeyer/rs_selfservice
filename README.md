@@ -61,6 +61,11 @@ TODO:
     * DataCenters
     * ServerTemplates
   * Frequently query the RS API and cache status for provisioned product show screen(s)
+  * Create a cache controller to show;
+    * Stats
+    * Namespaces
+    * Objects/keys
+    * Clear/invalidate namespaces
 * Allow launching of servers once deployment is created
   * Create launch stages (tiers), launch all LB first, then DB, then App
   * Allow execution of scripts on servers once they become operational
@@ -80,6 +85,8 @@ TODO:
   * Provisioning action(s) hit a controller with json metadata
   * ProvisioningHelper hits controllers with json metadata on success to indicate completion, allowing the RSSS to delete DB records
 * Importing templates can be tough, and time consuming, possibly batch this when the provisionable product is added to the catalog rather than making the end user wait.
+* Create Daemon/cron controller that;
+  * Updates cached API objects
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
