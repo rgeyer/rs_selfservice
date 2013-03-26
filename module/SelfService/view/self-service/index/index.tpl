@@ -113,7 +113,6 @@ $(function() {
 
 #products {
 	overflow: hidden;
-  height: 190px;
   width: 870px;
   margin: 0 59px;
 }
@@ -123,7 +122,8 @@ $(function() {
 	display: inline-block;
   margin: auto 2em;
   height: 196px;
-  width: 142px;	
+  width: 142px;
+  vertical-align: top;
 }
 
 .product img {
