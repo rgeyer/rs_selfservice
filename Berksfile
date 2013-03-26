@@ -1,6 +1,4 @@
-cookbook "yum"
-
-group :server_template do
+group :servertemplate do
   cookbook "rightscale",
     git: "git://github.com/rightscale/rightscale_cookbooks.git",
     branch: "6283004d61d9da87bb636664b827139b8955e325",
@@ -132,10 +130,12 @@ group :server_template do
     rel: "cookbooks/memcached"
 
   cookbook "rsss",
-    path: "cookbooks/rsss"
+    path: "cb/rsss"
 end
 
 group :vagrant_only do
+  cookbook "yum"
+
   cookbook "rs_vagrant_shim",
     git: "https://github.com/rgeyer-rs-cookbooks/rs_vagrant_shim.git",
     rel: "cookbooks/rs_vagrant_shim"

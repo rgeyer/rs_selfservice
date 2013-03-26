@@ -66,7 +66,7 @@ TODO:
     * Stats
     * Namespaces
     * Objects/keys
-    * Clear/invalidate namespaces
+    * Clear/invalidate namespaces (Done, in CacheController)
 * Allow launching of servers once deployment is created
   * Create launch stages (tiers), launch all LB first, then DB, then App
   * Allow execution of scripts on servers once they become operational
