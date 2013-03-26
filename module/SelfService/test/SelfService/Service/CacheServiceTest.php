@@ -80,18 +80,25 @@ class CacheServiceTest extends AbstractHttpControllerTestCase {
     $storage_adapter = new Memory();
 
     $clouds_mock = array();
-    $clouds_mock[0] = new \stdClass();
-    $clouds_mock[0]->id = 1;
-    $clouds_mock[1] = new \stdClass();
-    $clouds_mock[1]->id = 2;
+    $cmock = $this->getMockBuilder("\RGeyer\Guzzle\Rs\Model\Mc\Cloud")->disableOriginalConstructor()->getMock();
+    $cmock->expects($this->once())
+      ->method('supportsCloudFeature')
+      ->will($this->returnValue(true));
+    $cmock->id = 1;
+    $clouds_mock[] = $cmock;
+    $cmock = $this->getMockBuilder("\RGeyer\Guzzle\Rs\Model\Mc\Cloud")->disableOriginalConstructor()->getMock();
+    $cmock->expects($this->once())
+      ->method('supportsCloudFeature')
+      ->will($this->returnValue(true));
+    $cmock->id = 2;
+    $clouds_mock[] = $cmock;
 
     $api_cache_mock = $this->getMockBuilder("SelfService\Service\RightScaleAPICache")->disableOriginalConstructor()->getMock();
     $api_cache_mock->expects($this->once())
       ->method('getClouds')
       ->will($this->returnValue($clouds_mock));
     $api_cache_mock->expects($this->exactly(2))
-      ->method('updateDatacenters')
-      ->with($this->logicalOr(1,2));
+      ->method('updateDatacenters');
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('cache_storage_adapter', $storage_adapter);
     $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $api_cache_mock);
