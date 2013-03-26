@@ -4,7 +4,7 @@ namespace SelfServiceTest\Controller\Console;
 
 use Zend\Test\PHPUnit\Controller\AbstractConsoleControllerTestCase;
 
-class ProductControllerTest extends AbstractConsoleControllerTestCase {
+class CacheControllerTest extends AbstractConsoleControllerTestCase {
   public function setUp() {
     $this->setApplicationConfig(
       include __DIR__ . '/../../../../../../config/application.config.php'
@@ -27,18 +27,15 @@ class ProductControllerTest extends AbstractConsoleControllerTestCase {
     );
   }
 
-  public function testConsoleAddActionCanBeAccessed() {
-    $this->dispatch('product add baselinux');
+  public function testUpdateRightScaleActionCanBeAccessed() {
+    $cache_service_mock = $this->getMockBuilder('SelfService\Service\CacheService')->disableOriginalConstructor()->getMock();
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('CacheService', $cache_service_mock);
 
-    $this->assertActionName('consoleadd');
-    $this->assertControllerName('selfservice\controller\product');
+    $this->dispatch('cache update rightscale');
+
+    $this->assertActionName('updaterightscale');
+    $this->assertControllerName('selfservice\controller\cache');
     $this->assertResponseStatusCode(0);
-  }
-
-  public function testConsoleAddActionRequiresProductName() {
-    $this->dispatch('product add');
-
-    $this->assertResponseStatusCode(1);
-    $this->assertContains("Invalid arguments", $this->getResponse()->getContent());
   }
 }

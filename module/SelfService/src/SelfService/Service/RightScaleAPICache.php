@@ -55,7 +55,7 @@ class RightScaleAPICache {
   public function getClouds() {
     $clouds = $this->adapter->getItem('clouds');
     if(!isset($clouds)) {
-      $clouds = $this->updateClouds(false);
+      $clouds = $this->updateClouds();
     } else {
       foreach($clouds as $idx => $cloud) {
         $clouds[$idx] = $this->client->newModel('Cloud', (object)$cloud);
@@ -71,16 +71,14 @@ class RightScaleAPICache {
   /**
    * @param bool $assumeExists A boolean indicating if the clouds key already exists in the cache.  This prevents (re)checking when this method is called to set cache the value for the first time, such as from getClouds()
    */
-  public function updateClouds($assumeExists = true) {
+  public function updateClouds() {
     $cloud = $this->client->newModel('Cloud');
     $clouds = $cloud->index();
     $cache_clouds = array();
     foreach($clouds as $idx => $cloud) {
       $cache_clouds[$idx] = $cloud->getParameters();
     }
-    if($assumeExists) {
-      $this->adapter->replaceItem('clouds',$cache_clouds);
-    } else if ($this->adapter->hasItem('clouds')) {
+    if ($this->adapter->hasItem('clouds')) {
       $this->adapter->replaceItem('clouds',$cache_clouds);
     } else {
       $this->adapter->setItem('clouds',$cache_clouds);
@@ -89,9 +87,10 @@ class RightScaleAPICache {
   }
 
   public function getInstanceTypes($cloud_id) {
-    $instance_types = $this->adapter->getItem('instance_types_'.$cloud_id);
+    $item_key = "instance_types_".intval($cloud_id);
+    $instance_types = $this->adapter->getItem($item_key);
     if(!isset($instance_types)) {
-      $instance_types = $this->updateInstanceTypes($cloud_id, false);
+      $instance_types = $this->updateInstanceTypes($cloud_id);
     } else {
       foreach($instance_types as $idx => $instance_type) {
         $instance_types[$idx] = $this->client->newModel('InstanceType', (object)$instance_type);
@@ -101,10 +100,12 @@ class RightScaleAPICache {
   }
 
   public function removeInstanceTypes($cloud_id) {
-    $this->adapter->removeItem("instance_types_".$cloud_id);
+    $item_key = "instance_types_".intval($cloud_id);
+    $this->adapter->removeItem($item_key);
   }
 
-  public function updateInstanceTypes($cloud_id, $assumeExists = true) {
+  public function updateInstanceTypes($cloud_id) {
+    $item_key = "instance_types_".intval($cloud_id);
     $instance_type = $this->client->newModel('InstanceType');
     $instance_type->cloud_id = $cloud_id;
     $instance_types = $instance_type->index();
@@ -112,20 +113,19 @@ class RightScaleAPICache {
     foreach($instance_types as $idx => $instance_type) {
       $cache_instance_types[$idx] = $instance_type->getParameters();
     }
-    if($assumeExists) {
-      $this->adapter->replaceItem('instance_types_'.$cloud_id,$cache_instance_types);
-    } else if ($this->adapter->hasItem('instance_types_'.$cloud_id)) {
-      $this->adapter->replaceItem('instance_types_'.$cloud_id,$cache_instance_types);
+    if ($this->adapter->hasItem($item_key)) {
+      $this->adapter->replaceItem($item_key,$cache_instance_types);
     } else {
-      $this->adapter->setItem('instance_types_'.$cloud_id,$cache_instance_types);
+      $this->adapter->setItem($item_key,$cache_instance_types);
     }
     return $instance_types;
   }
 
   public function getDatacenters($cloud_id) {
-    $dcs = $this->adapter->getItem('datacenters_'.$cloud_id);
+    $item_key = 'datacenters_'.intval($cloud_id);
+    $dcs = $this->adapter->getItem($item_key);
     if(!isset($dcs)) {
-      $dcs = $this->updateDatacenters($cloud_id, false);
+      $dcs = $this->updateDatacenters($cloud_id);
     } else {
       foreach($dcs as $idx => $dc) {
         $dcs[$idx] = $this->client->newModel('DataCenter', (object)$dc);
@@ -135,23 +135,23 @@ class RightScaleAPICache {
   }
 
   public function removeDatacenters($cloud_id) {
-    $this->adapter->removeItem("datacenters_".$cloud_id);
+    $item_key = 'datacenters_'.intval($cloud_id);
+    $this->adapter->removeItem($item_key);
   }
 
-  public function updateDatacenters($cloud_id, $assumeExists = true) {
+  public function updateDatacenters($cloud_id) {
+    $item_key = 'datacenters_'.intval($cloud_id);
     $dc = $this->client->newModel('DataCenter');
-    $dc->cloud_id = $cloud_id;
+    $dc->cloud_id = strval($cloud_id);
     $dcs = $dc->index();
     $cache_dcs = array();
     foreach($dcs as $idx => $dc) {
       $cache_dcs[$idx] = $dc->getParameters();
     }
-    if($assumeExists) {
-      $this->adapter->replaceItem('datacenters_'.$cloud_id,$cache_dcs);
-    } else if ($this->adapter->hasItem('datacenters_'.$cloud_id)) {
-      $this->adapter->replaceItem('datacenters_'.$cloud_id,$cache_dcs);
+    if ($this->adapter->hasItem($item_key)) {
+      $this->adapter->replaceItem($item_key,$cache_dcs);
     } else {
-      $this->adapter->setItem('datacenters_'.$cloud_id,$cache_dcs);
+      $this->adapter->setItem($item_key,$cache_dcs);
     }
     return $dcs;
   }
@@ -159,7 +159,7 @@ class RightScaleAPICache {
   public function getServerTemplates() {
     $sts = $this->adapter->getItem('server_templates');
     if(!isset($sts)) {
-      $sts = $this->updateServerTemplates(false);
+      $sts = $this->updateServerTemplates();
     } else {
       foreach($sts as $idx => $st) {
         $sts[$idx] = $this->client->newModel('ServerTemplate', (object)$st);
@@ -175,16 +175,14 @@ class RightScaleAPICache {
   /**
    * @param bool $assumeExists A boolean indicating if the server_templates key already exists in the cache.  This prevents (re)checking when this method is called to set cache the value for the first time, such as from getServerTemplates()
    */
-  public function updateServerTemplates($assumeExists = true) {
+  public function updateServerTemplates() {
     $st = $this->client->newModel('ServerTemplate');
     $sts = $st->index();
     $cache_sts = array();
     foreach($sts as $idx => $st) {
       $cache_sts[$idx] = $st->getParameters();
     }
-    if($assumeExists) {
-      $this->adapter->replaceItem('server_templates',$cache_sts);
-    } else if ($this->adapter->hasItem('server_templates')) {
+    if ($this->adapter->hasItem('server_templates')) {
       $this->adapter->replaceItem('server_templates',$cache_sts);
     } else {
       $this->adapter->setItem('server_templates',$cache_sts);

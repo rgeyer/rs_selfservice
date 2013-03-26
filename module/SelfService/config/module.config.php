@@ -140,12 +140,21 @@ return array(
       'routes' => array(
         'product' => array(
           'options' => array(
-            'route' => 'product add [<name>]',
+            'route' => 'product add <name>',
             'defaults' => array(
               'controller' => 'SelfService\Controller\Product',
-              'action' => 'consoleadd'
+              'action' => 'consoleadd',
             )
           )
+        ),
+        'update_rightscale_cache' => array(
+          'options' => array(
+            'route' => 'cache update rightscale',
+            'defaults' => array(
+              'controller' => 'SelfService\Controller\Cache',
+              'action' => 'updaterightscale',
+            ),
+          ),
         ),
       )
     )
@@ -158,11 +167,8 @@ return array(
         $caching = $config['caching'];
         return new \Zend\Cache\Storage\Adapter\Memcached($caching);
       },
-      'RightScaleAPIClient.cache_adapter' => function($serviceManager) {
-        $zend_cache_adapter = $serviceManager->get('cache_storage_adapter');
-        $zend_cache_adapter->getOptions()->setNamespace("rsapi");
-        $guzzle_cache_adapter = new Zf2CacheAdapter($zend_cache_adapter);
-        return $guzzle_cache_adapter;
+      'CacheService' => function($serviceManager) {
+        return \SelfService\Service\CacheService::get($serviceManager);
       },
       'RightScaleAPIClient' => function($serviceManager) {
         $config = $serviceManager->get('Configuration');
@@ -246,7 +252,8 @@ return array(
       'SelfService\Controller\Login' => 'SelfService\Controller\LoginController',
       'SelfService\Controller\ProvisionedProduct' => 'SelfService\Controller\ProvisionedProductController',
       'SelfService\Controller\Product' => 'SelfService\Controller\ProductController',
-      'SelfService\Controller\MetaInput' => 'SelfService\Controller\MetaInputController'
+      'SelfService\Controller\MetaInput' => 'SelfService\Controller\MetaInputController',
+      'SelfService\Controller\Cache' => 'SelfService\Controller\CacheController'
     ),
   ),
   'view_manager' => array(
