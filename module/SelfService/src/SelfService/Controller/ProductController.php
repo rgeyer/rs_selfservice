@@ -96,8 +96,9 @@ class ProductController extends BaseController {
         try {
           # Provision and record deployment
           $deplname = sprintf("rsss-%s-%s", $product->name, $now);
+          $deplname = $this->params()->fromPost('deployment_name', $deplname);
           $depl_params = array(
-            'deployment[name]' => $this->params()->fromPost('deployment_name', $deplname),
+            'deployment[name]' => $deplname,
             'deployment[description]' => sprintf("Created by rs_selfservice for the '%s' product", $product->name)
           );
           $depl = $prov_helper->provisionDeployment($depl_params);
