@@ -46,7 +46,7 @@ class php3tier {
     $cloud_metainput->default_value = 1;
     $cloud_metainput->input_name = 'cloud';
     $cloud_metainput->display_name = 'Cloud';
-    $cloud_metainput->description = 'The AWS cloud to create the 3-Tier in';
+    $cloud_metainput->description = 'The cloud to create the 3-Tier in';
 
     $em->persist($cloud_metainput);
     // END Cloud ProductMetaInput
@@ -80,7 +80,7 @@ class php3tier {
     $em->persist($php_default_sg);
     // END php-default Security Group
 
-      // START php-lb Security Group
+    // START php-lb Security Group
     $php_lb_sg = new SecurityGroup();
     $php_lb_sg->name = new TextProductMetaInput("php-lb");
     $php_lb_sg->description = new TextProductMetaInput("PHP 3-Tier");
