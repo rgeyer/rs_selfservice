@@ -73,7 +73,9 @@ class CacheService {
     $api_cache = $this->_serviceManager->get('RightScaleAPICache');
     $clouds = $api_cache->getClouds();
     foreach($clouds as $cloud) {
-      $api_cache->updateDatacenters($cloud->id);
+      if($cloud->supportsCloudFeature('datacenters')) {
+        $api_cache->updateDatacenters($cloud->id);
+      }
     }
   }
 
