@@ -5,7 +5,8 @@ return array(
         'SelfService',
         'DoctrineModule',
         'DoctrineORMModule',
-        'SmartyModule'
+        'SmartyModule',
+        'ZendDeveloperTools'
     ),
 
     // These are various options for the listeners attached to the ModuleManager

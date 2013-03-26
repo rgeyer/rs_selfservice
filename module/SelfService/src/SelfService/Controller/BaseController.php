@@ -30,7 +30,7 @@ abstract class BaseController extends AbstractActionController {
 
 	/**
 	 *
-	 * @var Doctrine\ORM\EntityManager
+	 * @var \Doctrine\ORM\EntityManager
 	 */
 	protected $em;
 
