@@ -69,7 +69,7 @@ class GoogleAuthPlugin extends AbstractPlugin {
       $this->getController()->redirect()->toRoute('login');
 		} else if (!$auth->getIdentity()->authorized) {
       if($routematch->getMatchedRouteName() == 'user') { return; }
-      $this->getController()->redirect()->toRoute('user');
+      $this->getController()->redirect()->toRoute('user',array('action' => 'unauthorized'));
     }
 	}
 }

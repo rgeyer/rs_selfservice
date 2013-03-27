@@ -1,5 +1,4 @@
 <?php
-
 /*
 Copyright (c) 2013 Ryan J. Geyer <me@ryangeyer.com>
 

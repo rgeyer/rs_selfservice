@@ -45,7 +45,7 @@ class CacheController extends BaseController {
     if($this->getRequest() instanceof \Zend\Http\Request) {
       return array('messages' => $collection_writer->messages);
     } else {
-      return join("\n",$collection_writer->messages);
+      return join("\n",$collection_writer->messages)."\n";
     }
   }
 

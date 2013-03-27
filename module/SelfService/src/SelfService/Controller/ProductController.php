@@ -206,7 +206,7 @@ class ProductController extends BaseController {
       $this->getLogger()->err($e->getTraceAsString());
     }
 
-    return join("\n",$collection_writer->messages);
+    return join("\n",$collection_writer->messages)."\n";
 	}
 
 }

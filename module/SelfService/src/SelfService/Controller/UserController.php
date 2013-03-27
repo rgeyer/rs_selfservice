@@ -24,6 +24,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Controller;
 
+use Doctrine\ORM\ORMException;
+use Zend\View\Model\JsonModel;
+
 /**
  * UserController
  * 
@@ -33,6 +36,74 @@ class UserController extends BaseController {
 
   public function unauthorizedAction() {
     return array('use_layout' => true);
+  }
+
+  public function authorizeAction() {
+    $response = array('result' => 'success');
+    $userService = $this->getServiceLocator()->get('SelfService\Service\Entity\UserService');
+    try {
+      $userService->authorizeByEmail($this->params('email'));
+    } catch (ORMException $e) {
+      $response['result'] = 'error';
+      $response['message'] = $e->getMessage();
+    }
+    if($this->getRequest() instanceof \Zend\Http\Request) {
+      return new JsonModel($response);
+    } else {
+      return $response;
+    }
+  }
+
+  public function deauthorizeAction() {
+    $response = array('result' => 'success');
+    $userService = $this->getServiceLocator()->get('SelfService\Service\Entity\UserService');
+    try {
+      $userService->deauthorizeByEmail($this->params('email'));
+    } catch (ORMException $e) {
+      $response['result'] = 'error';
+      $response['message'] = $e->getMessage();
+    }
+    if($this->getRequest() instanceof \Zend\Http\Request) {
+      return new JsonModel($response);
+    } else {
+      return $response;
+    }
+  }
+
+  public function indexAction() {
+    $users = $this->getServiceLocator()->get('SelfService\Service\Entity\UserService')->findAll();
+
+    if($this->getRequest() instanceof \Zend\Http\Request) {
+      $actions = array();
+      foreach($users as $user) {
+        if($user->authorized) {
+          $actions[$user->id] = array(
+            'deauthorize' => array(
+              'uri' => $this->url()->fromRoute('user').'/deauthorize/'.urlencode($user->email),
+              'img_path' => '/images/16keyblock.png'
+            )
+          );
+        } else {
+          $actions[$user->id] = array(
+            'authorize' => array(
+              'uri' => $this->url()->fromRoute('user').'/authorize/'.urlencode($user->email),
+              'img_path' => '/images/16key.png'
+            )
+          );
+        }
+      }
+      return array('users' => $users, 'actions' => $actions);
+    } else {
+      $console = $this->getServiceLocator()->get('console');
+      foreach($users as $user) {
+        if($user->authorized) {
+          $console->writeLine("authorized   -- ".$user->email, \Zend\Console\ColorInterface::GREEN);
+        } else {
+          $console->writeLine("unauthorized -- ".$user->email, \Zend\Console\ColorInterface::RED);
+        }
+      }
+      return array();
+    }
   }
 
 }

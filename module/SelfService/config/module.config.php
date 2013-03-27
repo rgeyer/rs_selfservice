@@ -37,8 +37,8 @@ return array(
         'options' => array(
           'route' => '/admin/provisionedproducts[/:action][/:id]',
           'constraints' => array(
-              'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-              'id' => '[0-9]+'
+            'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            'id' => '[0-9]+'
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',
@@ -52,8 +52,8 @@ return array(
         'options' => array(
           'route' => '/product[/:action][/:id]',
           'constraints' => array(
-              'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-              'id' => '[0-9]+'
+            'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            'id' => '[0-9]+'
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',
@@ -66,7 +66,7 @@ return array(
         'options' => array(
           'route' => '/product/rendermetaform[/:id]',
           'constraints' => array(
-              'id' => '[0-9]+'
+            'id' => '[0-9]+'
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',
@@ -80,7 +80,7 @@ return array(
         'options' => array(
           'route' => '/login[/:action]',
           'constraints' => array(
-              'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',
@@ -94,8 +94,8 @@ return array(
         'options' => array(
           'route' => '/metainput[/:action][/:id]',
           'constraints' => array(
-              'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-              'id' => '[0-9]+'
+            'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            'id' => '[0-9]+'
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',
@@ -106,11 +106,14 @@ return array(
       'user' => array(
         'type' => 'Segment',
         'options' => array(
-          'route' => '/user',
+          'route' => '/admin/user[/:action][/:email]',
+          'constraints' => array(
+            'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+          ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',
             'controller' => 'User',
-            'action' => 'unauthorized',
+            'action' => 'index',
           ),
         ),
       ),
@@ -167,8 +170,36 @@ return array(
             ),
           ),
         ),
-      )
-    )
+        'userslist' => array(
+          'options' => array(
+            'route' => 'users list',
+            'defaults' => array(
+              'controller' => 'SelfService\Controller\User',
+              'action' => 'index'
+            ),
+          ),
+        ),
+        'usersauthorize' => array(
+          'options' => array(
+            // Note: Using email here, but the HTTP controller accepts IDs
+            'route' => 'users authorize <email>',
+            'defaults' => array(
+              'controller' => 'SelfService\Controller\User',
+              'action' => 'authorize'
+            ),
+          ),
+        ),
+        'usersdeauthorize' => array(
+          'options' => array(
+            'route' => 'users deauthorize <email>',
+            'defaults' => array(
+              'controller' => 'SelfService\Controller\User',
+              'action' => 'deauthorize'
+            ),
+          ),
+        ),
+      ),
+    ),
   ),
   'service_manager' => array(
     'factories' => array(
@@ -192,10 +223,10 @@ return array(
         # is the most time consuming part anyway!
         $client = \RGeyer\Guzzle\Rs\RightScaleClient::factory(
           array(
-            'acct_num' => $rscreds['account_id'],
-            'email' => $rscreds['email'],
-            'password' => $rscreds['password'],
-            'version' => '1.5'
+               'acct_num' => $rscreds['account_id'],
+               'email' => $rscreds['email'],
+               'password' => $rscreds['password'],
+               'version' => '1.5'
           )
         );
 
@@ -245,6 +276,9 @@ return array(
         $storage = new \Zend\Authentication\Storage\Session("auth", null, $manager);
         return new AuthenticationService($storage);
       },
+    ),
+    'invokables' => array(
+      'SelfService\Service\Entity\UserService'     => 'SelfService\Service\Entity\UserService',
     ),
   ),
   'translator' => array(
