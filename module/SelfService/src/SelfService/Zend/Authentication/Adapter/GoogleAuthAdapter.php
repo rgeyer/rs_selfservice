@@ -68,15 +68,24 @@ class GoogleAuthAdapter implements AdapterInterface {
 		if($this->_oid->mode == 'cancel') {
 			return new Result(Result::FAILURE, $this->_oid);
 		} elseif ($this->_oid->validate()) {
-			$user = $this->em->getRepository('SelfService\Entity\User')->findOneBy(array('oid_url' => $this->_oid->identity));
+      $query = $this->em->createQuery("select u from SelfService\Entity\User u where u.oid_url = :oid_url or u.email = :email");
+      $query->setParameters(
+        array(
+          'oid_url' => $this->_oid->identity,
+          'email' => $this->getPrincipalEmail()
+        )
+      );
+			$user = $query->getResult();
 			if(!$user) {
 				$user = new User();
-				$user->oid_url = $this->_oid->identity;
-        $user->email = $this->getPrincipalEmail();
-        $user->name = $this->getPrincipalName();
-				$this->em->persist($user);
-				$this->em->flush();
-			}
+			} else {
+        $user = array_pop($user);
+      }
+      $user->oid_url = $this->_oid->identity;
+      $user->email = $this->getPrincipalEmail();
+      $user->name = $this->getPrincipalName();
+      $this->em->persist($user);
+      $this->em->flush();
 			return new Result(Result::SUCCESS, $user);
 		} else {
 			return new Result(Result::FAILURE_CREDENTIAL_INVALID, $this->_oid);

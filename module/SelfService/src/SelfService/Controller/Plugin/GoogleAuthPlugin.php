@@ -51,6 +51,7 @@ class GoogleAuthPlugin extends AbstractPlugin {
 		# TODO: Look up the user in the DB. If they're not there, still force a login.
 		$redirect_to_auth = false;
 		$auth = $serviceManager->get('AuthenticationService');
+    $user = null;
 		if(!$auth->hasIdentity()) {
 			$redirect_to_auth = true;
 		} else {
@@ -66,6 +67,9 @@ class GoogleAuthPlugin extends AbstractPlugin {
       $sess = new Container('auth');
       $sess->preloginroute = $routematch;
       $this->getController()->redirect()->toRoute('login');
-		}
+		} else if (!$auth->getIdentity()->authorized) {
+      if($routematch->getMatchedRouteName() == 'user') { return; }
+      $this->getController()->redirect()->toRoute('user');
+    }
 	}
 }

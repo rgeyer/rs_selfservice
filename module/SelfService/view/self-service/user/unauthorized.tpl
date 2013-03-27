@@ -1,0 +1,1 @@
+<p>Hey there, thanks for registering to use the vending machine.  You're not yet authorized, but an email has been sent to an administrator.  Check back frequently for access.</p>

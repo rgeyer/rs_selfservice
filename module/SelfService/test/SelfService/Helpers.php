@@ -25,6 +25,43 @@ class Helpers {
     $user = new User();
     $user->email = 'foo@bar.baz';
     $user->oid_url = 'oid_url';
+    $user->authorized = true;
+
+    $userRepo = $test->getMockBuilder('Doctrine\ORM\EntityRepository')
+      ->disableOriginalConstructor()
+      ->getMock();
+    $userRepo->expects($test->any())
+      ->method('findOneBy')
+      ->will($test->returnValue($user));
+
+    $em = $test->getMockBuilder('Doctrine\ORM\EntityManager')
+      ->disableOriginalConstructor()
+      ->getMock();
+    $em->expects($test->any())
+      ->method('getRepository')
+      ->with('SelfService\Entity\User')
+      ->will($test->returnValue($userRepo));
+
+    $sm->setAllowOverride(true);
+    $sm->setService('doctrine.entitymanager.orm_default', $em);
+
+    $adapter = $test->getMock('Zend\Authentication\Adapter\AdapterInterface');
+    $adapter->expects($test->once())
+      ->method('authenticate')
+      ->will($test->returnValue(new Result(Result::SUCCESS, $user)));
+    $auth = $sm->get('AuthenticationService');
+    $auth->authenticate($adapter);
+  }
+
+  public static function authenticateAsUnauthorizedUser(ServiceManager $sm) {
+    # TODO: Auth in such a way that I don't clobber the entity manager for all
+    # subsequent use.
+    $test = new ConcreteGuzzleTestCase();
+
+    $user = new User();
+    $user->email = 'foo@bar.baz';
+    $user->oid_url = 'oid_url';
+    $user->authorized = false;
 
     $userRepo = $test->getMockBuilder('Doctrine\ORM\EntityRepository')
       ->disableOriginalConstructor()

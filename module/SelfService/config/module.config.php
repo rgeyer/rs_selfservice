@@ -103,6 +103,17 @@ return array(
           )
         )
       ),
+      'user' => array(
+        'type' => 'Segment',
+        'options' => array(
+          'route' => '/user',
+          'defaults' => array(
+            '__NAMESPACE__' => 'SelfService\Controller',
+            'controller' => 'User',
+            'action' => 'unauthorized',
+          ),
+        ),
+      ),
       // The following is a route to simplify getting started creating
       // new controllers and actions without needing to create a new
       // module. Simply drop new controllers in, and you can access them
@@ -253,7 +264,8 @@ return array(
       'SelfService\Controller\ProvisionedProduct' => 'SelfService\Controller\ProvisionedProductController',
       'SelfService\Controller\Product' => 'SelfService\Controller\ProductController',
       'SelfService\Controller\MetaInput' => 'SelfService\Controller\MetaInputController',
-      'SelfService\Controller\Cache' => 'SelfService\Controller\CacheController'
+      'SelfService\Controller\Cache' => 'SelfService\Controller\CacheController',
+      'SelfService\Controller\User' => 'SelfService\Controller\UserController',
     ),
   ),
   'view_manager' => array(

@@ -66,4 +66,32 @@ class GoogleAuthPluginTest extends AbstractHttpControllerTestCase {
     $this->markTestSkipped("Haven't properly implemented this yet.");
     $this->dispatch('home');
   }
+
+  public function testRedirectsToUnauthorizedWhenAuthenticatedButNotAuthorized() {
+    $storage_adapter = $this->getMockForAbstractClass('Zend\Cache\Storage\Adapter\AbstractAdapter');
+
+    $sm = $this->getApplicationServiceLocator();
+    $sm->setAllowOverride(true);
+    $sm->setService('cache_storage_adapter', $storage_adapter);
+
+    \SelfServiceTest\Helpers::authenticateAsUnauthorizedUser($this->getApplicationServiceLocator());
+    $this->dispatch('/');
+
+    $this->assertRedirect();
+    $this->assertRedirectRegex(',^.*/user,');
+  }
+
+  public function testDoesNotRedirectWhenRouteIsUserUnauthorized() {
+    $storage_adapter = $this->getMockForAbstractClass('Zend\Cache\Storage\Adapter\AbstractAdapter');
+
+    $sm = $this->getApplicationServiceLocator();
+    $sm->setAllowOverride(true);
+    $sm->setService('cache_storage_adapter', $storage_adapter);
+    \SelfServiceTest\Helpers::authenticateAsUnauthorizedUser($this->getApplicationServiceLocator());
+    $this->dispatch('/user');
+
+    $this->assertNotRedirect();
+    $this->assertControllerName('selfservice\controller\user');
+    $this->assertResponseStatusCode(200);
+  }
 }

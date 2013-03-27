@@ -53,10 +53,16 @@ class User
 	public $email;
 
 	/**
-	 * @ORM\Column(type="string", unique=true)
+	 * @ORM\Column(type="string", unique=true, nullable=true)
 	 * @var string
 	 */
 	public $oid_url;
+
+  /**
+   * @ORM\Column(type="boolean")
+   * @var bool
+   */
+  public $authorized = false;
 	
 	/******************* Everything after this is deprecated, from before I was using Google for Auth ******************/
 	
