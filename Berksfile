@@ -130,7 +130,7 @@ group :servertemplate do
     rel: "cookbooks/memcached"
 
   cookbook "rsss",
-    path: "cb/rsss"
+    path: "cookbooks/rsss"
 end
 
 group :vagrant_only do
