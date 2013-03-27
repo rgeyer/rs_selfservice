@@ -76,6 +76,7 @@ TODO:
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
 * Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
 * Add Authorization functionality (admin, read_all, act_all, read_mine, act_mine, etc)
+  * Partly done, users are now either authorized or not, no roles yet (Done)
 * Filter cloud menu based on product ST support?
 * Make sure ServerTemplate is done importing before starting servers
 * Make the windows product work by properly passing inputs into the server or deployment.
@@ -86,8 +87,6 @@ TODO:
   * Provisioning action(s) hit a controller with json metadata
   * ProvisioningHelper hits controllers with json metadata on success to indicate completion, allowing the RSSS to delete DB records
 * Importing templates can be tough, and time consuming, possibly batch this when the provisionable product is added to the catalog rather than making the end user wait.
-* Create Daemon/cron controller that;
-  * Updates cached API objects
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
