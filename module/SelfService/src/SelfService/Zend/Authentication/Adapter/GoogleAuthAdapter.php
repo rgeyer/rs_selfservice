@@ -60,7 +60,7 @@ class GoogleAuthAdapter implements AdapterInterface {
 	}
 
 	public function redirectUrlForGoogleAuth() {
-		$this->_oid->identity = 'https://www.google.com/accounts/o8/id';
+		$this->_oid->__set('identity', 'https://www.google.com/accounts/o8/id');
 		return $this->_oid->authUrl();
 	}
 
@@ -71,7 +71,7 @@ class GoogleAuthAdapter implements AdapterInterface {
       $query = $this->em->createQuery("select u from SelfService\Entity\User u where u.oid_url = :oid_url or u.email = :email");
       $query->setParameters(
         array(
-          'oid_url' => $this->_oid->identity,
+          'oid_url' => $this->_oid->__get('identity'),
           'email' => $this->getPrincipalEmail()
         )
       );
@@ -81,7 +81,7 @@ class GoogleAuthAdapter implements AdapterInterface {
 			} else {
         $user = array_pop($user);
       }
-      $user->oid_url = $this->_oid->identity;
+      $user->oid_url = $this->_oid->__get('identity');
       $user->email = $this->getPrincipalEmail();
       $user->name = $this->getPrincipalName();
       $this->em->persist($user);
