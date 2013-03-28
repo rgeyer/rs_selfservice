@@ -67,9 +67,13 @@ class GoogleAuthPlugin extends AbstractPlugin {
       $sess = new Container('auth');
       $sess->preloginroute = $routematch;
       $this->getController()->redirect()->toRoute('login');
-		} else if (!$auth->getIdentity()->authorized) {
-      if($routematch->getMatchedRouteName() == 'user') { return; }
-      $this->getController()->redirect()->toRoute('user',array('action' => 'unauthorized'));
+		} else {
+      if($routematch->getMatchedRouteName() == 'user' && strtolower($routematch->getParam('action')) == 'unauthorized') { return; }
+      $auth->getStorage()->clear();
+      $auth->getStorage()->write($user);
+      if (!$auth->getIdentity()->authorized) {
+        $this->getController()->redirect()->toRoute('user',array('action' => 'unauthorized'));
+      }
     }
 	}
 }

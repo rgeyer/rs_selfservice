@@ -6,7 +6,6 @@ use Zend\Log\Writer\Stream;
 use SelfService\Service\CleanupHelper;
 use SelfService\Service\ProvisioningHelper;
 use Zend\Authentication\AuthenticationService;
-use SelfService\Guzzle\Common\Cache\Zf2CacheAdapter;
 
 return array(
   'router' => array(
