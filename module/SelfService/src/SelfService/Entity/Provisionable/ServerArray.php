@@ -31,7 +31,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Ryan J. Geyer <me@ryangeyer.com>
  *
  */
-class ServerArray {
+class ServerArray extends AlertSubjectBase {
 	
 	/**
 	 * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")

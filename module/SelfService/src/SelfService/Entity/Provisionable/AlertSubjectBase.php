@@ -30,7 +30,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity @ORM\Table(name="alert_specs_base")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"Server" = "Server", "ServerTemplate" = "ServerTemplate"})
+ * @ORM\DiscriminatorMap({"Server" = "Server", "ServerTemplate" = "ServerTemplate", "ServerArray" = "ServerArray"})
  * @author Ryan J. Geyer <me@ryangeyer.com>
  *
  */
