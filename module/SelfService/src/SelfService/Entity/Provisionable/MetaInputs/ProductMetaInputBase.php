@@ -35,7 +35,8 @@ use Doctrine\ORM\Mapping as ORM;
  * 	"cloud" = "CloudProductMetaInput",
  * 	"text" = "TextProductMetaInput",
  * 	"number" = "NumberProductMetaInput",
- *  "instance_type" = "InstanceTypeProductMetaInput"
+ *  "instance_type" = "InstanceTypeProductMetaInput",
+ *  "input" = "InputProductMetaInput"
  * }) 
  * @author Ryan J. Geyer <me@ryangeyer.com>
  *

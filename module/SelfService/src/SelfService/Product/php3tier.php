@@ -33,6 +33,7 @@ use SelfService\Entity\Provisionable\SecurityGroup;
 use SelfService\Entity\Provisionable\ServerTemplate;
 use SelfService\Entity\Provisionable\SecurityGroupRule;
 use SelfService\Entity\Provisionable\MetaInputs\TextProductMetaInput;
+use SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput;
 use SelfService\Entity\Provisionable\MetaInputs\CloudProductMetaInput;
 use SelfService\Entity\Provisionable\MetaInputs\NumberProductMetaInput;
 
@@ -70,6 +71,64 @@ class php3tier {
 
     $em->persist($deployment_name);
     // END Deployment Name MetaInput
+
+    // START Deployment Inputs for Application Server
+    $app__database_name = new InputProductMetaInput('app/database_name', 'text:dbschema');
+    $app__database_name->input_name = 'dbschema';
+    $app__database_name->display_name = 'Database Schema Name';
+    $app__database_name->description = 'Database Schema Name';
+    $em->persist($app__database_name);
+
+    $db__dns__master__fqdn = new InputProductMetaInput('db/dns/master/fqdn', 'text:localhost');
+    $db__dns__master__fqdn->input_name = 'dbfqdn';
+    $db__dns__master__fqdn->display_name = 'Database FQDN';
+    $db__dns__master__fqdn->description = 'Database FQDN';
+    $em->persist($db__dns__master__fqdn);
+
+    $db__provider_type = new InputProductMetaInput('db/provider_type', 'text:db_mysql_5.5');
+    $db__provider_type->input_name = 'dbtype';
+    $db__provider_type->display_name = 'Database Type';
+    $db__provider_type->description = 'Database Type';
+    $em->persist($db__provider_type);
+
+    $repo__default__repository = new InputProductMetaInput('repo/default/repository', 'text:git://github.com/rightscale/examples.git');
+    $repo__default__repository->input_name = 'reporepository';
+    $repo__default__repository->display_name = 'Repository URL';
+    $repo__default__repository->description = 'Repository URL';
+    $em->persist($repo__default__repository);
+
+    $repo__default__revision = new InputProductMetaInput('repo/default/revision', 'text:unified_php');
+    $repo__default__revision->input_name = 'reporevision';
+    $repo__default__revision->display_name = 'Repository Revision';
+    $repo__default__revision->description = 'Repository Revision';
+    $em->persist($repo__default__revision);
+    // END  Deployment Inputs for Application Server
+
+    // START Deployment Inputs for DB Server
+    $db__backup__lineage = new InputProductMetaInput('db/backup/lineage', 'text:changeme');
+    $db__backup__lineage->input_name = 'dblineage';
+    $db__backup__lineage->display_name = 'Database Backup Lineage';
+    $db__backup__lineage->description = 'Database Backup Lineage';
+    $em->persist($db__backup__lineage);
+
+    $sys_dns__choice = new InputProductMetaInput('sys_dns/choice', 'text:DNSMadeEasy');
+    $sys_dns__choice->input_name = 'sysdnschoice';
+    $sys_dns__choice->display_name = 'DNS Provider';
+    $sys_dns__choice->description = 'DNS Provider';
+    $em->persist($sys_dns__choice);
+
+    $sys_dns__password = new InputProductMetaInput('sys_dns/password', 'text:password');
+    $sys_dns__password->input_name = 'sysdnspassword';
+    $sys_dns__password->display_name = 'DNS Password';
+    $sys_dns__password->description = 'DNS Password';
+    $em->persist($sys_dns__password);
+
+    $sys_dns__user = new InputProductMetaInput('sys_dns/user', 'text:user');
+    $sys_dns__user->input_name = 'sysdnschoice';
+    $sys_dns__user->display_name = 'DNS User';
+    $sys_dns__user->description = 'DNS User';
+    $em->persist($sys_dns__user);
+    // END Deployment Inputs for DB Server
 
     // START php-default Security Group
     $php_default_sg = new SecurityGroup();
@@ -262,6 +321,17 @@ class php3tier {
     $product->arrays = array($php_server_ary);
     $product->alerts = array($cpu_scale_up_alert, $cpu_scale_down_alert);
     $product->meta_inputs = array($cloud_metainput, $text_metainput, $deployment_name);
+    $product->parameters = array(
+      $app__database_name,
+      $db__dns__master__fqdn,
+      $db__backup__lineage,
+      $db__provider_type,
+      $repo__default__repository,
+      $repo__default__revision,
+      $sys_dns__choice,
+      $sys_dns__password,
+      $sys_dns__user
+    );
     $product->launch_servers = false;
 
     $em->persist($product);

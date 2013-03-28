@@ -10,8 +10,9 @@ use SelfService\Entity\Provisionable\ServerArray;
 use SelfService\Entity\Provisionable\SecurityGroup;
 use SelfService\Entity\Provisionable\ServerTemplate;
 use SelfService\Entity\Provisionable\SecurityGroupRule;
-use SelfService\Entity\Provisionable\MetaInputs\NumberProductMetaInput;
 use SelfService\Entity\Provisionable\MetaInputs\TextProductMetaInput;
+use SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput;
+use SelfService\Entity\Provisionable\MetaInputs\NumberProductMetaInput;
 
 class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
 
@@ -45,12 +46,37 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     );
     $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), new \stdClass(), array());
     $helper->setTags(array('foo', 'bar', 'baz'));
-    $deployment = $helper->provisionDeployment(array('deployment[description]' => 'description', 'deployment[name]' => 'name'));
+    $deployment = $helper->provisionDeployment('name', 'description');
     $requests = $this->_guzzletestcase->getMockedRequests();
-    $this->assertContains('deployment%5Bdescription%5D=description&deployment%5Bname%5D=name', strval($requests[2]));
+    $this->assertContains('deployment[description]=description', strval($requests[2]));
+    $this->assertContains('deployment[name]=name', strval($requests[2]));
     # TODO: The tags don't seem to be getting passed properly
-    #$this->assertContains('resource_hrefs%5B%5D=%2Fapi%2Fdeployments%2F12345&tags%5B%5D%5B0%5D=foo&tags%5B%5D%5B1%5D=bar&tags%5B%5D%5B2%5D=baz', strval($requests[3]));
+    $this->assertContains('resource_hrefs[]=%2Fapi%2Fdeployments%2F12345&tags[]=foo&tags[]=bar&tags[]=baz', strval($requests[3]));
     $this->assertInstanceOf('RGeyer\Guzzle\Rs\Model\Mc\Deployment', $deployment);
+  }
+
+  public function testCanUpdateDeploymentWithInputs() {
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
+      array(
+        '1.5/clouds/json/response',
+        '1.5/server_templates/json/response',
+        '1.5/deployments_create/response',
+        '1.5/tags_multi_add/response',
+        '1.5/inputs_multi_update/response'
+      )
+    );
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), new \stdClass(), array());
+    $helper->setTags(array('foo', 'bar', 'baz'));
+    $inputs = array();
+    $inputs[] = new InputProductMetaInput('foo/bar/baz', 'text:foobarbaz');
+
+    $deployment = $helper->provisionDeployment('name', 'description', $inputs);
+
+    #$helper->updateDeployment($deployment,$inputs);
+
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(5, count($requests));
+    $this->assertContains('inputs[foo/bar/baz]=text%3Afoobarbaz', strval($requests[4]));
   }
 
   public function testCanProvisionSecurityGroup() {
@@ -329,7 +355,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $clouds[11111]->href = '/api/clouds/12345';
     $clouds[12345] = $clouds[11111];
     $helper->setClouds($clouds);
-    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $deployment = $helper->provisionDeployment('foo');
     $server_template_model = new ServerTemplate();
     $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
@@ -371,7 +397,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $clouds[22222]->href = '/api/clouds/12345';
     $clouds[12345] = $clouds[22222];
     $helper->setClouds($clouds);
-    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $deployment = $helper->provisionDeployment('foo');
     $server_template_model = new ServerTemplate();
     $server_template_model->nickname = new TextProductMetaInput("foo");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
@@ -410,7 +436,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $clouds[11111]->href = '/api/clouds/12345';
     $clouds[12345] = $clouds[11111];
     $helper->setClouds($clouds);
-    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $deployment = $helper->provisionDeployment('foo');
     $server_template_model = new ServerTemplate();
     $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
@@ -431,7 +457,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     # Make sure the helper made all of the expected API calls
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains('instance_type_href%5D=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[7]));
+    $this->assertContains('instance_type_href]=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[7]));
   }
 
   public function testProvisionServerThrowsErrorIfTemplateNotImported() {
@@ -461,7 +487,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $clouds[11111]->href = '/api/clouds/12345';
     $clouds[12345] = $clouds[11111];
     $helper->setClouds($clouds);
-    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $deployment = $helper->provisionDeployment('foo');
     $server_template_model = new ServerTemplate();
     $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
@@ -504,7 +530,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $clouds[22222]->href = '/api/clouds/12345';
     $clouds[12345] = $clouds[22222];
     $helper->setClouds($clouds);
-    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $deployment = $helper->provisionDeployment('foo');
     $server_template_model = new ServerTemplate();
     $server_template_model->nickname = new TextProductMetaInput("foo");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
@@ -544,7 +570,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $clouds[11111]->href = '/api/clouds/12345';
     $clouds[12345] = $clouds[11111];
     $helper->setClouds($clouds);
-    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $deployment = $helper->provisionDeployment('foo');
     $server_template_model = new ServerTemplate();
     $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
@@ -564,7 +590,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     # Make sure the helper made all of the expected API calls
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains('instance_type_href%5D=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[7]));
+    $this->assertContains('instance_type_href]=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[7]));
   }
 
   public function testProvisionServerArrayThrowsErrorIfTemplateNotImported() {
@@ -602,7 +628,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $clouds[11111]->href = '/api/clouds/12345';
     $clouds[12345] = $clouds[11111];
     $helper->setClouds($clouds);
-    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $deployment = $helper->provisionDeployment('foo');
     $server_template_model = new ServerTemplate();
     $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
@@ -641,12 +667,12 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
 
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains("alert_spec%5Bsubject_href%5D=%2Fapi%2Fservers", strval($responses[12]));
-    $this->assertContains("alert_spec%5Bvote_type%5D=grow", strval($responses[12]));
-    $this->assertContains("alert_spec%5Bvote_tag%5D=tag", strval($responses[12]));
-    $this->assertContains("alert_spec%5Bsubject_href%5D=%2Fapi%2Fserver_arrays", strval($responses[13]));
-    $this->assertContains("alert_spec%5Bvote_type%5D=grow", strval($responses[13]));
-    $this->assertContains("alert_spec%5Bvote_tag%5D=tag", strval($responses[13]));
+    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fservers", strval($responses[12]));
+    $this->assertContains("alert_spec[vote_type]=grow", strval($responses[12]));
+    $this->assertContains("alert_spec[vote_tag]=tag", strval($responses[12]));
+    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fserver_arrays", strval($responses[13]));
+    $this->assertContains("alert_spec[vote_type]=grow", strval($responses[13]));
+    $this->assertContains("alert_spec[vote_tag]=tag", strval($responses[13]));
   }
 
   public function testCanProvisionEscalationAlertSpec() {
@@ -676,7 +702,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $clouds[11111]->href = '/api/clouds/12345';
     $clouds[12345] = $clouds[11111];
     $helper->setClouds($clouds);
-    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $deployment = $helper->provisionDeployment('foo');
     $server_template_model = new ServerTemplate();
     $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
     $server_template_model->publication_id = new TextProductMetaInput("1234");
@@ -714,10 +740,10 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
 
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains("alert_spec%5Bsubject_href%5D=%2Fapi%2Fservers", strval($responses[12]));
-    $this->assertContains("alert_spec%5Bescalation_name%5D=critical", strval($responses[12]));
-    $this->assertContains("alert_spec%5Bsubject_href%5D=%2Fapi%2Fserver_arrays", strval($responses[13]));
-    $this->assertContains("alert_spec%5Bescalation_name%5D=critical", strval($responses[13]));
+    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fservers", strval($responses[12]));
+    $this->assertContains("alert_spec[escalation_name]=critical", strval($responses[12]));
+    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fserver_arrays", strval($responses[13]));
+    $this->assertContains("alert_spec[escalation_name]=critical", strval($responses[13]));
   }
 
 }

@@ -86,7 +86,11 @@ class Product {
 	 * @var bool
 	 */
 	public $launch_servers;
-	
+
+  /**
+   * @ORM\ManyToMany(targetEntity="SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput", fetch="EAGER", cascade={"all"})
+   * @var InputProductMetaInput[]
+   */
 	public $parameters;
 
   public function mergeMetaInputs(array $params) {

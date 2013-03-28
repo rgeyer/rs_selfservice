@@ -1,0 +1,10 @@
+PUT /api/clouds/12345/instances/12345BC291FU4QHIP/inputs/multi_update HTTP/1.1
+Host: us-3.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.24.0 PHP/5.3.17 openssl/OpenSSL/12345.9.8r
+Expect: 100-Continue
+Content-Type: application/x-www-form-urlencoded
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkMtugkAARf9l1pAwDx5D0gUoRKkoKC3gxuDM0GBbKcgExPjvQtLlTe49NzkPUAAbyJuKgQL4DdiPKYgW2ARBbD0V0DFgQ2wQXSNIxwqo-NSHjFqloTOVmqJQIRRILUpTqBBhiM-agYmAE68T_1sIybyd8MCDRyeVf1-e71OZt9QZ4rEt5TigkNSLvv52XZH6bLWsLhFu8rQatxq9XO_9cLht0q76DOJAVl6gjRlvgi6BJEeULxG1cLS3msa5s-PKY85aZk5tbLXkfWeKXb_Znk4tvddh9qGfA7_w1hF3vU70Gs8P-7AMwlNSZ3km480PX_wunbVrvc1KhllJwVgtrx2wjenHfD5fvKJdOw==; _session_id=deadbeef0badf00dfeedfacec0ffee24
+Content-Length: 37
+
+inputs[logging/remote_server]=inherit

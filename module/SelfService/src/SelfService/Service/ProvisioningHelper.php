@@ -359,15 +359,20 @@ class ProvisioningHelper {
   }
 
   /**
-   * Creates a new deployment, using RightScale API 1.0
+   * Creates a new deployment, using RightScale API 1.5
    *
-   * @param $params An array of parameters to pass to the call.
-   * @link http://reference.rightscale.com/api1.5/resources/ResourceDeployments.html#create
-   * @return RGeyer\Guzzle\Rs\Model\Mc\Deployment The newly created deployment
+   * @param string $name The name for the deployment
+   * @param string|null $description A description for the deployment, or null
+   * @param \SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput[] $inputs An array of inputs specified for the product
+   * @return \RGeyer\Guzzle\Rs\Model\Mc\Deployment The newly created deployment
    */
-  public function provisionDeployment($params) {
+  public function provisionDeployment($name, $description = null, $inputs = array()) {
     $deployment = $this->client->newModel('Deployment');
-    $deployment->create($params);
+    $deployment->name = $name;
+    if($description) {
+      $deployment->description = $description;
+    }
+    $deployment->create();
 
     $command = $this->client->getCommand('tags_multi_add',
       array(
@@ -377,7 +382,33 @@ class ProvisioningHelper {
     );
     $command->execute();
     $command->getResult();
+
+    $this->updateDeployment($deployment, $inputs);
+
     return $deployment;
+  }
+
+  /**
+   * @param \RGeyer\Guzzle\Rs\Model\Mc\Deployment $deployment A RightScaleAPIClient model representing the provisioned deployment, only the ->href property is used
+   * @param \SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput[] $inputs An array of inputs specified for the product
+   * @return void
+   */
+  public function updateDeployment($deployment, $inputs) {
+    if(count($inputs) > 0) {
+      $inputs_2_0_ary = array();
+      foreach($inputs as $input) {
+        $inputs_2_0_ary[$input->rs_input_name] = $input->getVal();
+      }
+
+      $command = $this->client->getCommand('inputs_multi_update',
+        array(
+          'path' => str_replace('/api/', '', $deployment->href).'/inputs/multi_update',
+          'inputs' => $inputs_2_0_ary
+        )
+      );
+      $command->execute();
+      $command->getResult();
+    }
   }
 
   /**

@@ -55,6 +55,7 @@ TODO:
   * As a named credential (only in absence of a same named credential)
 * Shared sessions - Horizontal Scalability
   * Sorta implemented, the authentication bits are stored in memcached, but other session data still stored in "sessions"
+  * Refactoring is in order here.  The session management and authentication is scattered across several classes and methods.  Need to create a single service which aggregates and simplifies
 * Cache commonly read data (user profiles/oauth uris, etc)
   * Implemented caching for all RS API GET and HEAD calls, but should create a service which smartly (as in can be invalidated when new records are imported etc) caches
     * Clouds (Done, could use an "as index" option)
