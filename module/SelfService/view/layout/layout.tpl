@@ -1,7 +1,7 @@
 {if isset($use_layout) && $use_layout === false}
-  {$this->content}
-  {else}
-  {$this->doctype()}
+{$this->content}
+{else}
+{$this->doctype()}
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -60,16 +60,27 @@
         $('#progress-dialog').dialog('open');
         timeout_func();
         href = $(this).attr('href');
-        $.get(href, function(data, status, jqXHR) {
-          $('#progress-dialog').dialog('close');
-          if(status != 'success') {
-            $('#message-dialog').html("<p>"+status+"</p>");
+        $.ajax({
+          url: href,
+          dataType: 'json',
+          success: function(data, status, jqXHR) {
+            $('#progress-dialog').dialog('close');
+            if (data.result == 'error') {
+              $('#message-dialog').html("<p>"+data.error+"</p>");
+              $('#message-dialog').dialog('open');
+            } else {
+              location.reload();
+            }
+          },
+          error: function(jqXHR, status, error) {
+            content = $('<div>').append(jqXHR.responseText).find("#content");
+            $('#progress-dialog').dialog('close');
+            $('#message-dialog').html(content);
+            $('#message-dialog').dialog({
+              height: $(window).height() - 100,
+              width: $(window).width() - 100
+            });
             $('#message-dialog').dialog('open');
-          } else if (data.result == 'error') {
-            $('#message-dialog').html("<p>"+data.error+"</p>");
-            $('#message-dialog').dialog('open');
-          } else {
-            location.reload();
           }
         });
         evt.preventDefault();
@@ -103,7 +114,7 @@
     </div>
   </div>
 </div>
-<div class="container">
+<div id="content" class="container">
   {$this->content}
   <hr>
   <footer>

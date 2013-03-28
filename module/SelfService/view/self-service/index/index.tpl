@@ -9,7 +9,9 @@
   {block name=style}{/block}
   
   {block name=script}{/block}
-<link type="text/css" href="jquery/css/start/jquery-ui-1.8.16.custom.css" rel="stylesheet" /> 
+<link type="text/css" href="{$this->basePath()}/jquery/css/start/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+<link type="text/css" href="{$this->basePath()}/css/style.css" rel="stylesheet" />
+<link type="text/css" href="{$this->basePath()}/css/default.css" rel="stylesheet" />
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 <script>
@@ -78,8 +80,8 @@ $(function() {
   showHideControls();
   
   $('#product-dialog').dialog({
-	    height: 750,
-	    width: 500,
+	    height: 600,
+	    width: 575,
 	    modal: true,
 	    autoOpen: false
   });
@@ -101,7 +103,7 @@ $(function() {
 });
 </script>
 <style>
-#content {
+#idxcontent {
   width: 988px;
   height: 568px;
   background: #012b5d url('images/it-services-v1.png') no-repeat right top;
@@ -149,11 +151,24 @@ $(function() {
   right: 0;
 }
 
+.productform label {
+  width: auto;
+}
+
+.productform fieldset {
+  width: 85%;
+}
+
+.productform input {
+  width: auto;
+  float: none;
+}
+
 </style>
 </head>
 <body bgcolor="#012b5d" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <center>
-<div id="content">
+<div id="idxcontent">
   <div id="products">
     <div id="leftlink"><img src="images/left.png" /></div>
     <div id="rightlink"><img src="images/right.png" /></div>
