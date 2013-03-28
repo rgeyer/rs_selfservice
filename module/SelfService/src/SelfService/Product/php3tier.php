@@ -231,7 +231,7 @@ class php3tier {
     $cpu_scale_up_alert->cond = new TextProductMetaInput('<');
     $cpu_scale_up_alert->threshold = new TextProductMetaInput('60');
     $cpu_scale_up_alert->duration = new NumberProductMetaInput(2);
-    $cpu_scale_up_alert->subjects = array($app_server);
+    $cpu_scale_up_alert->subjects = array($app_server,$php_server_ary);
     $cpu_scale_up_alert->action = new TextProductMetaInput('vote');
     $cpu_scale_up_alert->vote_tag = $text_metainput;
     $cpu_scale_up_alert->vote_type = new TextProductMetaInput('grow');
@@ -247,7 +247,7 @@ class php3tier {
     $cpu_scale_down_alert->cond = new TextProductMetaInput('>');
     $cpu_scale_down_alert->threshold = new TextProductMetaInput('80');
     $cpu_scale_down_alert->duration = new NumberProductMetaInput(2);
-    $cpu_scale_down_alert->subjects = array($app_server);
+    $cpu_scale_down_alert->subjects = array($app_server,$php_server_ary);
     $cpu_scale_down_alert->action = new TextProductMetaInput('vote');
     $cpu_scale_down_alert->vote_tag = $text_metainput;
     $cpu_scale_down_alert->vote_type = new TextProductMetaInput('shrink');

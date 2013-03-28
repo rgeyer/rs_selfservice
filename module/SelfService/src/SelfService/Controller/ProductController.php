@@ -157,6 +157,12 @@ class ProductController extends BaseController {
             }
           }
 
+          # Provision and record alert specs
+          $this->getLogger()->info(sprintf("About to provision %d alert specs", count($product->alerts)));
+          foreach($product->alerts as $alert) {
+            $prov_helper->provisionAlertSpec($alert);
+          }
+
           # Start yer engines
           if($product->launch_servers) {
             $prov_helper->launchServers();

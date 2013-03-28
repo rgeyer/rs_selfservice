@@ -1,0 +1,8 @@
+POST /api/alert_specs HTTP/1.1
+Host: my.rightscale.com
+User-Agent: Guzzle/2.7.1 curl/12345.24.0 PHP/5.3.17 openssl/OpenSSL/12345.9.8r
+Content-Type: application/x-www-form-urlencoded
+X-API-VERSION: 1.5
+Cookie: rs_gbl=eNotkEtvgkAYAP_LniFh91uRJekBtfISUQlUeyE8VmsVtuDio4b_Xkx6n5nDPFGGTFQ9kILKCzKfqLvwFpmUYDB6BckCmRhGeEx1ZowVdCwHmrKcAqFcJcBBxZgTldEsUzEBDEzLweDa0JP83x1R_HKHPLKgWce3LtWaE63L9yby5sK__gRfk5WFD7oPzWh6SrfitIukNufldzxJheqcy4fWhoLsLw_hGGGQrJmEvRcs_NvmN3INn44P4T1JZxUJW2e5WCWfW1zqwj3PIoflQqZMLlOIgyoOXdtru2lEdnEjEnH7OG6udKvX9sRqKs-SteHY2iIh7ttryf21JCsK0dVyuEIx0L7_A3IVW7k=
+
+alert_spec%5Bsubject_href%5D=%2Fapi%2Fserver_arrays%2F214057001&alert_spec%5Bcondition%5D=%3D%3D&alert_spec%5Bduration%5D=1&alert_spec%5Bfile%5D=path%2Ffile&alert_spec%5Bname%5D=foo&alert_spec%5Bthreshold%5D=1&alert_spec%5Bvariable%5D=var&alert_spec%5Bvote_tag%5D=foo&alert_spec%5Bvote_type%5D=shrink

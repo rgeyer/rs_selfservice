@@ -1,0 +1,14 @@
+HTTP/1.1 201 Created
+Server: nginx/1.0.14
+Date: Thu, 01 Nov 2012 05:16:28 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Status: 201 Created
+Location: /api/alert_specs/12345
+X-Runtime: 394
+X-Request-Uuid: 70ba9391d26a4942823eb7645e2bcba3
+Set-Cookie:
+Cache-Control: no-cache
+
+ 

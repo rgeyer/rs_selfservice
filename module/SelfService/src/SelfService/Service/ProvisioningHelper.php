@@ -31,6 +31,7 @@ use RGeyer\Guzzle\Rs\Model\Mc\Deployment;
 use Doctrine\ORM\PersistentCollection;
 
 use SelfService\Entity\Provisionable\Server;
+use SelfService\Entity\Provisionable\AlertSpec;
 use SelfService\Entity\Provisionable\ServerArray;
 use SelfService\Entity\Provisionable\SecurityGroup;
 use SelfService\Entity\Provisionable\ServerTemplate as OrmServerTemplate;
@@ -112,6 +113,11 @@ class ProvisioningHelper {
    * @var \RGeyer\Guzzle\Rs\Model\AbstractServer[] The complete list of servers provisioned by this helper
    */
   protected $_servers;
+
+  /**
+   * @var \RGeyer\Guzzle\Rs\Model\ServerArray[] The complete list of server arrays provisioned by this helper
+   */
+  protected $_arrays;
 
   /**
    * @var array An array of tags which will be set on every taggable resource created by this provisioning helper
@@ -345,7 +351,7 @@ class ProvisioningHelper {
       $api_server->addTags($this->_tags);
 
       $result[] = $api_server;
-      $this->_servers[] = $api_server;
+      $this->_servers[strval($server->id)] = $api_server;
 
       $this->log->info(sprintf("Created Server - Name: %s ID: %s", $server->nickname->getVal(), $api_server->id));
     }
@@ -540,8 +546,49 @@ class ProvisioningHelper {
     $command->getResult();
 
     $result[] = $api_array;
+    $this->_arrays[strval($array->id)] = $api_array;
     $this->log->info(sprintf("Created Array - Name: %s ID: %s", $array->nickname->getVal(), $api_array->id));
     return $result;
+  }
+
+  public function provisionAlertSpec(AlertSpec $alert) {
+    $alert_spec_subject_hrefs = array();
+    foreach($alert->subjects as $subject) {
+      switch(get_class($subject)) {
+        case "SelfService\Entity\Provisionable\Server":
+          $strid = strval($subject->id);
+          if(array_key_exists($strid, $this->_servers)) {
+            $alert_spec_subject_hrefs[] = $this->_servers[$strid]->href;
+          }
+          break;
+        case "SelfService\Entity\Provisionable\ServerArray":
+          $strid = strval($subject->id);
+          if(array_key_exists($strid, $this->_arrays)) {
+            $alert_spec_subject_hrefs[] = $this->_arrays[$strid]->href;
+          }
+          break;
+      }
+    }
+
+    foreach($alert_spec_subject_hrefs as $subject_href) {
+      $api_alert_spec = $this->client->newModel('AlertSpec');
+      $api_alert_spec->name = $alert->name->getVal();
+      $api_alert_spec->file = $alert->file->getVal();
+      $api_alert_spec->variable = $alert->variable->getVal();
+      $api_alert_spec->condition = $alert->cond->getVal();
+      $api_alert_spec->threshold = $alert->threshold->getVal();
+      $api_alert_spec->duration = $alert->duration->getVal();
+      $api_alert_spec->subject_href = $subject_href;
+      if($alert->action->getVal() == 'vote') {
+        $api_alert_spec->vote_tag = $alert->vote_tag->getVal();
+        $api_alert_spec->vote_type = $alert->vote_type->getVal();
+      } else if ($alert->action->getVal() == 'escalation') {
+        $api_alert_spec->escalation_name = $alert->escalation_name->getVal();
+      }
+      $api_alert_spec->create();
+      $this->log->info(sprintf("Created Alert Spec - Name: %s For Subject: %s", $api_alert_spec->name, $subject_href));
+    }
+
   }
 
   public function launchServers() {

@@ -575,4 +575,149 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $this->markTestSkipped("Kinda untestable becase there are nearly 600 results in the mock file, need mocks specific to these tests");
   }
 
+  public function testCanProvisionVoteAlertSpec() {
+    $log = $this->getMock('Zend\Log\Logger');
+    # TODO: This breaks if github.com/rgeyer/rs_guzzle_client mocks change, probably an improvement
+    # for Guzzle 3 mocks..
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/servers_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/alert_specs_create/response',
+      '1.5/alert_specs_create/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $server_template_model = new ServerTemplate();
+    $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
+    $server_template_model->publication_id = new TextProductMetaInput("1234");
+    $server_template_model->version = new NumberProductMetaInput(5);
+    $server_model = new Server();
+    $server_model->id = 1;
+    $server_model->cloud_id = new NumberProductMetaInput(11111);
+    $server_model->count = new NumberProductMetaInput(1);
+    $server_model->nickname = new TextProductMetaInput("DB");
+    $server_model->server_template = $server_template_model;
+    $server_model->security_groups = array();
+    $helper->provisionServer($server_model, $deployment);
+    $array_model = new ServerArray();
+    $array_model->id = 1;
+    $array_model->cloud_id = new NumberProductMetaInput(11111);
+    $array_model->max_count = new NumberProductMetaInput(10);
+    $array_model->min_count = new NumberProductMetaInput(2);
+    $array_model->type = new TextProductMetaInput("alert");
+    $array_model->tag = new TextProductMetaInput("tag");
+    $array_model->nickname = new TextProductMetaInput("DB");
+    $array_model->server_template = $server_template_model;
+    $array_model->security_groups = array();
+    $alert_spec_model = new \SelfService\Entity\Provisionable\AlertSpec();
+    $alert_spec_model->name = new TextProductMetaInput("foo");
+    $alert_spec_model->file = new TextProductMetaInput("file");
+    $alert_spec_model->variable = new TextProductMetaInput("var");
+    $alert_spec_model->cond = new TextProductMetaInput("==");
+    $alert_spec_model->threshold = new TextProductMetaInput("threshold");
+    $alert_spec_model->duration = new NumberProductMetaInput(1);
+    $alert_spec_model->action = new TextProductMetaInput("vote");
+    $alert_spec_model->vote_tag = new TextProductMetaInput("tag");
+    $alert_spec_model->vote_type = new TextProductMetaInput("grow");
+    $alert_spec_model->subjects = array($server_model,$array_model);
+    $helper->provisionServerArray($array_model,$deployment);
+    $helper->provisionAlertSpec($alert_spec_model);
+
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("alert_spec%5Bsubject_href%5D=%2Fapi%2Fservers", strval($responses[12]));
+    $this->assertContains("alert_spec%5Bvote_type%5D=grow", strval($responses[12]));
+    $this->assertContains("alert_spec%5Bvote_tag%5D=tag", strval($responses[12]));
+    $this->assertContains("alert_spec%5Bsubject_href%5D=%2Fapi%2Fserver_arrays", strval($responses[13]));
+    $this->assertContains("alert_spec%5Bvote_type%5D=grow", strval($responses[13]));
+    $this->assertContains("alert_spec%5Bvote_tag%5D=tag", strval($responses[13]));
+  }
+
+  public function testCanProvisionEscalationAlertSpec() {
+    $log = $this->getMock('Zend\Log\Logger');
+    # TODO: This breaks if github.com/rgeyer/rs_guzzle_client mocks change, probably an improvement
+    # for Guzzle 3 mocks..
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/servers_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/alert_specs_create/response',
+      '1.5/alert_specs_create/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment(array('deployment[name]' => 'foo'));
+    $server_template_model = new ServerTemplate();
+    $server_template_model->nickname = new TextProductMetaInput("Database Manager for Microsoft SQL Server (v12.11.1-LTS)");
+    $server_template_model->publication_id = new TextProductMetaInput("1234");
+    $server_template_model->version = new NumberProductMetaInput(5);
+    $server_model = new Server();
+    $server_model->id = 1;
+    $server_model->cloud_id = new NumberProductMetaInput(11111);
+    $server_model->count = new NumberProductMetaInput(1);
+    $server_model->nickname = new TextProductMetaInput("DB");
+    $server_model->server_template = $server_template_model;
+    $server_model->security_groups = array();
+    $helper->provisionServer($server_model, $deployment);
+    $array_model = new ServerArray();
+    $array_model->id = 1;
+    $array_model->cloud_id = new NumberProductMetaInput(11111);
+    $array_model->max_count = new NumberProductMetaInput(10);
+    $array_model->min_count = new NumberProductMetaInput(2);
+    $array_model->type = new TextProductMetaInput("alert");
+    $array_model->tag = new TextProductMetaInput("tag");
+    $array_model->nickname = new TextProductMetaInput("DB");
+    $array_model->server_template = $server_template_model;
+    $array_model->security_groups = array();
+    $alert_spec_model = new \SelfService\Entity\Provisionable\AlertSpec();
+    $alert_spec_model->name = new TextProductMetaInput("foo");
+    $alert_spec_model->file = new TextProductMetaInput("file");
+    $alert_spec_model->variable = new TextProductMetaInput("var");
+    $alert_spec_model->cond = new TextProductMetaInput("==");
+    $alert_spec_model->threshold = new TextProductMetaInput("threshold");
+    $alert_spec_model->duration = new NumberProductMetaInput(1);
+    $alert_spec_model->action = new TextProductMetaInput("escalation");
+    $alert_spec_model->escalation_name = new TextProductMetaInput("critical");
+    $alert_spec_model->subjects = array($server_model,$array_model);
+    $helper->provisionServerArray($array_model,$deployment);
+    $helper->provisionAlertSpec($alert_spec_model);
+
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("alert_spec%5Bsubject_href%5D=%2Fapi%2Fservers", strval($responses[12]));
+    $this->assertContains("alert_spec%5Bescalation_name%5D=critical", strval($responses[12]));
+    $this->assertContains("alert_spec%5Bsubject_href%5D=%2Fapi%2Fserver_arrays", strval($responses[13]));
+    $this->assertContains("alert_spec%5Bescalation_name%5D=critical", strval($responses[13]));
+  }
+
 }
