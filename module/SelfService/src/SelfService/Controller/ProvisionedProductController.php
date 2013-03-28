@@ -120,6 +120,7 @@ class ProvisionedProductController extends BaseController {
 
 					# Wait up if we're waiting on servers or array instances
 					if(	array_key_exists('wait_for_decom', $response) && count($response['wait_for_decom']) > 0) {
+            $keep_going = true;
 						break;
 					}
 
@@ -155,8 +156,10 @@ class ProvisionedProductController extends BaseController {
             }
 					}
         } while ($keep_going);
-        $em->remove($prov_product);
-        $em->flush();
+        if(!$keep_going) {
+          $em->remove($prov_product);
+          $em->flush();
+        }
       }
     }
 

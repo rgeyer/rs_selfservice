@@ -69,11 +69,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $helper->setTags(array('foo', 'bar', 'baz'));
     $inputs = array();
     $inputs[] = new InputProductMetaInput('foo/bar/baz', 'text:foobarbaz');
-
     $deployment = $helper->provisionDeployment('name', 'description', $inputs);
-
-    #$helper->updateDeployment($deployment,$inputs);
-
     $requests = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(5, count($requests));
     $this->assertContains('inputs[foo/bar/baz]=text%3Afoobarbaz', strval($requests[4]));
@@ -336,8 +332,6 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
 
   public function testCanProvisionServer() {
     $log = $this->getMock('Zend\Log\Logger');
-    # TODO: This breaks if github.com/rgeyer/rs_guzzle_client mocks change, probably an improvement
-    # for Guzzle 3 mocks..
     $request_paths = array(
       '1.5/clouds/json/with_different_ids/response',
       '1.5/server_templates/json/response',
@@ -345,6 +339,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/response',
+      '1.5/datacenters/json/response',
       '1.5/servers_create/response',
       '1.5/tags_multi_add/response'
     );
@@ -387,6 +382,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/server_templates/json/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/response',
+      '1.5/datacenters/json/response',
       '1.5/servers_create/response',
       '1.5/tags_multi_add/response'
     );
@@ -426,6 +422,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/no_instance_type/response',
       '1.5/instance_types/json/response',
+      '1.5/datacenters/json/response',
       '1.5/servers_create/response',
       '1.5/tags_multi_add/response'
     );
@@ -457,7 +454,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     # Make sure the helper made all of the expected API calls
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains('instance_type_href]=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[7]));
+    $this->assertContains('instance_type_href]=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[8]));
   }
 
   public function testProvisionServerThrowsErrorIfTemplateNotImported() {
@@ -612,6 +609,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/response',
+      '1.5/datacenters/json/response',
       '1.5/servers_create/response',
       '1.5/tags_multi_add/response',
       '1.5/multi_cloud_images/json/response',
@@ -667,12 +665,12 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
 
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fservers", strval($responses[12]));
-    $this->assertContains("alert_spec[vote_type]=grow", strval($responses[12]));
-    $this->assertContains("alert_spec[vote_tag]=tag", strval($responses[12]));
-    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fserver_arrays", strval($responses[13]));
+    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fservers", strval($responses[13]));
     $this->assertContains("alert_spec[vote_type]=grow", strval($responses[13]));
     $this->assertContains("alert_spec[vote_tag]=tag", strval($responses[13]));
+    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fserver_arrays", strval($responses[14]));
+    $this->assertContains("alert_spec[vote_type]=grow", strval($responses[14]));
+    $this->assertContains("alert_spec[vote_tag]=tag", strval($responses[14]));
   }
 
   public function testCanProvisionEscalationAlertSpec() {
@@ -686,6 +684,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
       '1.5/tags_multi_add/response',
       '1.5/multi_cloud_images/json/response',
       '1.5/multi_cloud_image_settings/json/response',
+      '1.5/datacenters/json/response',
       '1.5/servers_create/response',
       '1.5/tags_multi_add/response',
       '1.5/multi_cloud_images/json/response',
@@ -740,10 +739,10 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
 
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fservers", strval($responses[12]));
-    $this->assertContains("alert_spec[escalation_name]=critical", strval($responses[12]));
-    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fserver_arrays", strval($responses[13]));
+    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fservers", strval($responses[13]));
     $this->assertContains("alert_spec[escalation_name]=critical", strval($responses[13]));
+    $this->assertContains("alert_spec[subject_href]=%2Fapi%2Fserver_arrays", strval($responses[14]));
+    $this->assertContains("alert_spec[escalation_name]=critical", strval($responses[14]));
   }
 
 }

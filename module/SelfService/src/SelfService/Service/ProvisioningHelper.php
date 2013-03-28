@@ -316,7 +316,16 @@ class ProvisioningHelper {
     $instance_type_href = null;
     $this->_selectMciAndInstanceType($st, $cloud_id, $mci_href, $instance_type_href);
 
-    # TODO: Handle all defaulted things such as datacenters
+    $datacenter_hrefs = array();
+    if($this->_clouds[$cloud_id]->supportsCloudFeature('datacenters')) {
+      $datacenters = $this->api_cache->getDatacenters($cloud_id);
+      foreach($datacenters as $datacenter) {
+        # TODO: Filter by datacenters specified as defaults for product, or
+        # specified as a meta input by the user
+        $datacenter_hrefs[] = $datacenter->href;
+      }
+    }
+
     $server_secgrps = $this->_getProvisionedSecurityGroupHrefs($server->security_groups);
 
     $this->log->info("About to provision " . $server->count->getVal() . " servers of type " . $server->nickname->getVal());
@@ -337,6 +346,9 @@ class ProvisioningHelper {
       $params['server[instance][instance_type_href]'] = $server->instance_type != null ? $server->instance_type->getVal() : $instance_type_href;
       if(count($server_secgrps) > 0) {
         $params['server[instance][security_group_hrefs]'] = $server_secgrps;
+      }
+      if(count($datacenter_hrefs) > 0) {
+        $params['server[instance][datacenter_href]'] = $datacenter_hrefs[$i % count($datacenter_hrefs)];
       }
       $params['server[instance][multi_cloud_image_href]'] = $mci_href;
       $ssh_key = $this->_getSshKey( $cloud_id, $deployment->name, $result);
