@@ -52,7 +52,7 @@ class UserControllerTest extends AbstractConsoleControllerTestCase {
     $em->flush();
 
     $consolemock = $this->getMock('Zend\Console\Adapter\AdapterInterface');
-    $consolemock->expects($this->exactly(2))->method('write');
+    $consolemock->expects($this->exactly(2))->method('writeLine');
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('console', $consolemock);
 

@@ -30,7 +30,7 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
 
   public function testIndexActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/user');
+    $this->dispatch('/admin/user');
 
     $this->assertActionName('index');
     $this->assertControllerName('selfservice\controller\user');
@@ -51,7 +51,7 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
 
     $em->flush();
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/user');
+    $this->dispatch('/admin/user');
 
     $this->assertActionName('index');
     $this->assertControllerName('selfservice\controller\user');
@@ -63,7 +63,7 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
 
   public function testUnauthorizedActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/user/unauthorized');
+    $this->dispatch('/admin/user/unauthorized');
 
     $this->assertActionName('unauthorized');
     $this->assertControllerName('selfservice\controller\user');
@@ -80,7 +80,7 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
     $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\UserService',$userservicemock);
 
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/user/authorize/foo%40bar.baz');
+    $this->dispatch('/admin/user/authorize/foo%40bar.baz');
 
     $this->assertActionName('authorize');
     $this->assertControllerName('selfservice\controller\user');
@@ -97,7 +97,7 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
     $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\UserService',$userservicemock);
 
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/user/deauthorize/foo%40bar.baz');
+    $this->dispatch('/admin/user/deauthorize/foo%40bar.baz');
 
     $this->assertActionName('deauthorize');
     $this->assertControllerName('selfservice\controller\user');
