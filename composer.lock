@@ -531,12 +531,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rgeyer/rs_guzzle_client.git",
-                "reference": "9b73736575cf76d9c4b8875464cd1900a32157d4"
+                "reference": "5349b1ccdba04ea18791bd84c04f3261cfe07c57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rgeyer/rs_guzzle_client/zipball/9b73736575cf76d9c4b8875464cd1900a32157d4",
-                "reference": "9b73736575cf76d9c4b8875464cd1900a32157d4",
+                "url": "https://api.github.com/repos/rgeyer/rs_guzzle_client/zipball/5349b1ccdba04ea18791bd84c04f3261cfe07c57",
+                "reference": "5349b1ccdba04ea18791bd84c04f3261cfe07c57",
                 "shasum": ""
             },
             "require": {
@@ -570,7 +570,7 @@
                 "api",
                 "client"
             ],
-            "time": "2013-03-25 02:13:47"
+            "time": "2013-03-28 05:33:06"
         },
         {
             "name": "smarty/smarty",
