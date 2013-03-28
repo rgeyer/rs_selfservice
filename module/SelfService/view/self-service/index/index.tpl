@@ -32,7 +32,7 @@ $(function() {
   }); 
   
   $( "#dialog-modal" ).dialog({
-    height: 750,
+    height: 180,
     width: 500,
     modal: true,
     autoOpen: false

@@ -24,9 +24,56 @@
 
   {literal}
   <script>
+    function timeout_func()
+    {
+      var percent = $("#progressbar").progressbar('value');
+      percent = (percent + 10) % 100;
+      $("#progressbar").progressbar('value', percent);
+
+      if ($("#progress-dialog").dialog('isOpen')) {
+        setTimeout(timeout_func,1000);
+      }
+    }
+
     $(document).ready(function() {
       $('#nav').menu({position:{my: "left top", at: "left top+40"}});
-      // Eventually my nav initialization will go here.
+
+      $( "#progressbar" ).progressbar({
+        value: 0
+      });
+
+      $('#progress-dialog').dialog({
+        height: 180,
+        width: 500,
+        modal: true,
+        autoOpen:false
+      });
+
+      $('#message-dialog').dialog({
+        height: 350,
+        width: 500,
+        modal: true,
+        autoOpen:false
+      });
+
+      $('a.ajaxaction').click(function(evt) {
+        $('#progress-dialog').dialog('open');
+        timeout_func();
+        href = $(this).attr('href');
+        $.get(href, function(data, status, jqXHR) {
+          $('#progress-dialog').dialog('close');
+          if(status != 'success') {
+            $('#message-dialog').html("<p>"+status+"</p>");
+            $('#message-dialog').dialog('open');
+          } else if (data.result == 'error') {
+            $('#message-dialog').html("<p>"+data.error+"</p>");
+            $('#message-dialog').dialog('open');
+          } else {
+            location.reload();
+          }
+        });
+        evt.preventDefault();
+      });
     });
   </script>
   {/literal}
@@ -63,6 +110,11 @@
     <p>&copy; 2013 by Ryan J. Geyer {$this->translate('All rights reserved.')}</p>
   </footer>
 </div> <!-- /container -->
+<div id="progress-dialog" title="Please wait">
+  <p>Processing your request</p>
+  <div id="progressbar"></div>
+</div>
+<div id="message-dialog" title="Message"></div>
   {$this->inlineScript()}
 </body>
 </html>

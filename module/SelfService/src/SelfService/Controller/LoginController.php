@@ -25,7 +25,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Controller;
 
 use Zend\Session\Container;
-use Zend\View\Model\JsonModel;
 use Zend\Authentication\Result;
 use SelfService\Zend\Authentication\Adapter\GoogleAuthAdapter;
 

@@ -42,6 +42,7 @@ Travis-CI Build Status [![Build Status](https://travis-ci.org/rgeyer/rs_selfserv
 TODO:
 * Soft deletes for products, provisioned products, perhaps others?
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
+  * All ajax calls are actually ajax with a progress bar.  Above still needs more love. (Done)
 * Handle "cloud not supported" errors when provisioning servers or arrays
   * Select default Datacenter when not specified and supported/required by the cloud
 * Tokenize all paths

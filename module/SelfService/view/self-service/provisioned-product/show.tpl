@@ -23,7 +23,7 @@
           <td>{$server->name}</td>
           <td>{$server->created_at|date_format}</td>
           <td>{$server->ip}</td>
-          <td>{foreach $server->actions as $key=>$action}<a href="{$action.uri_prefix}/{$server->prov_server->id}"><img src="{$action.img_path}"/></a>{/foreach}</td>
+          <td>{foreach $server->actions as $key=>$action}<a href="{$action.uri_prefix}/{$server->prov_server->id}"{if $action.is_ajax} class="ajaxaction"{/if}><img src="{$action.img_path}"/></a>{/foreach}</td>
         </tr>
     {/foreach}
       </tbody>

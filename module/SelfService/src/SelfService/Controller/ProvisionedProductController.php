@@ -47,7 +47,8 @@ class ProvisionedProductController extends BaseController {
     $actions = array(
       'del' => array(
         'uri_prefix' => $this->url()->fromRoute('admin/provisionedproduct').'/provisionedproducts/cleanup',
-        'img_path' => '/images/delete.png'
+        'img_path' => '/images/delete.png',
+        'is_ajax' => true
       ),
       'show' => array(
         'uri_prefix' => $this->url()->fromRoute('admin/provisionedproduct').'/provisionedproducts/show',
@@ -211,13 +212,15 @@ class ProvisionedProductController extends BaseController {
           if(in_array($server->state, array('inactive', 'stopped'))) {
             $server->actions['start'] = array(
               'uri_prefix' => $this->url()->fromRoute('admin/provisionedproducts').'/provisionedproducts/serverstart',
-              'img_path' => '/images/plus.png'
+              'img_path' => '/images/plus.png',
+              'is_ajax' => true
             );
           }
           if($server->state == 'operational') {
             $server->actions['stop'] = array(
               'uri_prefix' => $this->url()->fromRoute('admin/provisionedproducts').'/provisionedproducts/serverstop',
-              'img_path' => '/images/delete.png'
+              'img_path' => '/images/delete.png',
+              'is_ajax' => true
             );
           }
         }
