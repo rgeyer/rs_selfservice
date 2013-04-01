@@ -110,7 +110,7 @@ class ProvisioningHelper {
   protected $_ssh_keys = array();
 
   /**
-   * @var \RGeyer\Guzzle\Rs\Model\AbstractServer[] The complete list of servers provisioned by this helper
+   * @var array An associative array where the key is the string ID of the \SelfService\Entity\ProvisionedServer and the value is an array of \RGeyer\Guzzle\Rs\Model\Mc\Server which was provisioned by the helper.
    */
   protected $_servers;
 
@@ -363,7 +363,7 @@ class ProvisioningHelper {
       $api_server->addTags($this->_tags);
 
       $result[] = $api_server;
-      $this->_servers[strval($server->id)] = $api_server;
+      $this->_servers[strval($server->id)][] = $api_server;
 
       $this->log->info(sprintf("Created Server - Name: %s ID: %s", $server->nickname->getVal(), $api_server->id));
     }
@@ -601,7 +601,9 @@ class ProvisioningHelper {
         case "SelfService\Entity\Provisionable\Server":
           $strid = strval($subject->id);
           if(array_key_exists($strid, $this->_servers)) {
-            $alert_spec_subject_hrefs[] = $this->_servers[$strid]->href;
+            foreach($this->_servers[$strid] as $server) {
+              $alert_spec_subject_hrefs[] = $server->href;
+            }
           }
           break;
         case "SelfService\Entity\Provisionable\ServerArray":
@@ -635,8 +637,10 @@ class ProvisioningHelper {
   }
 
   public function launchServers() {
-    foreach($this->_servers as $server) {
-      $server->launch();
+    foreach($this->_servers as $servers) {
+      foreach($servers as $server) {
+        $server->launch();
+      }
     }
   }
 
