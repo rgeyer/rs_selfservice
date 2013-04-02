@@ -91,33 +91,6 @@ class ProductService extends BaseEntityService {
     $em->persist($instance_meta);
     $product->meta_inputs[] = $instance_meta;
 
-    foreach($json as $server_or_array) {
-      switch(strtolower($server_or_array->type)) {
-        case "server":
-          $template = new ServerTemplate();
-          $template->nickname = new TextProductMetaInput($server_or_array->st_name);
-          $template->version = new NumberProductMetaInput($server_or_array->revision);
-          $template->publication_id = new TextProductMetaInput($server_or_array->publication_id);
-          $em->persist($template);
-
-          $server = new Server();
-          $server->server_template = $template;
-          $server->cloud_id = $cloud_meta;
-          $server->count = new NumberProductMetaInput(1);
-          $server->nickname = new TextProductMetaInput($server_or_array->name);
-          $em->persist($server);
-
-          $product->servers[] = $server;
-
-          foreach($server_or_array->inputs as $key=>$input) {
-            $inputs[$key] = $input;
-          }
-          break;
-        default:
-          break;
-      }
-    }
-
     $secgrp = new SecurityGroup();
     $secgrp->description = new TextProductMetaInput(sprintf("Provisioned by rsss for %s", $product->name));
     $secgrp->cloud_id = $cloud_meta;
@@ -140,6 +113,36 @@ class ProductService extends BaseEntityService {
     $udprule->ingress_group = $secgrp;
     $secgrp->rules[] = $udprule;
     $em->persist($secgrp);
+
+    $product->security_groups[] = $secgrp;
+
+    foreach($json as $server_or_array) {
+      switch(strtolower($server_or_array->type)) {
+        case "server":
+          $template = new ServerTemplate();
+          $template->nickname = new TextProductMetaInput($server_or_array->st_name);
+          $template->version = new NumberProductMetaInput($server_or_array->revision);
+          $template->publication_id = new TextProductMetaInput($server_or_array->publication_id);
+          $em->persist($template);
+
+          $server = new Server();
+          $server->server_template = $template;
+          $server->cloud_id = $cloud_meta;
+          $server->count = new NumberProductMetaInput(1);
+          $server->nickname = new TextProductMetaInput($server_or_array->name);
+          $server->security_groups[] = $secgrp;
+          $em->persist($server);
+
+          $product->servers[] = $server;
+
+          foreach($server_or_array->inputs as $key=>$input) {
+            $inputs[$key] = $input;
+          }
+          break;
+        default:
+          break;
+      }
+    }
 
     foreach($inputs as $key=>$value) {
       $metainput = new InputProductMetaInput($key,$value);
