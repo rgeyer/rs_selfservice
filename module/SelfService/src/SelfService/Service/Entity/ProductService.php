@@ -99,7 +99,7 @@ class ProductService extends BaseEntityService {
     $em->flush();
 
     $tcprule = new SecurityGroupRule();
-    $tcprule->ingress_from_port = new NumberProductMetaInput(0);
+    $tcprule->ingress_from_port = new NumberProductMetaInput(1);
     $tcprule->ingress_to_port = new NumberProductMetaInput(65535);
     $tcprule->ingress_protocol = new TextProductMetaInput("tcp");
     $tcprule->ingress_group = $secgrp;
@@ -107,7 +107,7 @@ class ProductService extends BaseEntityService {
     $em->persist($secgrp);
 
     $udprule = new SecurityGroupRule();
-    $udprule->ingress_from_port = new NumberProductMetaInput(0);
+    $udprule->ingress_from_port = new NumberProductMetaInput(1);
     $udprule->ingress_to_port = new NumberProductMetaInput(65535);
     $udprule->ingress_protocol = new TextProductMetaInput("udp");
     $udprule->ingress_group = $secgrp;
