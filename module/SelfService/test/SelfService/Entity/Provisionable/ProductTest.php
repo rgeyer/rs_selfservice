@@ -21,6 +21,7 @@ class ProductTest extends AbstractHttpControllerTestCase {
     $meta_name->input_name = "foo";
     $sg->name = $meta_name;
     $product->security_groups[] = $sg;
+    $product->parameters = array();
 
     $product->mergeMetaInputs(array('foo' => 'bar'));
     $this->assertEquals('bar', $sg->name->getVal());
