@@ -14,20 +14,8 @@
 <link type="text/css" href="{$this->basePath()}/css/default.css" rel="stylesheet" />
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{$this->basePath()}/js/functions.js"></script>
 <script>
-// 988 x 568
-// 2.8 x 1.972
-function timeout_func()
-{
-  var percent = $( "#progressbar" ).progressbar('value');
-  percent = (percent + 10) % 100;
-  $( "#progressbar" ).progressbar('value', percent);
-  
-  if ($( "#dialog-modal" ).dialog('isOpen')) {
-    setTimeout(timeout_func,1000);
-  }
-}
-
 $(function() {
   $( "#progressbar" ).progressbar({
     value: 0
@@ -88,17 +76,23 @@ $(function() {
   
   $('.product').click(function() {
 	  id = $('input', this).val();
-	  $.get('{$this->url("productrendermetaform")}/' + id, function(data) {
-		  $('#product-dialog').html(data);
-		  $('#product-dialog').dialog('open');
-	  });	  
-  });
-  
-  $('#finished-dialog').dialog({
-      height: 350,
-      width: 500,
-      modal: true,
-      autoOpen: false
+    $.ajax({
+      url: '{$this->url("productrendermetaform")}/'+id,
+      dataType: 'html',
+      success: function(data, status, jqXHR) {
+        $('#product-dialog').html(data);
+		    $('#product-dialog').dialog('open');
+      },
+      error: function(jqXHR, status, error) {
+        content = $('<div>').append(jqXHR.responseText).find("#content");
+        open_message_dialog(
+          $(window).height() - 100,
+          $(window).width() - 100,
+          "Error",
+          content
+        );
+      }
+    });
   });
 });
 </script>
@@ -167,7 +161,6 @@ $(function() {
 </style>
 </head>
 <body bgcolor="#012b5d" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-<center>
 <div id="idxcontent">
   <div id="products">
     <div id="leftlink"><img src="images/left.png" /></div>
@@ -185,10 +178,7 @@ $(function() {
   <p>Please wait while your servers are provisioned!<p>
   <div id="progressbar"></div>
 </div>
-<div id="product-dialog" title="Environment Options">
-</div>
-<div id="finished-dialog" title="Product Provisioned">
-</div>
-</center>
+<div id="product-dialog" title="Environment Options"></div>
+<div id="message-dialog" title="Message"></div>
 </body>
 </html>

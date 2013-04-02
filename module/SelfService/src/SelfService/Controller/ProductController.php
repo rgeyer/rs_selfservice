@@ -72,7 +72,7 @@ class ProductController extends BaseController {
   }
 
   public function provisionAction() {
-    $response = array('result' => 'success');
+    $response = array('result' => 'success', 'messages' => array());
     $now = time();
     $product_id = $this->params('id');
     if(isset($product_id)) {
@@ -91,7 +91,12 @@ class ProductController extends BaseController {
         $em->persist($prov_prod);
         $em->flush();
 
-        $response['url'] = $this->url()->fromRoute('admin/provisionedproducts').'/provisionedproducts/show/'.$prov_prod->id;
+        $response['messages'][] = sprintf(
+          "View your provisioned product in the admin panel <a href='%s'>here</a>.",
+          $this->url()->fromRoute('admin/provisionedproducts').'/provisionedproducts/show/'.$prov_prod->id
+        );
+
+        # TODO: Add a link to the RightScale deployment based on a configuration flag and/or user role
         $prov_helper->setTags(array('rsss:provisioned_product_id='.$prov_prod->id));
         try {
           # Provision and record deployment

@@ -20,21 +20,11 @@
   {$this->headScript()->prependFile($this->basePath()|cat:'/js/html5.js', 'text/javascript', $conditional_scripts_ary)
   ->prependFile($this->basePath()|cat:'/js/bootstrap.min.js')
   ->prependFile('http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
-  ->appendFile('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js')}
+  ->appendFile('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js')
+  ->appendFile($this->basePath()|cat:'/js/functions.js')}
 
   {literal}
   <script>
-    function timeout_func()
-    {
-      var percent = $("#progressbar").progressbar('value');
-      percent = (percent + 10) % 100;
-      $("#progressbar").progressbar('value', percent);
-
-      if ($("#progress-dialog").dialog('isOpen')) {
-        setTimeout(timeout_func,1000);
-      }
-    }
-
     $(document).ready(function() {
       $('#nav').menu({position:{my: "left top", at: "left top+40"}});
 
@@ -66,8 +56,25 @@
           success: function(data, status, jqXHR) {
             $('#progress-dialog').dialog('close');
             if (data.result == 'error') {
-              $('#message-dialog').html("<p>"+data.error+"</p>");
-              $('#message-dialog').dialog('open');
+              open_message_dialog(
+                $(window).height() - 100,
+                $(window).width() - 100,
+                "Error",
+                "<p>"+data.error+"</p>"
+              );
+            } else if (data.messages != undefined) {
+              $('#message-dialog').dialog({
+                close: function( event, ui ) {
+                  location.reload();
+                }
+              });
+              content = response_messages_to_content(data.messages);
+              open_message_dialog(
+                350,
+                500,
+                "Messages",
+                content
+              );
             } else {
               location.reload();
             }
@@ -75,12 +82,12 @@
           error: function(jqXHR, status, error) {
             content = $('<div>').append(jqXHR.responseText).find("#content");
             $('#progress-dialog').dialog('close');
-            $('#message-dialog').html(content);
-            $('#message-dialog').dialog({
-              height: $(window).height() - 100,
-              width: $(window).width() - 100
-            });
-            $('#message-dialog').dialog('open');
+            open_message_dialog(
+              $(window).height() - 100,
+              $(window).width() - 100,
+              "Error",
+              content
+            );
           }
         });
         evt.preventDefault();
@@ -103,7 +110,7 @@
       <div class="nav-collapse collapse">
         <ul class="nav" id="nav">
           <li class="active"><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
-          <li class="active"><a href="{$this->url('admin')}">{$this->translate('Admin')}</a>
+          <li class="active">{$this->translate('Admin')}
             <ul class="nav">
               <li><a href="{$this->url('admin/provisionedproducts')}/provisionedproducts">{$this->translate('Provisioned Products')}</a></li><br/>
               <li><a href="{$this->url('user')}">{$this->translate("Users")}</a></li>

@@ -120,6 +120,11 @@ class ProvisionedProductController extends BaseController {
 
 					# Wait up if we're waiting on servers or array instances
 					if(	array_key_exists('wait_for_decom', $response) && count($response['wait_for_decom']) > 0) {
+            $response['messages'][] = sprintf(
+              "There were %d servers still running and %d arrays with running instances.  A terminate request has been sent.  When the servers have been terminated, you can try to delete the product again",
+              count($response['wait_for_decom']['servers']),
+              count($response['wait_for_decom']['arrays'])
+            );
             $keep_going = true;
 						break;
 					}

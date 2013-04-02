@@ -53,33 +53,31 @@ $(function() {
       success: function(data, status, jqXHR) {
         $("#dialog-modal").dialog('close');
         if (data.result == 'error') {
-          $("#finished-dialog").html("<p>" + data.error + "</p>");
+          open_message_dialog(
+            $(window).height() - 100,
+            $(window).width() - 100,
+            "Application Error",
+            "<p>"+data.error+"</p>"
+          );
         } else {
-          if(data.servers) {
-            hostname_list = 'The following servers were launched and are currently available </br>';
-            for(server in data.servers) {
-              hostname_list += data.servers[server]['dns-name'] + "</br>"
-            }
-            $("#finished-dialog").html(hostname_list);
-          } else {
-            $("#finished-dialog").html("<a href='" + data.url + "'>" + data.url + "</a>");
-          }
+          content = response_messages_to_content(data.messages);
+          open_message_dialog(
+            350,
+            500,
+            "Provisioned Product",
+            content
+          );
         }
-        $('#finished-dialog').dialog({
-          height: 350,
-          width: 500
-        });
-        $("#finished-dialog").dialog('open');
       },
       error: function(jqXHR, status, error) {
         content = $('<div>').append(jqXHR.responseText).find("#content");
         $('#dialog-modal').dialog('close');
-        $('#finished-dialog').html(content);
-        $('#finished-dialog').dialog({
-          height: $(window).height() - 100,
-          width: $(window).width() - 100
-        });
-        $("#finished-dialog").dialog('open');
+        open_message_dialog(
+          $(window).height() - 100,
+          $(window).width() - 100,
+          "Transport Error",
+          content
+        );
       }
     {literal}}{/literal});
 		evt.preventDefault();
