@@ -110,7 +110,7 @@
       <div class="nav-collapse collapse">
         <ul class="nav" id="nav">
           <li class="active"><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
-          <li class="active">{$this->translate('Admin')}
+          <li class="active"><a>{$this->translate('Admin')}</a>
             <ul class="nav">
               <li><a href="{$this->url('admin/provisionedproducts')}/provisionedproducts">{$this->translate('Provisioned Products')}</a></li><br/>
               <li><a href="{$this->url('user')}">{$this->translate("Users")}</a></li>
