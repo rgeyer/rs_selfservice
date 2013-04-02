@@ -110,6 +110,10 @@ class Product {
 		foreach($this->alerts as $alert) {
 			$this->meta_up_object($alert, $params);
 		}
+
+    foreach($this->parameters as $input) {
+      $this->meta_up_object($input, $params);
+    }
   }
 
 	protected function meta_up_object($object, array $params) {

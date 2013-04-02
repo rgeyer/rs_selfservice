@@ -24,13 +24,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Service\Entity;
 
+use Doctrine\DBAL\LockMode;
 use SelfService\Entity\User;
 use Doctrine\ORM\EntityManager;
-use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 
-class UserService implements ServiceLocatorAwareInterface {
+class UserService extends BaseEntityService {
 
   /**
    * @var string The name of the entity class for this service
@@ -38,38 +36,20 @@ class UserService implements ServiceLocatorAwareInterface {
   protected $entityClass = 'SelfService\Entity\User';
 
   /**
-   * @var ServiceLocatorInterface
-   */
-  protected $serviceLocator;
-
-  /**
-   * @return \Doctrine\ORM\EntityManager
-   */
-  protected function getEntityManager() {
-    return $this->serviceLocator->get('doctrine.entitymanager.orm_default');
-  }
-
-  /**
-   * @return ServiceLocatorInterface
-   */
-  public function getServiceLocator() {
-    return $this->serviceLocator;
-  }
-
-  /**
-   * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceLocator
-   * @return void
-   */
-  public function setServiceLocator(ServiceLocatorInterface $serviceLocator) {
-    $this->serviceLocator = $serviceLocator;
-  }
-
-  /**
-   * @return User[] An array of all User entities
+   * @return \SelfService\Entity\User[] An array of all User entities
    */
   public function findAll() {
-    $em = $this->getEntityManager();
-    return $em->getRepository($this->entityClass)->findAll();
+    return parent::findAll();
+  }
+
+  /**
+   * @param $id
+   * @param $lockMode
+   * @param null $lockVersion
+   * @return \SelfService\Entity\User
+   */
+  public function find($id, $lockMode = LockMode::NONE, $lockVersion = null) {
+    return parent::find($id, $lockMode, $lockVersion);
   }
 
   /**

@@ -217,5 +217,22 @@ class ProductController extends BaseController {
     return join("\n",$collection_writer->messages)."\n";
 	}
 
+  public function rideimportAction() {
+    switch ($this->getRequest()->getMethod()) {
+      case "POST":
+        $response = array('result' => 'success');
+        $productService = $this->serviceLocator->get('SelfService\Service\Entity\ProductService');
+        $productService->createFromRideJson($this->params()->fromPost('dep'));
+        return new JsonModel($response);
+        break;
+      case "GET":
+        return array();
+        break;
+      default:
+        break;
+    }
+    return array();
+  }
+
 }
 

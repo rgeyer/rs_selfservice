@@ -277,7 +277,8 @@ return array(
       },
     ),
     'invokables' => array(
-      'SelfService\Service\Entity\UserService'     => 'SelfService\Service\Entity\UserService',
+      'SelfService\Service\Entity\UserService'      => 'SelfService\Service\Entity\UserService',
+      'SelfService\Service\Entity\ProductService'   => 'SelfService\Service\Entity\ProductService',
     ),
   ),
   'translator' => array(

@@ -73,6 +73,7 @@ TODO:
   * Create launch stages (tiers), launch all LB first, then DB, then App
   * Allow execution of scripts on servers once they become operational
   * Enforce HA best practices by putting multiples of the same server type in different datacenters
+    * Done, but would like to allow the user to define a subset of datacenters to use.
 * DNS integration to generate DB records etc.
 * Support multiple AWS/RS accounts
 * In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
