@@ -58,6 +58,21 @@ use SelfService\Entity\ProvisionedSecurityGroup;
  */
 class ProductController extends BaseController {
 
+  public function indexAction() {
+    $products = $this->getServiceLocator()->get('SelfService\Service\Entity\ProductService')->findAll();
+    $actions = array();
+    foreach($products as $product) {
+      $actions[$product->id] = array(
+        'delete' => array(
+          'uri' => $this->url()->fromRoute('product').'/delete/'.$product->id,
+          'img_path' => '/images/delete.png',
+          'is_ajax' => true
+        ),
+      );
+    }
+    return array('actions' => $actions, 'products' => $products);
+  }
+
   public function rendermetaformAction() {
     $client = $this->getServiceLocator()->get('RightScaleAPICache');
     $id = $this->params('id');
@@ -232,6 +247,13 @@ class ProductController extends BaseController {
         break;
     }
     return array();
+  }
+
+  public function deleteAction() {
+    $response = array('result' => 'success');
+    $productService = $this->serviceLocator->get('SelfService\Service\Entity\ProductService');
+    $productService->remove($this->params('id'));
+    return new JsonModel($response);
   }
 
 }

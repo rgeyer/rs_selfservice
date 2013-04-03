@@ -112,6 +112,7 @@
           <li class="active"><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
           <li class="active"><a>{$this->translate('Admin')}</a>
             <ul class="nav">
+              <li><a href="{$this->url('product')}/index">{$this->translate("Products")}</a></li><br/>
               <li><a href="{$this->url('admin/provisionedproducts')}/provisionedproducts">{$this->translate('Provisioned Products')}</a></li><br/>
               <li><a href="{$this->url('user')}">{$this->translate("Users")}</a></li>
             </ul>

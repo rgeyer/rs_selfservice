@@ -71,6 +71,7 @@ class ProductService extends BaseEntityService {
     $product->servers = array();
     $product->meta_inputs = array();
     $product->launch_servers = false;
+    $product->icon_filename = "zoidberg.png";
     $product->name = sprintf("RIDE-%s", time());
 
     // Standard Inputs
@@ -129,7 +130,7 @@ class ProductService extends BaseEntityService {
           $server->server_template = $template;
           $server->cloud_id = $cloud_meta;
           $server->count = new NumberProductMetaInput(1);
-          $server->nickname = new TextProductMetaInput($server_or_array->name);
+          $server->nickname = new TextProductMetaInput($server_or_array->info->nickname);
           $server->security_groups[] = $secgrp;
           $em->persist($server);
 
@@ -151,6 +152,11 @@ class ProductService extends BaseEntityService {
 
     $em->persist($product);
     $em->flush();
+  }
+
+  public function remove($id) {
+    # TODO: This leaves a lot of abandoned things which need to be cleaned up
+    parent::remove($id);
   }
 
 }

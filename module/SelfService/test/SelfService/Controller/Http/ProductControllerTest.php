@@ -34,6 +34,15 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
     );
   }
 
+  public function testIndexActionCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $this->dispatch('/product/index');
+
+    $this->assertActionName('index');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+  }
+
   public function testProvisionActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $sl = $this->getApplicationServiceLocator();

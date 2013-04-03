@@ -83,4 +83,14 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
     return $em->getRepository($this->entityClass)->find($id, $lockMode, $lockVersion);
   }
 
+  /**
+   * @param $id The ID of the entity to remove
+   * @return void
+   */
+  public function remove($id) {
+    $em = $this->getEntityManager();
+    $em->remove($this->find($id));
+    $em->flush();
+  }
+
 }

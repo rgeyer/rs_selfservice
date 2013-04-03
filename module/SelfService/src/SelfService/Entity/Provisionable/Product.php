@@ -52,31 +52,31 @@ class Product {
 	public $icon_filename;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="SecurityGroup", fetch="EAGER", cascade={"all"})
+	 * @ORM\ManyToMany(targetEntity="SecurityGroup", fetch="EAGER", cascade={"persist"})
 	 * @var SecurityGroup[]
 	 */
 	public $security_groups = array();
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="Server", fetch="EAGER", cascade={"all"})
+	 * @ORM\ManyToMany(targetEntity="Server", fetch="EAGER", cascade={"persist"})
 	 * @var Server[]
 	 */
 	public $servers = array();
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="ServerArray", fetch="EAGER", cascade={"all"})
+	 * @ORM\ManyToMany(targetEntity="ServerArray", fetch="EAGER", cascade={"persist"})
 	 * @var ServerArray[]
 	 */
 	public $arrays = array();
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="AlertSpec", fetch="EAGER", cascade={"all"})
+	 * @ORM\ManyToMany(targetEntity="AlertSpec", fetch="EAGER", cascade={"persist"})
 	 * @var AlertSpec[]
 	 */
 	public $alerts = array();
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="SelfService\Entity\Provisionable\MetaInputs\ProductMetaInputBase", fetch="EAGER", cascade={"all"})
+	 * @ORM\ManyToMany(targetEntity="SelfService\Entity\Provisionable\MetaInputs\ProductMetaInputBase", fetch="EAGER", cascade={"persist"})
 	 * @var ProductMetaInputBase[]
 	 */
 	public $meta_inputs = array();
@@ -88,7 +88,7 @@ class Product {
 	public $launch_servers;
 
   /**
-   * @ORM\ManyToMany(targetEntity="SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput", fetch="EAGER", cascade={"all"})
+   * @ORM\ManyToMany(targetEntity="SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput", fetch="EAGER", cascade={"persist"})
    * @var InputProductMetaInput[]
    */
 	public $parameters;
