@@ -9,7 +9,9 @@
       {/foreach}
     </select>
     {/if}
-    {if preg_match('/TextProductMetaInput(Proxy)?$/', get_class($meta_input)) || preg_match('/NumberProductMetaInput(Proxy)?$/', get_class($meta_input)) }
+    {if preg_match('/TextProductMetaInput(Proxy)?$/', get_class($meta_input)) ||
+    preg_match('/NumberProductMetaInput(Proxy)?$/', get_class($meta_input)) ||
+    preg_match('/InputProductMetaInput(Proxy)?$/', get_class($meta_input)) }
     <input type="text" name="{$meta_input->input_name}" id="{$meta_input->input_name}" value="{$meta_input->getVal()}"/>
     {/if}
     {if preg_match('/InstanceTypeProductMetaInput(Proxy)?$/', get_class($meta_input))}

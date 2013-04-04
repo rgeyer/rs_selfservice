@@ -119,6 +119,9 @@ class ProductService extends BaseEntityService {
 
     foreach($json as $server_or_array) {
       switch(strtolower($server_or_array->type)) {
+        case "deployment":
+          $product->name = $server_or_array->nickname;
+          break;
         case "server":
           $template = new ServerTemplate();
           $template->nickname = new TextProductMetaInput($server_or_array->st_name);
@@ -137,7 +140,9 @@ class ProductService extends BaseEntityService {
           $product->servers[] = $server;
 
           foreach($server_or_array->inputs as $key=>$input) {
-            $inputs[$key] = $input;
+            $inputs[$key] = array(
+              'value' => $input,
+              'override' => (is_array($server_or_array->allowOverride) && in_array($key, $server_or_array->allowOverride)));
           }
           break;
         default:
@@ -146,8 +151,14 @@ class ProductService extends BaseEntityService {
     }
 
     foreach($inputs as $key=>$value) {
-      $metainput = new InputProductMetaInput($key,$value);
+      $metainput = new InputProductMetaInput($key,$value['value']);
+      $metainput->description = "Deployment level override for the input value ".$key;
+      $metainput->display_name = $key;
+      $metainput->input_name = $key;
       $product->parameters[] = $metainput;
+      if($value['override']) {
+        $product->meta_inputs[] = $metainput;
+      }
     }
 
     $em->persist($product);
