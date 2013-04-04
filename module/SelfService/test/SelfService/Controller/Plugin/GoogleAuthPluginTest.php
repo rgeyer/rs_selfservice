@@ -2,6 +2,7 @@
 
 namespace SelfServiceTest\Controller\Plugin;
 
+use Zend\Mvc\MvcEvent;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
 class GoogleAuthPluginTest extends AbstractHttpControllerTestCase {
@@ -28,10 +29,27 @@ class GoogleAuthPluginTest extends AbstractHttpControllerTestCase {
     );
   }
 
-  public function testRedirectsToLoginWhenNotAuthenticated() {
+  public function testRedirectOnUnauthorizedStopsEventPropogation() {
+    $sm = $this->getApplicationServiceLocator();
     $storage_adapter = $this->getMockForAbstractClass('Zend\Cache\Storage\Adapter\AbstractAdapter');
 
+    $sm->setAllowOverride(true);
+    $sm->setService('cache_storage_adapter', $storage_adapter);
+
+    $eventListenerMock = $this->getMock('Zend\Mvc\DispatchListener');
+    $eventListenerMock->expects($this->never())
+      ->method('onDispatch');
+
+    $eventManager = $this->getApplication()->getEventManager();
+    $eventManager->attach(MvcEvent::EVENT_DISPATCH, array($eventListenerMock, 'onDispatch'));
+
+    $this->dispatch('/');
+  }
+
+  public function testRedirectsToLoginWhenNotAuthenticated() {
     $sm = $this->getApplicationServiceLocator();
+    $storage_adapter = $this->getMockForAbstractClass('Zend\Cache\Storage\Adapter\AbstractAdapter');
+
     $sm->setAllowOverride(true);
     $sm->setService('cache_storage_adapter', $storage_adapter);
 

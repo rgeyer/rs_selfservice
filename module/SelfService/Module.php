@@ -44,20 +44,14 @@ class Module
   public function routeEventHandler(MvcEvent $event) {
     $app = $event->getApplication();
     $sm = $app->getServiceManager();
-    $sharedManager = $app->getEventManager()->getSharedManager();
 
     $router = $sm->get('router');
     $request = $sm->get('request');
 
     $matchedRoute = $router->match($request);
     if(null !== $matchedRoute) {
-      $sharedManager->attach('Zend\Mvc\Controller\AbstractActionController', 'dispatch',
-        function($e) use ($sm) {
-          $sm->get('ControllerPluginManager')->get('GoogleAuthPlugin')
-            ->doAuthenticate($e, $sm);
-        },
-        9999
-      );
+      $sm->get('ControllerPluginManager')->get('GoogleAuthPlugin')
+        ->doAuthenticate($event, $sm);
     }
   }
 }

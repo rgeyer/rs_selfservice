@@ -32,6 +32,15 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class GoogleAuthPlugin extends AbstractPlugin {
 
+  protected function redirect(MvcEvent $event, array $options, array $params = array()) {
+    $url = $event->getRouter()->assemble($params, $options);
+    $response = $event->getResponse();
+    $response->getHeaders()->addHeaderLine('Location', $url);
+    $response->setStatusCode(302);
+    $response->sendHeaders();
+    $event->stopPropagation(true);
+  }
+
 	public function doAuthenticate(MvcEvent $event, ServiceLocatorInterface $serviceManager) {
     # Console users are always authorized
     if ($event->getRequest() instanceof ConsoleRequest) {
@@ -66,13 +75,13 @@ class GoogleAuthPlugin extends AbstractPlugin {
       # http://framework.zend.com/manual/2.1/en/modules/zend.session.manager.html
       $sess = new Container('auth');
       $sess->preloginroute = $routematch;
-      $this->getController()->redirect()->toRoute('login');
+      $this->redirect($event, array('name' => 'login'));
 		} else {
       if($routematch->getMatchedRouteName() == 'user' && strtolower($routematch->getParam('action')) == 'unauthorized') { return; }
       $auth->getStorage()->clear();
       $auth->getStorage()->write($user);
       if (!$auth->getIdentity()->authorized) {
-        $this->getController()->redirect()->toRoute('user',array('action' => 'unauthorized'));
+        $this->redirect($event, array('name' => 'user', 'action' => 'unauthorized'));
       }
     }
 	}
