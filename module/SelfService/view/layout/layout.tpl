@@ -14,6 +14,7 @@
   ->prependStylesheet($this->basePath()|cat:'/css/style.css')
   ->prependStylesheet($this->basePath()|cat:'/css/default.css')
   ->prependStylesheet($this->basePath()|cat:'/css/bootstrap.min.css')
+  ->prependStylesheet($this->basePath()|cat:'/css/image-picker.css')
   ->prependStylesheet($this->basePath()|cat:'/js/jquery-ui-1.10.2.custom/css/ui-darkness/jquery-ui-1.10.2.custom.css')}
 
   {assign var="conditional_scripts_ary" value=['conditional' => 'lt IE 9']}
@@ -21,13 +22,13 @@
   ->prependFile($this->basePath()|cat:'/js/bootstrap.min.js')
   ->prependFile('http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
   ->appendFile('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js')
-  ->appendFile($this->basePath()|cat:'/js/functions.js')}
+  ->appendFile($this->basePath()|cat:'/js/functions.js')
+  ->appendFile($this->basePath()|cat:'/js/image-picker.min.js')
+  ->appendFile($this->basePath()|cat:'/js/jquery.masonry.min.js')}
 
   {literal}
   <script>
     $(document).ready(function() {
-      //$('#nav').menu({position:{my: "left top", at: "left top+40"}});
-
       $( "#progressbar" ).progressbar({
         value: 0
       });
@@ -53,6 +54,56 @@
         $.ajax({
           url: href,
           dataType: 'json',
+          success: function(data, status, jqXHR) {
+            $('#progress-dialog').dialog('close');
+            if (data.result == 'error') {
+              open_message_dialog(
+                $(window).height() - 100,
+                $(window).width() - 100,
+                "Error",
+                "<p>"+data.error+"</p>"
+              );
+            } else if (data.messages != undefined) {
+              $('#message-dialog').dialog({
+                close: function( event, ui ) {
+                  location.reload();
+                }
+              });
+              content = response_messages_to_content(data.messages);
+              open_message_dialog(
+                350,
+                500,
+                "Messages",
+                content
+              );
+            } else {
+              location.reload();
+            }
+          },
+          error: function(jqXHR, status, error) {
+            content = $('<div>').append(jqXHR.responseText).find("#content");
+            $('#progress-dialog').dialog('close');
+            open_message_dialog(
+              $(window).height() - 100,
+              $(window).width() - 100,
+              "Error",
+              content
+            );
+          }
+        });
+        evt.preventDefault();
+      });
+
+      $('input[type="submit"].ajaxaction').click(function(evt) {
+        $('#progress-dialog').dialog('open');
+        timeout_func();
+        form = $(this).parent();
+        href = $(form).attr('action');
+        $.ajax({
+          url: href,
+          dataType: 'json',
+          type: 'POST',
+          data: $(form).serializeArray(),
           success: function(data, status, jqXHR) {
             $('#progress-dialog').dialog('close');
             if (data.result == 'error') {

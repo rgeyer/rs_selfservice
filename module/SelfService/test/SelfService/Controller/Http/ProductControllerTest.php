@@ -85,4 +85,46 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
     $this->assertResponseStatusCode(200);
     $this->assertXpathQueryCount('//form', 1);
   }
+
+  public function testCanAccessEditAction() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $this->dispatch('/product/edit/1');
+
+    $response = strval($this->getResponse());
+
+    $this->assertActionName('edit');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+    $this->assertXpathQueryCount('//form', 1);
+  }
+
+  public function testEditActionListsIcons() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $this->dispatch('/product/edit/1');
+
+    $response = strval($this->getResponse());
+
+    $this->assertActionName('edit');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+    $this->assertXpathQueryCountMin('//select[id="icon_filename"]/option', 1);
+  }
+
+  public function testCanAccessUpdateAction() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+
+    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+
+    \SelfService\Product\php3tier::add($em);
+
+    $this->dispatch('/product/update/1');
+
+    $response = strval($this->getResponse());
+
+    $this->assertActionName('update');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+    $this->assertContains('{"result":"success"', $response);
+    $this->assertContains('content-type: application/json;', $response);
+  }
 }

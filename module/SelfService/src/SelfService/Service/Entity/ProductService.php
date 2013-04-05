@@ -61,6 +61,18 @@ class ProductService extends BaseEntityService {
     return parent::find($id, $lockMode, $lockVersion);
   }
 
+  public function update($id, array $params) {
+    $em = $this->getEntityManager();
+    $product = $this->find($id);
+    foreach($params as $key => $value) {
+      if(property_exists($product, $key)) {
+        $product->{$key} = $value;
+      }
+    }
+    $em->persist($product);
+    $em->flush();
+  }
+
   public function createFromRideJson($jsonstr) {
     $em = $this->getEntityManager();
     $json = json_decode($jsonstr);

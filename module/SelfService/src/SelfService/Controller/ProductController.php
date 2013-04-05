@@ -68,6 +68,11 @@ class ProductController extends BaseController {
           'img_path' => '/images/delete.png',
           'is_ajax' => true
         ),
+        'edit' => array(
+          'uri' => $this->url()->fromRoute('product').'/edit/'.$product->id,
+          'img_path' => '/images/pencil.png',
+          'is_ajax' => false
+        )
       );
     }
     return array('actions' => $actions, 'products' => $products);
@@ -253,6 +258,25 @@ class ProductController extends BaseController {
     $response = array('result' => 'success');
     $productService = $this->serviceLocator->get('SelfService\Service\Entity\ProductService');
     $productService->remove($this->params('id'));
+    return new JsonModel($response);
+  }
+
+  public function editAction() {
+    $icons_dir = __DIR__.'/../../../../../public/images/icons';
+    $icons = glob($icons_dir.'/*.png');
+    foreach($icons as $idx => $icon) {
+      $icons[$idx] = basename($icon);
+    }
+    $productService = $this->serviceLocator->get('SelfService\Service\Entity\ProductService');
+    return array('product' => $productService->find($this->params('id')), 'icons' => $icons);
+  }
+
+  public function updateAction() {
+    $postParams = $this->params()->fromPost();
+    $postParams['launch_servers'] = strtolower($postParams['launch_servers']) == 'on';
+    $response = array('result' => 'success');
+    $productService = $this->serviceLocator->get('SelfService\Service\Entity\ProductService');
+    $productService->update($this->params('id'), $postParams);
     return new JsonModel($response);
   }
 

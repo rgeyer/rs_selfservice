@@ -65,4 +65,40 @@ EOF;
     $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\MetaInputs\ProductMetaInputBase')->findAll()));
   }
 
+  public function testCanUpdateName() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+
+    \SelfService\Product\php3tier::add($em);
+
+    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+    $productService->update(1, array('name' => 'foobar'));
+
+    $product = $productService->find(1);
+    $this->assertEquals('foobar', $product->name);
+  }
+
+  public function testCanUpdateIcon() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+
+    \SelfService\Product\php3tier::add($em);
+
+    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+    $productService->update(1, array('icon_filename' => 'foobar.png'));
+
+    $product = $productService->find(1);
+    $this->assertEquals('foobar.png', $product->icon_filename);
+  }
+
+  public function testCanUpdateLaunchServers() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+
+    \SelfService\Product\php3tier::add($em);
+
+    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+    $productService->update(1, array('launch_servers' => true));
+
+    $product = $productService->find(1);
+    $this->assertTrue($product->launch_servers);
+  }
+
 }
