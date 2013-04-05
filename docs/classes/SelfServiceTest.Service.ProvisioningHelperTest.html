@@ -1,0 +1,332 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+<meta charset="utf-8">
+<title>phpDocumentor » \SelfServiceTest\Service\ProvisioningHelperTest</title>
+<meta name="author" content="Mike van Riel">
+<meta name="description" content="">
+<link href="../css/template.css" rel="stylesheet" media="all">
+<script src="../js/jquery-1.7.1.min.js" type="text/javascript"></script><script src="../js/jquery-ui-1.8.2.custom.min.js" type="text/javascript"></script><script src="../js/jquery.mousewheel.min.js" type="text/javascript"></script><script src="../js/bootstrap.js" type="text/javascript"></script><script src="../js/template.js" type="text/javascript"></script><script src="../js/prettify/prettify.min.js" type="text/javascript"></script><link rel="shortcut icon" href="../img/favicon.ico">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="../img/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="../img/apple-touch-icon-114x114.png">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner"><div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<li class="dropdown">
+<a href="#api" class="dropdown-toggle" data-toggle="dropdown">
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a>Namespaces</a></li>
+<li><a href="../namespaces/SelfService.html"><i class="icon-th"></i> SelfService</a></li>
+<li><a href="../namespaces/SelfServiceTest.html"><i class="icon-th"></i> SelfServiceTest</a></li>
+<li><a href="../namespaces/global.html"><i class="icon-th"></i> global</a></li>
+</ul>
+</li>
+<li class="dropdown" id="charts-menu">
+<a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
+                                    Charts <b class="caret"></b></a><ul class="dropdown-menu"><li><a href="../graph_class.html"><i class="icon-list-alt"></i> Class hierarchy diagram</a></li></ul>
+</li>
+<li class="dropdown" id="reports-menu">
+<a href="#reports" class="dropdown-toggle" data-toggle="dropdown">
+                                    Reports <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
+                <span class="label label-info">440</span></a></li>
+<li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
+                <ul><li>todo 
+                <span class="label label-info">1</span>
+</li></ul></a></li>
+<li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
+                <span class="label label-info">0</span></a></li>
+</ul>
+</li>
+</ul></div>
+</div></div>
+<div class="go_to_top"><a href="#___" style="color: inherit">Back to top  <i class="icon-upload icon-white"></i></a></div>
+</div>
+<div id="___" class="container">
+<noscript><div class="alert alert-warning">
+                            Javascript is disabled; several features are only available
+                            if Javascript is enabled.
+                        </div></noscript>
+<div class="row">
+<div class="span4">
+<span class="btn-group visibility" data-toggle="buttons-checkbox"><button class="btn public active" title="Show public elements">Public</button><button class="btn protected" title="Show protected elements">Protected</button><button class="btn private" title="Show private elements">Private</button><button class="btn inherited active" title="Show inherited elements">Inherited</button></span><div class="btn-group view pull-right" data-toggle="buttons-radio">
+<button class="btn details" title="Show descriptions and method names"><i class="icon-list"></i></button><button class="btn simple" title="Show only method names"><i class="icon-align-justify"></i></button>
+</div>
+<ul class="side-nav nav nav-list">
+<li class="nav-header">
+<i class="icon-custom icon-method"></i> Methods
+                    <ul>
+<li class="method public "><a href="#method_setUp" title="setUp :: "><span class="description">setUp()
+        </span><pre>setUp()</pre></a></li>
+<li class="method public "><a href="#method_testCanLaunchAllServers" title="testCanLaunchAllServers :: "><span class="description">testCanLaunchAllServers()
+        </span><pre>testCanLaunchAllServers()</pre></a></li>
+<li class="method public "><a href="#method_testCanLaunchAllServersWhenThereAreMultiplesOfThatServer" title="testCanLaunchAllServersWhenThereAreMultiplesOfThatServer :: "><span class="description">testCanLaunchAllServersWhenThereAreMultiplesOfThatServer()
+        </span><pre>testCanLaunchAllServersWhenThereAreMultiplesOfThatServer()</pre></a></li>
+<li class="method public "><a href="#method_testCanProvisionDeployment" title="testCanProvisionDeployment :: "><span class="description">testCanProvisionDeployment()
+        </span><pre>testCanProvisionDeployment()</pre></a></li>
+<li class="method public "><a href="#method_testCanProvisionEscalationAlertSpec" title="testCanProvisionEscalationAlertSpec :: "><span class="description">testCanProvisionEscalationAlertSpec()
+        </span><pre>testCanProvisionEscalationAlertSpec()</pre></a></li>
+<li class="method public "><a href="#method_testCanProvisionSecurityGroup" title="testCanProvisionSecurityGroup :: "><span class="description">testCanProvisionSecurityGroup()
+        </span><pre>testCanProvisionSecurityGroup()</pre></a></li>
+<li class="method public "><a href="#method_testCanProvisionSecurityGroupRules" title="testCanProvisionSecurityGroupRules :: "><span class="description">testCanProvisionSecurityGroupRules()
+        </span><pre>testCanProvisionSecurityGroupRules()</pre></a></li>
+<li class="method public "><a href="#method_testCanProvisionSecurityGroupRulesWithIngressGroup" title="testCanProvisionSecurityGroupRulesWithIngressGroup :: "><span class="description">testCanProvisionSecurityGroupRulesWithIngressGroup()
+        </span><pre>testCanProvisionSecurityGroupRulesWithIngressGroup()</pre></a></li>
+<li class="method public "><a href="#method_testCanProvisionServer" title="testCanProvisionServer :: "><span class="description">testCanProvisionServer()
+        </span><pre>testCanProvisionServer()</pre></a></li>
+<li class="method public "><a href="#method_testCanProvisionServerArray" title="testCanProvisionServerArray :: "><span class="description">testCanProvisionServerArray()
+        </span><pre>testCanProvisionServerArray()</pre></a></li>
+<li class="method public "><a href="#method_testCanProvisionVoteAlertSpec" title="testCanProvisionVoteAlertSpec :: "><span class="description">testCanProvisionVoteAlertSpec()
+        </span><pre>testCanProvisionVoteAlertSpec()</pre></a></li>
+<li class="method public "><a href="#method_testCanUpdateDeploymentWithInputs" title="testCanUpdateDeploymentWithInputs :: "><span class="description">testCanUpdateDeploymentWithInputs()
+        </span><pre>testCanUpdateDeploymentWithInputs()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionSecurityGroupBailsIfNotSupportedByCloud" title="testProvisionSecurityGroupBailsIfNotSupportedByCloud :: "><span class="description">testProvisionSecurityGroupBailsIfNotSupportedByCloud()
+        </span><pre>testProvisionSecurityGroupBailsIfNotSupportedByCloud()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud" title="testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud :: "><span class="description">testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud()
+        </span><pre>testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown" title="testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown :: "><span class="description">testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown()
+        </span><pre>testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated" title="testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated :: "><span class="description">testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated()
+        </span><pre>testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated" title="testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated :: "><span class="description">testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated()
+        </span><pre>testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionServerArrayImportsTemplateIfMissing" title="testProvisionServerArrayImportsTemplateIfMissing :: "><span class="description">testProvisionServerArrayImportsTemplateIfMissing()
+        </span><pre>testProvisionServerArrayImportsTemplateIfMissing()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable" title="testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable :: "><span class="description">testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable()
+        </span><pre>testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI" title="testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI :: "><span class="description">testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI()
+        </span><pre>testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionServerArrayThrowsErrorIfTemplateNotImported" title="testProvisionServerArrayThrowsErrorIfTemplateNotImported :: "><span class="description">testProvisionServerArrayThrowsErrorIfTemplateNotImported()
+        </span><pre>testProvisionServerArrayThrowsErrorIfTemplateNotImported()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionServerImportsTemplateIfMissing" title="testProvisionServerImportsTemplateIfMissing :: "><span class="description">testProvisionServerImportsTemplateIfMissing()
+        </span><pre>testProvisionServerImportsTemplateIfMissing()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable" title="testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable :: "><span class="description">testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable()
+        </span><pre>testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI" title="testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI :: "><span class="description">testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI()
+        </span><pre>testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI()</pre></a></li>
+<li class="method public "><a href="#method_testProvisionServerThrowsErrorIfTemplateNotImported" title="testProvisionServerThrowsErrorIfTemplateNotImported :: "><span class="description">testProvisionServerThrowsErrorIfTemplateNotImported()
+        </span><pre>testProvisionServerThrowsErrorIfTemplateNotImported()</pre></a></li>
+</ul>
+</li>
+<li class="nav-header">
+<i class="icon-custom icon-property"></i> Properties
+                    <ul></ul>
+</li>
+<li class="nav-header protected">» Protected
+                    <ul><li class="property protected "><a href="#property__guzzletestcase" title="$_guzzletestcase :: "><span class="description"></span><pre>$_guzzletestcase</pre></a></li></ul>
+</li>
+</ul>
+</div>
+<div class="span8">
+<a id="\SelfServiceTest\Service\ProvisioningHelperTest"></a><ul class="breadcrumb">
+<li>
+<a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
+</li>
+<li><a href="../namespaces/SelfServiceTest.html">SelfServiceTest</a></li>
+<li>
+<span class="divider">\</span><a href="../namespaces/SelfServiceTest.Service.html">Service</a>
+</li>
+<li class="active">
+<span class="divider">\</span><a href="../classes/SelfServiceTest.Service.ProvisioningHelperTest.html">ProvisioningHelperTest</a>
+</li>
+</ul>
+<div class="element class"><div class="details">
+<h3>
+<i class="icon-custom icon-method"></i> Methods</h3>
+<a id="method_setUp"></a><div class="element clickable method public method_setUp" data-toggle="collapse" data-target=".method_setUp .collapse">
+<h2>setUp()
+        </h2>
+<pre>setUp() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanLaunchAllServers"></a><div class="element clickable method public method_testCanLaunchAllServers" data-toggle="collapse" data-target=".method_testCanLaunchAllServers .collapse">
+<h2>testCanLaunchAllServers()
+        </h2>
+<pre>testCanLaunchAllServers() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanLaunchAllServersWhenThereAreMultiplesOfThatServer"></a><div class="element clickable method public method_testCanLaunchAllServersWhenThereAreMultiplesOfThatServer" data-toggle="collapse" data-target=".method_testCanLaunchAllServersWhenThereAreMultiplesOfThatServer .collapse">
+<h2>testCanLaunchAllServersWhenThereAreMultiplesOfThatServer()
+        </h2>
+<pre>testCanLaunchAllServersWhenThereAreMultiplesOfThatServer() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanProvisionDeployment"></a><div class="element clickable method public method_testCanProvisionDeployment" data-toggle="collapse" data-target=".method_testCanProvisionDeployment .collapse">
+<h2>testCanProvisionDeployment()
+        </h2>
+<pre>testCanProvisionDeployment() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanProvisionEscalationAlertSpec"></a><div class="element clickable method public method_testCanProvisionEscalationAlertSpec" data-toggle="collapse" data-target=".method_testCanProvisionEscalationAlertSpec .collapse">
+<h2>testCanProvisionEscalationAlertSpec()
+        </h2>
+<pre>testCanProvisionEscalationAlertSpec() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanProvisionSecurityGroup"></a><div class="element clickable method public method_testCanProvisionSecurityGroup" data-toggle="collapse" data-target=".method_testCanProvisionSecurityGroup .collapse">
+<h2>testCanProvisionSecurityGroup()
+        </h2>
+<pre>testCanProvisionSecurityGroup() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanProvisionSecurityGroupRules"></a><div class="element clickable method public method_testCanProvisionSecurityGroupRules" data-toggle="collapse" data-target=".method_testCanProvisionSecurityGroupRules .collapse">
+<h2>testCanProvisionSecurityGroupRules()
+        </h2>
+<pre>testCanProvisionSecurityGroupRules() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanProvisionSecurityGroupRulesWithIngressGroup"></a><div class="element clickable method public method_testCanProvisionSecurityGroupRulesWithIngressGroup" data-toggle="collapse" data-target=".method_testCanProvisionSecurityGroupRulesWithIngressGroup .collapse">
+<h2>testCanProvisionSecurityGroupRulesWithIngressGroup()
+        </h2>
+<pre>testCanProvisionSecurityGroupRulesWithIngressGroup() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanProvisionServer"></a><div class="element clickable method public method_testCanProvisionServer" data-toggle="collapse" data-target=".method_testCanProvisionServer .collapse">
+<h2>testCanProvisionServer()
+        </h2>
+<pre>testCanProvisionServer() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanProvisionServerArray"></a><div class="element clickable method public method_testCanProvisionServerArray" data-toggle="collapse" data-target=".method_testCanProvisionServerArray .collapse">
+<h2>testCanProvisionServerArray()
+        </h2>
+<pre>testCanProvisionServerArray() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanProvisionVoteAlertSpec"></a><div class="element clickable method public method_testCanProvisionVoteAlertSpec" data-toggle="collapse" data-target=".method_testCanProvisionVoteAlertSpec .collapse">
+<h2>testCanProvisionVoteAlertSpec()
+        </h2>
+<pre>testCanProvisionVoteAlertSpec() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testCanUpdateDeploymentWithInputs"></a><div class="element clickable method public method_testCanUpdateDeploymentWithInputs" data-toggle="collapse" data-target=".method_testCanUpdateDeploymentWithInputs .collapse">
+<h2>testCanUpdateDeploymentWithInputs()
+        </h2>
+<pre>testCanUpdateDeploymentWithInputs() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionSecurityGroupBailsIfNotSupportedByCloud"></a><div class="element clickable method public method_testProvisionSecurityGroupBailsIfNotSupportedByCloud" data-toggle="collapse" data-target=".method_testProvisionSecurityGroupBailsIfNotSupportedByCloud .collapse">
+<h2>testProvisionSecurityGroupBailsIfNotSupportedByCloud()
+        </h2>
+<pre>testProvisionSecurityGroupBailsIfNotSupportedByCloud() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud"></a><div class="element clickable method public method_testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud" data-toggle="collapse" data-target=".method_testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud .collapse">
+<h2>testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud()
+        </h2>
+<pre>testProvisionSecurityGroupRulesBailsIfNotSupportedByCloud() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown"></a><div class="element clickable method public method_testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown" data-toggle="collapse" data-target=".method_testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown .collapse">
+<h2>testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown()
+        </h2>
+<pre>testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated"></a><div class="element clickable method public method_testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated" data-toggle="collapse" data-target=".method_testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated .collapse">
+<h2>testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated()
+        </h2>
+<pre>testProvisionSecurityGroupRulesErrorsWhenSecurityGroupNotCreated() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated"></a><div class="element clickable method public method_testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated" data-toggle="collapse" data-target=".method_testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated .collapse">
+<h2>testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated()
+        </h2>
+<pre>testProvisionSecurityGroupRulesWarnsWhenIngressGroupNotCreated() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionServerArrayImportsTemplateIfMissing"></a><div class="element clickable method public method_testProvisionServerArrayImportsTemplateIfMissing" data-toggle="collapse" data-target=".method_testProvisionServerArrayImportsTemplateIfMissing .collapse">
+<h2>testProvisionServerArrayImportsTemplateIfMissing()
+        </h2>
+<pre>testProvisionServerArrayImportsTemplateIfMissing() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable"></a><div class="element clickable method public method_testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable" data-toggle="collapse" data-target=".method_testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable .collapse">
+<h2>testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable()
+        </h2>
+<pre>testProvisionServerArrayPicksInstanceTypeWhenNoDefaultIsAvailable() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI"></a><div class="element clickable method public method_testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI" data-toggle="collapse" data-target=".method_testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI .collapse">
+<h2>testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI()
+        </h2>
+<pre>testProvisionServerArrayThrowsErrorIfCloudNotSupportedByAnyMCI() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionServerArrayThrowsErrorIfTemplateNotImported"></a><div class="element clickable method public method_testProvisionServerArrayThrowsErrorIfTemplateNotImported" data-toggle="collapse" data-target=".method_testProvisionServerArrayThrowsErrorIfTemplateNotImported .collapse">
+<h2>testProvisionServerArrayThrowsErrorIfTemplateNotImported()
+        </h2>
+<pre>testProvisionServerArrayThrowsErrorIfTemplateNotImported() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionServerImportsTemplateIfMissing"></a><div class="element clickable method public method_testProvisionServerImportsTemplateIfMissing" data-toggle="collapse" data-target=".method_testProvisionServerImportsTemplateIfMissing .collapse">
+<h2>testProvisionServerImportsTemplateIfMissing()
+        </h2>
+<pre>testProvisionServerImportsTemplateIfMissing() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable"></a><div class="element clickable method public method_testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable" data-toggle="collapse" data-target=".method_testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable .collapse">
+<h2>testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable()
+        </h2>
+<pre>testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI"></a><div class="element clickable method public method_testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI" data-toggle="collapse" data-target=".method_testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI .collapse">
+<h2>testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI()
+        </h2>
+<pre>testProvisionServerThrowsErrorIfCloudNotSupportedByAnyMCI() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="method_testProvisionServerThrowsErrorIfTemplateNotImported"></a><div class="element clickable method public method_testProvisionServerThrowsErrorIfTemplateNotImported" data-toggle="collapse" data-target=".method_testProvisionServerThrowsErrorIfTemplateNotImported .collapse">
+<h2>testProvisionServerThrowsErrorIfTemplateNotImported()
+        </h2>
+<pre>testProvisionServerThrowsErrorIfTemplateNotImported() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<h3>
+<i class="icon-custom icon-property"></i> Properties</h3>
+<a id="property__guzzletestcase"> </a><div class="element clickable property protected property__guzzletestcase" data-toggle="collapse" data-target=".property__guzzletestcase .collapse">
+<h2></h2>
+<pre>$_guzzletestcase </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="row"><footer class="span12">
+            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
+            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a12</a> and<br>
+            generated on 2013-04-04T20:59:29-07:00.<br></footer></div>
+</div>
+</body>
+</html>

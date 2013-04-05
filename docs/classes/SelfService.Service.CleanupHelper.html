@@ -1,0 +1,241 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+<meta charset="utf-8">
+<title>phpDocumentor » \SelfService\Service\CleanupHelper</title>
+<meta name="author" content="Mike van Riel">
+<meta name="description" content="">
+<link href="../css/template.css" rel="stylesheet" media="all">
+<script src="../js/jquery-1.7.1.min.js" type="text/javascript"></script><script src="../js/jquery-ui-1.8.2.custom.min.js" type="text/javascript"></script><script src="../js/jquery.mousewheel.min.js" type="text/javascript"></script><script src="../js/bootstrap.js" type="text/javascript"></script><script src="../js/template.js" type="text/javascript"></script><script src="../js/prettify/prettify.min.js" type="text/javascript"></script><link rel="shortcut icon" href="../img/favicon.ico">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="../img/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="../img/apple-touch-icon-114x114.png">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner"><div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<li class="dropdown">
+<a href="#api" class="dropdown-toggle" data-toggle="dropdown">
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a>Namespaces</a></li>
+<li><a href="../namespaces/SelfService.html"><i class="icon-th"></i> SelfService</a></li>
+<li><a href="../namespaces/SelfServiceTest.html"><i class="icon-th"></i> SelfServiceTest</a></li>
+<li><a href="../namespaces/global.html"><i class="icon-th"></i> global</a></li>
+</ul>
+</li>
+<li class="dropdown" id="charts-menu">
+<a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
+                                    Charts <b class="caret"></b></a><ul class="dropdown-menu"><li><a href="../graph_class.html"><i class="icon-list-alt"></i> Class hierarchy diagram</a></li></ul>
+</li>
+<li class="dropdown" id="reports-menu">
+<a href="#reports" class="dropdown-toggle" data-toggle="dropdown">
+                                    Reports <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
+                <span class="label label-info">440</span></a></li>
+<li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
+                <ul><li>todo 
+                <span class="label label-info">1</span>
+</li></ul></a></li>
+<li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
+                <span class="label label-info">0</span></a></li>
+</ul>
+</li>
+</ul></div>
+</div></div>
+<div class="go_to_top"><a href="#___" style="color: inherit">Back to top  <i class="icon-upload icon-white"></i></a></div>
+</div>
+<div id="___" class="container">
+<noscript><div class="alert alert-warning">
+                            Javascript is disabled; several features are only available
+                            if Javascript is enabled.
+                        </div></noscript>
+<div class="row">
+<div class="span4">
+<span class="btn-group visibility" data-toggle="buttons-checkbox"><button class="btn public active" title="Show public elements">Public</button><button class="btn protected" title="Show protected elements">Protected</button><button class="btn private" title="Show private elements">Private</button><button class="btn inherited active" title="Show inherited elements">Inherited</button></span><div class="btn-group view pull-right" data-toggle="buttons-radio">
+<button class="btn details" title="Show descriptions and method names"><i class="icon-list"></i></button><button class="btn simple" title="Show only method names"><i class="icon-align-justify"></i></button>
+</div>
+<ul class="side-nav nav nav-list">
+<li class="nav-header">
+<i class="icon-custom icon-method"></i> Methods
+                    <ul>
+<li class="method public "><a href="#method___construct" title="__construct :: "><span class="description">__construct()
+        </span><pre>__construct()</pre></a></li>
+<li class="method public "><a href="#method_cleanupDeployment" title="cleanupDeployment :: "><span class="description">cleanupDeployment()
+        </span><pre>cleanupDeployment()</pre></a></li>
+<li class="method public "><a href="#method_cleanupSecurityGroup" title="cleanupSecurityGroup :: "><span class="description">cleanupSecurityGroup()
+        </span><pre>cleanupSecurityGroup()</pre></a></li>
+<li class="method public "><a href="#method_cleanupSecurityGroupRules" title="cleanupSecurityGroupRules :: "><span class="description">cleanupSecurityGroupRules()
+        </span><pre>cleanupSecurityGroupRules()</pre></a></li>
+<li class="method public "><a href="#method_cleanupServer" title="cleanupServer :: "><span class="description">cleanupServer()
+        </span><pre>cleanupServer()</pre></a></li>
+<li class="method public "><a href="#method_cleanupServerArray" title="cleanupServerArray :: "><span class="description">cleanupServerArray()
+        </span><pre>cleanupServerArray()</pre></a></li>
+<li class="method public "><a href="#method_cleanupSshKey" title="cleanupSshKey :: "><span class="description">cleanupSshKey()
+        </span><pre>cleanupSshKey()</pre></a></li>
+</ul>
+</li>
+<li class="nav-header">
+<i class="icon-custom icon-property"></i> Properties
+                    <ul><li class="property public "><a href="#property_client" title="$client :: A RightScale 1.5 API client."><span class="description"></span><pre>$client</pre></a></li></ul>
+</li>
+<li class="nav-header protected">» Protected
+                    <ul><li class="property protected "><a href="#property_log" title="$log :: "><span class="description"></span><pre>$log</pre></a></li></ul>
+</li>
+</ul>
+</div>
+<div class="span8">
+<a id="\SelfService\Service\CleanupHelper"></a><ul class="breadcrumb">
+<li>
+<a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
+</li>
+<li><a href="../namespaces/SelfService.html">SelfService</a></li>
+<li>
+<span class="divider">\</span><a href="../namespaces/SelfService.Service.html">Service</a>
+</li>
+<li class="active">
+<span class="divider">\</span><a href="../classes/SelfService.Service.CleanupHelper.html">CleanupHelper</a>
+</li>
+</ul>
+<div class="element class"><div class="details">
+<h3>
+<i class="icon-custom icon-method"></i> Methods</h3>
+<a id="method___construct"></a><div class="element clickable method public method___construct" data-toggle="collapse" data-target=".method___construct .collapse">
+<h2>__construct()
+        </h2>
+<pre>__construct($rs_account, $rs_email, $rs_password, \SelfService\Service\Zend_Log $log) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument"><h4>$rs_account</h4></div>
+<div class="subelement argument"><h4>$rs_email</h4></div>
+<div class="subelement argument"><h4>$rs_password</h4></div>
+<div class="subelement argument">
+<h4>$log</h4>
+<code>\SelfService\Service\Zend_Log</code>
+</div>
+</div></div>
+</div>
+<a id="method_cleanupDeployment"></a><div class="element clickable method public method_cleanupDeployment" data-toggle="collapse" data-target=".method_cleanupDeployment .collapse">
+<h2>cleanupDeployment()
+        </h2>
+<pre>cleanupDeployment(\SelfService\Entity\ProvisionedDeployment $deployment) : bool</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$deployment</h4>
+<code>\ProvisionedDeployment</code><p>The RSSS ORM Model for a provisioned array, used only for it's ->href param</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>bool</code>Always true, throws exceptions if an error occurred</div>
+</div></div>
+</div>
+<a id="method_cleanupSecurityGroup"></a><div class="element clickable method public method_cleanupSecurityGroup" data-toggle="collapse" data-target=".method_cleanupSecurityGroup .collapse">
+<h2>cleanupSecurityGroup()
+        </h2>
+<pre>cleanupSecurityGroup(\SelfService\Entity\ProvisionedSecurityGroup $sec_grp) : bool</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument"><h4>$sec_grp</h4></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>bool</code>Always true, throws exceptions if an error occurred</div>
+</div></div>
+</div>
+<a id="method_cleanupSecurityGroupRules"></a><div class="element clickable method public method_cleanupSecurityGroupRules" data-toggle="collapse" data-target=".method_cleanupSecurityGroupRules .collapse">
+<h2>cleanupSecurityGroupRules()
+        </h2>
+<pre>cleanupSecurityGroupRules(\SelfService\Entity\ProvisionedSecurityGroup $sec_grp) : bool</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument"><h4>$sec_grp</h4></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>bool</code>Always true, throws exceptions if an error occurred</div>
+</div></div>
+</div>
+<a id="method_cleanupServer"></a><div class="element clickable method public method_cleanupServer" data-toggle="collapse" data-target=".method_cleanupServer .collapse">
+<h2>cleanupServer()
+        </h2>
+<pre>cleanupServer(\SelfService\Entity\ProvisionedServer $server) : bool</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$server</h4>
+<code>\ProvisionedServer</code><p>The RSSS ORM Model for a provisioned array, used only for it's ->href param</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>bool</code>True if the array had no running instances and was destroyed.  False if the server was running, and the servers_terminate method was called</div>
+</div></div>
+</div>
+<a id="method_cleanupServerArray"></a><div class="element clickable method public method_cleanupServerArray" data-toggle="collapse" data-target=".method_cleanupServerArray .collapse">
+<h2>cleanupServerArray()
+        </h2>
+<pre>cleanupServerArray(\SelfService\Entity\ProvisionedArray $array) : bool</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$array</h4>
+<code>\ProvisionedArray</code><p>The RSSS ORM Model for a provisioned array, used only for it's ->href param</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>bool</code>True if the array had no running instances and was destroyed.  False if the array had running instances, and the multi_terminate method was called</div>
+</div></div>
+</div>
+<a id="method_cleanupSshKey"></a><div class="element clickable method public method_cleanupSshKey" data-toggle="collapse" data-target=".method_cleanupSshKey .collapse">
+<h2>cleanupSshKey()
+        </h2>
+<pre>cleanupSshKey(\SelfService\Entity\ProvisionedSshKey $ssh_key) : bool</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$ssh_key</h4>
+<code>\ProvisionedSshKey</code><p>The RSSS ORM Model for a provisioned ssh key, used only for it's ->href and ->cloud_id params</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>bool</code>Always true, throws exceptions if an error occurred</div>
+</div></div>
+</div>
+<h3>
+<i class="icon-custom icon-property"></i> Properties</h3>
+<a id="property_client"> </a><div class="element clickable property public property_client" data-toggle="collapse" data-target=".property_client .collapse">
+<h2></h2>
+<pre>$client : \SelfService\Service\RGeyer\Guzzle\Rs\RightScaleClient</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"><p>This is public to allow mocking for unit testing. Likely
+won't want to muck with this much</p></div></div></div>
+</div>
+<a id="property_log"> </a><div class="element clickable property protected property_log" data-toggle="collapse" data-target=".property_log .collapse">
+<h2></h2>
+<pre>$log : \SelfService\Service\Zend_Log</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="row"><footer class="span12">
+            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
+            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a12</a> and<br>
+            generated on 2013-04-04T20:59:29-07:00.<br></footer></div>
+</div>
+</body>
+</html>

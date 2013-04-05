@@ -1,0 +1,277 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+<meta charset="utf-8">
+<title>phpDocumentor » \SelfService\Service\Entity\UserService</title>
+<meta name="author" content="Mike van Riel">
+<meta name="description" content="">
+<link href="../css/template.css" rel="stylesheet" media="all">
+<script src="../js/jquery-1.7.1.min.js" type="text/javascript"></script><script src="../js/jquery-ui-1.8.2.custom.min.js" type="text/javascript"></script><script src="../js/jquery.mousewheel.min.js" type="text/javascript"></script><script src="../js/bootstrap.js" type="text/javascript"></script><script src="../js/template.js" type="text/javascript"></script><script src="../js/prettify/prettify.min.js" type="text/javascript"></script><link rel="shortcut icon" href="../img/favicon.ico">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="../img/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="../img/apple-touch-icon-114x114.png">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner"><div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<li class="dropdown">
+<a href="#api" class="dropdown-toggle" data-toggle="dropdown">
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a>Namespaces</a></li>
+<li><a href="../namespaces/SelfService.html"><i class="icon-th"></i> SelfService</a></li>
+<li><a href="../namespaces/SelfServiceTest.html"><i class="icon-th"></i> SelfServiceTest</a></li>
+<li><a href="../namespaces/global.html"><i class="icon-th"></i> global</a></li>
+</ul>
+</li>
+<li class="dropdown" id="charts-menu">
+<a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
+                                    Charts <b class="caret"></b></a><ul class="dropdown-menu"><li><a href="../graph_class.html"><i class="icon-list-alt"></i> Class hierarchy diagram</a></li></ul>
+</li>
+<li class="dropdown" id="reports-menu">
+<a href="#reports" class="dropdown-toggle" data-toggle="dropdown">
+                                    Reports <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
+                <span class="label label-info">440</span></a></li>
+<li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
+                <ul><li>todo 
+                <span class="label label-info">1</span>
+</li></ul></a></li>
+<li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
+                <span class="label label-info">0</span></a></li>
+</ul>
+</li>
+</ul></div>
+</div></div>
+<div class="go_to_top"><a href="#___" style="color: inherit">Back to top  <i class="icon-upload icon-white"></i></a></div>
+</div>
+<div id="___" class="container">
+<noscript><div class="alert alert-warning">
+                            Javascript is disabled; several features are only available
+                            if Javascript is enabled.
+                        </div></noscript>
+<div class="row">
+<div class="span4">
+<span class="btn-group visibility" data-toggle="buttons-checkbox"><button class="btn public active" title="Show public elements">Public</button><button class="btn protected" title="Show protected elements">Protected</button><button class="btn private" title="Show private elements">Private</button><button class="btn inherited active" title="Show inherited elements">Inherited</button></span><div class="btn-group view pull-right" data-toggle="buttons-radio">
+<button class="btn details" title="Show descriptions and method names"><i class="icon-list"></i></button><button class="btn simple" title="Show only method names"><i class="icon-align-justify"></i></button>
+</div>
+<ul class="side-nav nav nav-list">
+<li class="nav-header">
+<i class="icon-custom icon-method"></i> Methods
+                    <ul>
+<li class="method public "><a href="#method_authorizeByEmail" title="authorizeByEmail :: "><span class="description">authorizeByEmail()
+        </span><pre>authorizeByEmail()</pre></a></li>
+<li class="method public "><a href="#method_deauthorizeByEmail" title="deauthorizeByEmail :: "><span class="description">deauthorizeByEmail()
+        </span><pre>deauthorizeByEmail()</pre></a></li>
+<li class="method public "><a href="#method_find" title="find :: "><span class="description">find()
+        </span><pre>find()</pre></a></li>
+<li class="method public "><a href="#method_findAll" title="findAll :: "><span class="description">findAll()
+        </span><pre>findAll()</pre></a></li>
+<li class="method public "><a href="#method_findByEmail" title="findByEmail :: "><span class="description">findByEmail()
+        </span><pre>findByEmail()</pre></a></li>
+<li class="method public inherited"><a href="#method_getServiceLocator" title="getServiceLocator :: "><span class="description">getServiceLocator()
+        </span><pre>getServiceLocator()</pre></a></li>
+<li class="method public inherited"><a href="#method_remove" title="remove :: "><span class="description">remove()
+        </span><pre>remove()</pre></a></li>
+<li class="method public inherited"><a href="#method_setServiceLocator" title="setServiceLocator :: "><span class="description">setServiceLocator()
+        </span><pre>setServiceLocator()</pre></a></li>
+</ul>
+</li>
+<li class="nav-header protected">» Protected
+                    <ul><li class="method protected inherited"><a href="#method_getEntityManager" title="getEntityManager :: "><span class="description">getEntityManager()
+        </span><pre>getEntityManager()</pre></a></li></ul>
+</li>
+<li class="nav-header">
+<i class="icon-custom icon-property"></i> Properties
+                    <ul></ul>
+</li>
+<li class="nav-header protected">» Protected
+                    <ul>
+<li class="property protected "><a href="#property_entityClass" title="$entityClass :: "><span class="description">The name of the entity class for this service</span><pre>$entityClass</pre></a></li>
+<li class="property protected inherited"><a href="#property_serviceLocator" title="$serviceLocator :: "><span class="description"></span><pre>$serviceLocator</pre></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="span8">
+<a id="\SelfService\Service\Entity\UserService"></a><ul class="breadcrumb">
+<li>
+<a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
+</li>
+<li><a href="../namespaces/SelfService.html">SelfService</a></li>
+<li>
+<span class="divider">\</span><a href="../namespaces/SelfService.Service.html">Service</a>
+</li>
+<li>
+<span class="divider">\</span><a href="../namespaces/SelfService.Service.Entity.html">Entity</a>
+</li>
+<li class="active">
+<span class="divider">\</span><a href="../classes/SelfService.Service.Entity.UserService.html">UserService</a>
+</li>
+</ul>
+<div class="element class"><div class="details">
+<h3>
+<i class="icon-custom icon-method"></i> Methods</h3>
+<a id="method_authorizeByEmail"></a><div class="element clickable method public method_authorizeByEmail" data-toggle="collapse" data-target=".method_authorizeByEmail .collapse">
+<h2>authorizeByEmail()
+        </h2>
+<pre>authorizeByEmail($email) : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument"><h4>$email</h4></div>
+</div></div>
+</div>
+<a id="method_deauthorizeByEmail"></a><div class="element clickable method public method_deauthorizeByEmail" data-toggle="collapse" data-target=".method_deauthorizeByEmail .collapse">
+<h2>deauthorizeByEmail()
+        </h2>
+<pre>deauthorizeByEmail($email) : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument"><h4>$email</h4></div>
+</div></div>
+</div>
+<a id="method_find"></a><div class="element clickable method public method_find" data-toggle="collapse" data-target=".method_find .collapse">
+<h2>find()
+        </h2>
+<pre>find($id, $lockMode, null $lockVersion) : <a href="../classes/SelfService.Entity.User.html">\SelfService\Entity\User</a></pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument"><h4>$id</h4></div>
+<div class="subelement argument"><h4>$lockMode</h4></div>
+<div class="subelement argument">
+<h4>$lockVersion</h4>
+<code>null</code>
+</div>
+<h3>Returns</h3>
+<div class="subelement response"><code><a href="../classes/SelfService.Entity.User.html">\SelfService\Entity\User</a></code></div>
+</div></div>
+</div>
+<a id="method_findAll"></a><div class="element clickable method public method_findAll" data-toggle="collapse" data-target=".method_findAll .collapse">
+<h2>findAll()
+        </h2>
+<pre>findAll() : <a href="src.SelfService.Entity.User.html#%5CSelfService%5CEntity%5CUser">\SelfService\Entity\User[]</a></pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code><a href="src.SelfService.Entity.User.html#%5CSelfService%5CEntity%5CUser">\SelfService\Entity\User[]</a></code>An array of all User entities</div>
+</div></div>
+</div>
+<a id="method_findByEmail"></a><div class="element clickable method public method_findByEmail" data-toggle="collapse" data-target=".method_findByEmail .collapse">
+<h2>findByEmail()
+        </h2>
+<pre>findByEmail($email) : <a href="../classes/SelfService.Entity.User.html">\SelfService\Entity\User</a> | null</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$email</h4><p>Email address of the user to find</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code><a href="../classes/SelfService.Entity.User.html">\SelfService\Entity\User</a></code><code>null</code>
+</div>
+</div></div>
+</div>
+<a id="method_getServiceLocator"></a><div class="element clickable method public method_getServiceLocator" data-toggle="collapse" data-target=".method_getServiceLocator .collapse">
+<h2>getServiceLocator()
+        </h2>
+<pre>getServiceLocator() : \Zend\ServiceManager\ServiceLocatorInterface</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<table class="table table-bordered"><tr>
+<th>inherited_from</th>
+<td>\SelfService\Service\Entity\BaseEntityService::getServiceLocator()</td>
+</tr></table>
+<h3>Returns</h3>
+<div class="subelement response"><code>\Zend\ServiceManager\ServiceLocatorInterface</code></div>
+</div></div>
+</div>
+<a id="method_remove"></a><div class="element clickable method public method_remove" data-toggle="collapse" data-target=".method_remove .collapse">
+<h2>remove()
+        </h2>
+<pre>remove($id) : void</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<table class="table table-bordered"><tr>
+<th>inherited_from</th>
+<td>\SelfService\Service\Entity\BaseEntityService::remove()</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$id</h4><p>The ID of the entity to remove</p></div>
+</div></div>
+</div>
+<a id="method_setServiceLocator"></a><div class="element clickable method public method_setServiceLocator" data-toggle="collapse" data-target=".method_setServiceLocator .collapse">
+<h2>setServiceLocator()
+        </h2>
+<pre>setServiceLocator(\Zend\ServiceManager\ServiceLocatorInterface $serviceLocator) : void</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<table class="table table-bordered"><tr>
+<th>inherited_from</th>
+<td>\SelfService\Service\Entity\BaseEntityService::setServiceLocator()</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$serviceLocator</h4>
+<code>\Zend\ServiceManager\ServiceLocatorInterface</code>
+</div>
+</div></div>
+</div>
+<a id="method_getEntityManager"></a><div class="element clickable method protected method_getEntityManager" data-toggle="collapse" data-target=".method_getEntityManager .collapse">
+<h2>getEntityManager()
+        </h2>
+<pre>getEntityManager() : \Doctrine\ORM\EntityManager</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<table class="table table-bordered"><tr>
+<th>inherited_from</th>
+<td>\SelfService\Service\Entity\BaseEntityService::getEntityManager()</td>
+</tr></table>
+<h3>Returns</h3>
+<div class="subelement response"><code>\Doctrine\ORM\EntityManager</code></div>
+</div></div>
+</div>
+<h3>
+<i class="icon-custom icon-property"></i> Properties</h3>
+<a id="property_entityClass"> </a><div class="element clickable property protected property_entityClass" data-toggle="collapse" data-target=".property_entityClass .collapse">
+<h2>The name of the entity class for this service</h2>
+<pre>$entityClass : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
+</div>
+<a id="property_serviceLocator"> </a><div class="element clickable property protected property_serviceLocator" data-toggle="collapse" data-target=".property_serviceLocator .collapse">
+<h2></h2>
+<pre>$serviceLocator : \Zend\ServiceManager\ServiceLocatorInterface</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<div class="long_description"></div>
+<table class="table table-bordered"><tr>
+<th>inherited_from</th>
+<td>\SelfService\Service\Entity\BaseEntityService::$$serviceLocator</td>
+</tr></table>
+</div></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="row"><footer class="span12">
+            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
+            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a12</a> and<br>
+            generated on 2013-04-04T20:59:29-07:00.<br></footer></div>
+</div>
+</body>
+</html>
