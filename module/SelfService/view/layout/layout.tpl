@@ -26,7 +26,7 @@
   {literal}
   <script>
     $(document).ready(function() {
-      $('#nav').menu({position:{my: "left top", at: "left top+40"}});
+      //$('#nav').menu({position:{my: "left top", at: "left top+40"}});
 
       $( "#progressbar" ).progressbar({
         value: 0
@@ -108,12 +108,12 @@
       </a>
       <a class="brand" href="{$this->url('home')}">{$this->translate('IT Vending Machine')}</a>
       <div class="nav-collapse collapse">
-        <ul class="nav" id="nav">
+        <ul class="nav nav-tabs" id="nav">
           <li class="active"><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
-          <li class="active"><a>{$this->translate('Admin')}</a>
-            <ul class="nav">
-              <li><a href="{$this->url('product')}/index">{$this->translate("Products")}</a></li><br/>
-              <li><a href="{$this->url('admin/provisionedproducts')}/provisionedproducts">{$this->translate('Provisioned Products')}</a></li><br/>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{$this->translate('Admin')}</a>
+            <ul class="dropdown-menu">
+              <li><a href="{$this->url('product')}/index">{$this->translate("Products")}</a></li>
+              <li><a href="{$this->url('admin/provisionedproducts')}/provisionedproducts">{$this->translate('Provisioned Products')}</a></li>
               <li><a href="{$this->url('user')}">{$this->translate("Users")}</a></li>
             </ul>
           </li>
