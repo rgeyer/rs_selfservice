@@ -166,8 +166,37 @@ class ProductService extends BaseEntityService {
   }
 
   public function remove($id) {
+    $em = $this->getEntityManager();
+    $product = $this->find($id);
+    $metainputs = array();
+    $security_groups = array();
+    foreach($product->alerts as $alert) {
+      $em->remove($alert);
+    }
+    foreach($product->parameters as $param) {
+      $em->remove($param);
+    }
+    foreach($product->security_groups as $group) {
+      foreach($group->rules as $rule) {
+        $em->remove($rule);
+      }
+    }
+    foreach($product->security_groups as $group) {
+      $em->remove($group);
+    }
+    foreach($product->servers as $server) {
+      $em->remove($server);
+    }
+    foreach($product->arrays as $array) {
+      $em->remove($array);
+    }
+    foreach($product->meta_inputs as $input) {
+      $em->remove($input);
+    }
     # TODO: This leaves a lot of abandoned things which need to be cleaned up
-    parent::remove($id);
+    $em->remove($product);
+    $em->flush();
+    # delete from servers where id not in (select server_id from product_server);
   }
 
 }

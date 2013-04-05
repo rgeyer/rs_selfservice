@@ -45,4 +45,24 @@ EOF;
     $this->assertEquals(4, count($products[0]->meta_inputs));
   }
 
+  public function testCanDeleteProductIncludingAllSubordinates() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+
+    \SelfService\Product\php3tier::add($em);
+
+    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+
+    $productService->remove(1);
+
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\AlertSpec')->findAll()));
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\AlertSubjectBase')->findAll()));
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\Product')->findAll()));
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\SecurityGroup')->findAll()));
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\SecurityGroupRule')->findAll()));
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\Server')->findAll()));
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\ServerArray')->findAll()));
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\ServerTemplate')->findAll()));
+    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\MetaInputs\ProductMetaInputBase')->findAll()));
+  }
+
 }

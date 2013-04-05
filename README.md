@@ -90,6 +90,7 @@ TODO:
   * Provisioning action(s) hit a controller with json metadata
   * ProvisioningHelper hits controllers with json metadata on success to indicate completion, allowing the RSSS to delete DB records
 * Importing templates can be tough, and time consuming, possibly batch this when the provisionable product is added to the catalog rather than making the end user wait.
+* Seriously consider using ODM and a NoSQL store for products, provisioned products, etc.  All of them are really self contained things anyway.
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
