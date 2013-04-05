@@ -62,12 +62,10 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
   public function testRideImportActionAcceptsPostAndReturnsJson() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
 
-    $ridepayload = '[{"type":"Server","publication_id":"46546","revision":"136","name":"LB_HAPROXY_13_2_1","st_name":"Load Balancer with HAProxy (v13.2.1)","inputs":{"lb/service/provider":"text:lb_client"},"info":{"ec2_security_group_href":"https://my.rightscale.com/api/acct/71/ec2_security_groups/234123","ec2_ssh_key_href":"https://my.rightscale.com/api/acct/71/ec2_ssh_keys/274173","cloud_id":"1","nickname":"Load Balancer with HAProxy (v13.2.1) #1","server_template_href":"https://my.rightscale.com/api/acct/71/server_templates/275034001"}},{"type":"Server","publication_id":"46554","revision":"102","name":"DB_MYSQL55_13_2_1","st_name":"Database Manager for MySQL 5.5 (v13.2.1)","inputs":{"db/backup/lineage":"text:changeme","sys_dns/choice":"text:DNSMadeEasy","sys_dns/password":"text:password","sys_dns/user":"text:user"},"info":{"ec2_security_group_href":"https://my.rightscale.com/api/acct/71/ec2_security_groups/234123","ec2_ssh_key_href":"https://my.rightscale.com/api/acct/71/ec2_ssh_keys/274173","cloud_id":"1","nickname":"Database Manager for MySQL 5.5 (v13.2.1) #1","server_template_href":"https://my.rightscale.com/api/acct/71/server_templates/275034001"}}]';
+    $ridepayload = '[{"type":"Deployment","nickname":"lj"},{"type":"Server","publication_id":"46554","revision":"102","name":"DB_MYSQL55_13_2_1","st_name":"Database Manager for MySQL 5.5 (v13.2.1)","inputs":{"sys_dns/choice":"text:DNSMadeEasy","sys_dns/password":"text:password","sys_dns/user":"text:user","db/backup/lineage":"text:changeme"},"info":{"nickname":"Database Manager for MySQL 5.5 (v13.2.1) #1"},"allowOverride":["sys_dns/password","sys_dns/user"]}]';
     $this->dispatch('/product/rideimport', 'POST', array('dep' => $ridepayload));
 
     $response = strval($this->getResponse());
-
-    print $response;
 
     $this->assertActionName('rideimport');
     $this->assertControllerName('selfservice\controller\product');
