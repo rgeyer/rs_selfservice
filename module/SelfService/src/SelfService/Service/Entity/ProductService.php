@@ -306,11 +306,8 @@ class ProductService extends BaseEntityService {
           case 'selfservice\entity\provisionable\server':
             $rel = array('rel' => 'servers', 'id' => $jsonProduct->servers[$subject->id]);
             break;
-          case 'selfservice\entity\provisionable\servertemplate':
-            $rel = array('rel' => 'servertemplate', 'id' => $jsonProduct->servers[$subject->id]);
-            break;
           case 'selfservice\entity\provisionable\serverarray':
-            $rel = array('rel' => 'arrays', 'id' => $jsonProduct->servers[$subject->id]);
+            $rel = array('rel' => 'arrays', 'id' => $jsonProduct->arrays[$subject->id]);
             break;
         }
         $jsonAlert->subjects[] = $rel;
