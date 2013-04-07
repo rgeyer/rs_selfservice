@@ -81,7 +81,7 @@ class GoogleAuthPlugin extends AbstractPlugin {
       $auth->getStorage()->clear();
       $auth->getStorage()->write($user);
       if (!$auth->getIdentity()->authorized) {
-        $this->redirect($event, array('name' => 'user', 'action' => 'unauthorized'));
+        $this->redirect($event, array('name' => 'user'), array('controller' => 'user', 'action' => 'unauthorized'));
       }
     }
 	}

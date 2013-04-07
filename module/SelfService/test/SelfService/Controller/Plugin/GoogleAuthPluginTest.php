@@ -96,7 +96,7 @@ class GoogleAuthPluginTest extends AbstractHttpControllerTestCase {
     $this->dispatch('/');
 
     $this->assertRedirect();
-    $this->assertRedirectRegex(',^.*/user,');
+    $this->assertRedirectRegex(',^.*/user/unauthorized,');
   }
 
   public function testDoesNotRedirectWhenRouteIsUserUnauthorized() {
