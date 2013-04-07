@@ -211,4 +211,122 @@ class ProductService extends BaseEntityService {
     # delete from servers where id not in (select server_id from product_server);
   }
 
+  /**
+   * @param $meta_inputs
+   * @param $object
+   * @return
+   */
+  protected function ormToStdclass($meta_input_ids, $object) {
+    $stdClass = new \stdClass();
+    foreach(get_object_vars($object) as $propname => $var) {
+      if(is_a($var, 'SelfService\Entity\Provisionable\MetaInputs\ProductMetaInputBase')) {
+        if(in_array($var->id, $meta_input_ids)) {
+          $stdClass->{$propname} = array('rel' => 'meta_inputs', 'id' => $var->id);
+        } else {
+          $stdClass->{$propname} = $var->getVal();
+        }
+      } else if ($var !== null && $propname != 'id') {
+        $stdClass->{$propname} = $var;
+      }
+    }
+    return $stdClass;
+  }
+
+  public function toJson($id, array $params = array()) {
+    $product = $this->find($id);
+    $product->mergeMetaInputs($params);
+    $jsonProduct = $this->ormToStdclass(array(), $product);
+    $jsonProduct->meta_inputs = array();
+    foreach($product->meta_inputs as $meta_input) {
+      $type = '';
+      switch(strtolower(get_class($meta_input))) {
+        case 'selfservice\entity\provisionable\metainputs\cloudproductmetainput':
+          $type = 'cloud';
+          break;
+        case 'selfservice\entity\provisionable\metainputs\textproductmetainput':
+          $type = 'text';
+          break;
+        case 'selfservice\entity\provisionable\metainputs\inputproductmetainput':
+          $type = 'input';
+          break;
+        case 'selfservice\entity\provisionable\metainputs\instancetypeproductmetainput':
+          $type = 'instancetype';
+          break;
+        default:
+          $type = 'unknown';
+          break;
+      }
+      $jsonProduct->meta_inputs[$meta_input->id] =
+        array(
+          'type' => $type,
+          'meta' => $this->ormToStdclass(array(), $meta_input),
+          'value' => $meta_input->getVal()
+        );
+    }
+    $jsonProduct->security_groups = array();
+    foreach($product->security_groups as $security_group) {
+      $jsonSecurityGroup = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $security_group);
+      $jsonSecurityGroup->rules = array();
+      foreach($security_group->rules as $rule) {
+        $jsonRule = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $rule);
+        if($rule->ingress_group) {
+          $jsonRule->ingress_group = array('rel' => 'security_groups', 'id' => $rule->ingress_group->id);
+        }
+        $jsonSecurityGroup->rules[] = $jsonRule;
+      }
+      $jsonProduct->security_groups[$security_group->id] = $jsonSecurityGroup;
+    }
+    $jsonProduct->arrays = array();
+    foreach($product->arrays as $array) {
+      $jsonArray = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array);
+      $jsonArray->server_template = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array->server_template);
+      $jsonArray->security_groups = array();
+      foreach($array->security_groups as $security_group) {
+        $jsonArray->security_groups[] = array('rel' => 'security_groups', 'id' => $security_group->id);
+      }
+      $jsonProduct->arrays[$array->id] = $jsonArray;
+    }
+    $jsonProduct->servers = array();
+    foreach($product->servers as $server) {
+      $jsonArray = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server);
+      $jsonArray->server_template = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server->server_template);
+      $jsonArray->security_groups = array();
+      foreach($server->security_groups as $security_group) {
+        $jsonArray->security_groups[] = array('rel' => 'security_groups', 'id' => $security_group->id);
+      }
+      $jsonProduct->servers[$server->id] = $jsonArray;
+    }
+    $jsonProduct->alerts = array();
+    foreach($product->alerts as $alert) {
+      $jsonAlert = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $alert);
+      $jsonAlert->subjects = array();
+      foreach($alert->subjects as $subject) {
+        $rel = array('rel' => 'unknown');
+        switch(strtolower(get_class($subject))) {
+          case 'selfservice\entity\provisionable\server':
+            $rel = array('rel' => 'servers', 'id' => $jsonProduct->servers[$subject->id]);
+            break;
+          case 'selfservice\entity\provisionable\servertemplate':
+            $rel = array('rel' => 'servertemplate', 'id' => $jsonProduct->servers[$subject->id]);
+            break;
+          case 'selfservice\entity\provisionable\serverarray':
+            $rel = array('rel' => 'arrays', 'id' => $jsonProduct->servers[$subject->id]);
+            break;
+        }
+        $jsonAlert->subjects[] = $rel;
+      }
+      $jsonProduct->alerts[$alert->id] = $jsonAlert;
+    }
+    $jsonProduct->parameters = array();
+    foreach($product->parameters as $param) {
+      $jsonProduct->parameters[] = array(
+        'name' => $param->rs_input_name,
+        'value' => $param->getVal(),
+        'meta' => $this->ormToStdclass(array(), $param)
+      );
+    }
+
+    return json_encode($jsonProduct);
+  }
+
 }

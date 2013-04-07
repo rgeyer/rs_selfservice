@@ -101,4 +101,13 @@ EOF;
     $this->assertTrue($product->launch_servers);
   }
 
+  public function testCanConvertToJson() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+
+    \SelfService\Product\php3tier::add($em);
+
+    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+    print $productService->toJson(1);
+  }
+
 }

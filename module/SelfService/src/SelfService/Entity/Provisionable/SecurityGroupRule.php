@@ -47,7 +47,7 @@ class SecurityGroupRule {
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="SecurityGroup", fetch="EAGER", cascade={"persist"})
-	 * @var TextProductMetaInput
+	 * @var SecurityGroup
 	 */
 	public $ingress_group;
 
