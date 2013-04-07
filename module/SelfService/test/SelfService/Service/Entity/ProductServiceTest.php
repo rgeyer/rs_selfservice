@@ -107,7 +107,7 @@ EOF;
     \SelfService\Product\php3tier::add($em);
 
     $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
-    print $productService->toJson(1);
+    #print $productService->toJson(1);
   }
 
 }

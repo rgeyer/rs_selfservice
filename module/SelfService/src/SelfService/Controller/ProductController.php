@@ -273,7 +273,9 @@ class ProductController extends BaseController {
 
   public function updateAction() {
     $postParams = $this->params()->fromPost();
-    $postParams['launch_servers'] = strtolower($postParams['launch_servers']) == 'on';
+    if($this->params()->fromPost('launch_servers', 'unset') != 'unset') {
+      $postParams['launch_servers'] = strtolower($postParams['launch_servers']) == 'on';
+    }
     $response = array('result' => 'success');
     $productService = $this->serviceLocator->get('SelfService\Service\Entity\ProductService');
     $productService->update($this->params('id'), $postParams);

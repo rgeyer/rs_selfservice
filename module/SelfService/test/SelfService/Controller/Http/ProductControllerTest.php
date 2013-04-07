@@ -121,8 +121,6 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
 
     $response = strval($this->getResponse());
 
-    print $response;
-
     $this->assertActionName('update');
     $this->assertControllerName('selfservice\controller\product');
     $this->assertResponseStatusCode(200);
