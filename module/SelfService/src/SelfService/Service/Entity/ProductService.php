@@ -236,6 +236,8 @@ class ProductService extends BaseEntityService {
     $product = $this->find($id);
     $product->mergeMetaInputs($params);
     $jsonProduct = $this->ormToStdclass(array(), $product);
+    $jsonProduct->server_templates = array();
+
     $jsonProduct->meta_inputs = array();
     foreach($product->meta_inputs as $meta_input) {
       $type = '';
@@ -259,7 +261,7 @@ class ProductService extends BaseEntityService {
       $jsonProduct->meta_inputs[$meta_input->id] =
         array(
           'type' => $type,
-          'meta' => $this->ormToStdclass(array(), $meta_input),
+          'extra' => $this->ormToStdclass(array(), $meta_input),
           'value' => $meta_input->getVal()
         );
     }
@@ -279,7 +281,8 @@ class ProductService extends BaseEntityService {
     $jsonProduct->arrays = array();
     foreach($product->arrays as $array) {
       $jsonArray = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array);
-      $jsonArray->server_template = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array->server_template);
+      $jsonProduct->server_templates[$array->server_template->id] = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array->server_template);
+      $jsonArray->server_template = array('rel' => 'server_templates', 'id' => $array->server_template->id);
       $jsonArray->security_groups = array();
       foreach($array->security_groups as $security_group) {
         $jsonArray->security_groups[] = array('rel' => 'security_groups', 'id' => $security_group->id);
@@ -288,13 +291,14 @@ class ProductService extends BaseEntityService {
     }
     $jsonProduct->servers = array();
     foreach($product->servers as $server) {
-      $jsonArray = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server);
-      $jsonArray->server_template = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server->server_template);
-      $jsonArray->security_groups = array();
+      $jsonServer = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server);
+      $jsonProduct->server_templates[$server->server_template->id] = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server->server_template);
+      $jsonServer->server_template = array('rel' => 'server_templates', 'id' => $server->server_template->id);
+      $jsonServer->security_groups = array();
       foreach($server->security_groups as $security_group) {
-        $jsonArray->security_groups[] = array('rel' => 'security_groups', 'id' => $security_group->id);
+        $jsonServer->security_groups[] = array('rel' => 'security_groups', 'id' => $security_group->id);
       }
-      $jsonProduct->servers[$server->id] = $jsonArray;
+      $jsonProduct->servers[$server->id] = $jsonServer;
     }
     $jsonProduct->alerts = array();
     foreach($product->alerts as $alert) {
@@ -304,10 +308,10 @@ class ProductService extends BaseEntityService {
         $rel = array('rel' => 'unknown');
         switch(strtolower(get_class($subject))) {
           case 'selfservice\entity\provisionable\server':
-            $rel = array('rel' => 'servers', 'id' => $jsonProduct->servers[$subject->id]);
+            $rel = array('rel' => 'servers', 'id' => $subject->id);
             break;
           case 'selfservice\entity\provisionable\serverarray':
-            $rel = array('rel' => 'arrays', 'id' => $jsonProduct->arrays[$subject->id]);
+            $rel = array('rel' => 'arrays', 'id' => $subject->id);
             break;
         }
         $jsonAlert->subjects[] = $rel;
@@ -319,7 +323,7 @@ class ProductService extends BaseEntityService {
       $jsonProduct->parameters[] = array(
         'name' => $param->rs_input_name,
         'value' => $param->getVal(),
-        'meta' => $this->ormToStdclass(array(), $param)
+        'extra' => $this->ormToStdclass(array(), $param)
       );
     }
 
