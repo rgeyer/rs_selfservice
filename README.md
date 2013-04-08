@@ -91,6 +91,7 @@ TODO:
   * ProvisioningHelper hits controllers with json metadata on success to indicate completion, allowing the RSSS to delete DB records
 * Importing templates can be tough, and time consuming, possibly batch this when the provisionable product is added to the catalog rather than making the end user wait.
 * Seriously consider using ODM and a NoSQL store for products, provisioned products, etc.  All of them are really self contained things anyway.
+* Allow an Opt-In phone home to allow the tracking of multiple vending machines by a single person/organization
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
