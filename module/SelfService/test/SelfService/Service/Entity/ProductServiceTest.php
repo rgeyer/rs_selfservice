@@ -118,6 +118,7 @@ EOF;
 
     $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
     $jsonStr = $productService->toJson(1);
+    print $jsonStr;
     $jsonObj = json_decode($jsonStr);
     $this->assertTrue(property_exists($jsonObj, 'name'), "Product JSON did not include product name");
     $this->assertTrue(property_exists($jsonObj, 'icon_filename'), "Product JSON did not include product icon_filename");

@@ -3,6 +3,7 @@
 namespace SelfServiceTest\Controller\Api;
 
 use Zend\Http\Request;
+use Zend\Http\Response;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
 class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
@@ -30,7 +31,6 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testCreateCanBeAccessed() {
-    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct', Request::METHOD_POST);
 
     $this->assertActionName('create');
@@ -41,30 +41,74 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testDeleteCanBeAccessed() {
-    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct/1', Request::METHOD_DELETE);
 
     $this->assertResponseStatusCode(501);
   }
 
   public function testGetCanBeAccessed() {
-    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct/1', Request::METHOD_GET);
 
     $this->assertResponseStatusCode(501);
   }
 
   public function testGetListCanBeAccessed() {
-    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct', Request::METHOD_GET);
 
     $this->assertResponseStatusCode(501);
   }
 
   public function testUpdateCanBeAccessed() {
-    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct/1', Request::METHOD_PUT);
 
     $this->assertResponseStatusCode(501);
+  }
+
+  public function testObjectsCanBeAccessed() {
+    $this->dispatch('/api/provisionedproduct/1/objects',
+      Request::METHOD_POST,
+      array(
+        'type' => 'rs.deployment',
+        'href' => 'http://foo.bar.baz'
+      )
+    );
+
+    $this->assertResponseStatusCode(201);
+  }
+
+  public function testObjectsReturns405OnNonPostMethod() {
+    $this->dispatch('/api/provisionedproduct/1/objects', Request::METHOD_PUT);
+
+    $this->assertResponseStatusCode(405);
+  }
+
+  public function testObjectReturns400WhenTypeIsMissing() {
+    $this->dispatch('/api/provisionedproduct/1/objects',
+      Request::METHOD_POST,
+      array(
+        'href' => 'http://foo.bar.baz'
+      )
+    );
+
+    $response = strval($this->getResponse());
+
+    $this->assertResponseStatusCode(Response::STATUS_CODE_400);
+    $this->assertContains('missing', strtolower($response));
+    $this->assertContains('type', strtolower($response));
+  }
+
+  public function testObjectReturns400WhenHrefIsMissing() {
+    $this->dispatch('/api/provisionedproduct/1/objects',
+      Request::METHOD_POST,
+      array(
+        'type' => 'rs.deployment'
+      )
+    );
+
+    $response = strval($this->getResponse());
+
+    $this->assertResponseStatusCode(Response::STATUS_CODE_400);
+    $this->assertContains('missing', strtolower($response));
+    $this->assertContains('href', strtolower($response));
   }
 }

@@ -24,9 +24,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Controller\Api;
 
+use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\View\Model\JsonModel;
 use Zend\Mvc\Controller\AbstractRestfulController;
+
+use SelfService\Entity\ProvisionedDeployment;
 
 class ProvisionedProductController extends AbstractRestfulController {
 
@@ -108,5 +111,38 @@ class ProvisionedProductController extends AbstractRestfulController {
     $this->getResponse()->setStatusCode(Response::STATUS_CODE_501);
     $this->getResponse()->sendHeaders();
     return new JsonModel();
+  }
+
+  public function objectsAction() {
+    $retval = array();
+    if($this->getRequest()->getMethod() != Request::METHOD_POST) {
+      $this->getResponse()->setStatusCode(Response::STATUS_CODE_405);
+      $this->getResponse()->getHeaders()->addHeaderLine('Allow', array('POST'));
+      $retval['message'] = "Only the POST (or create) method is allowed.";
+    } else {
+      $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+      $required_params = array('href', 'type');
+      $post_params = $this->params()->fromPost();
+      $missing_required_params = array_diff($required_params, array_keys($post_params));
+      if(count($missing_required_params) > 0) {
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+        $retval['message'] = 'Missing required fields: '.join(',', $missing_required_params);
+      } else {
+        $object = null;
+        switch($post_params['type']) {
+          case "rs.deployment":
+            $object = new ProvisionedDeployment(array('href'=>$post_params['href']));
+            break;
+        }
+        $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+        if($object != null) {
+          $em->persist($object);
+          $em->flush();
+        }
+        $retval = array_merge($retval, array('id' => $this->params('id'), 'post' => $this->params()->fromPost()));
+      }
+    }
+    $retval['code'] = $this->getResponse()->getStatusCode();
+    return new JsonModel($retval);
   }
 }

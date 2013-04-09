@@ -119,7 +119,7 @@ return array(
       'api-provisionedproduct' => array(
         'type' => 'Segment',
         'options' => array(
-          'route' => '/api/provisionedproduct[/:id]',
+          'route' => '/api/provisionedproduct[/:id][/:action]',
           'constraints' => array(
             'id' => '[0-9]+'
           ),
