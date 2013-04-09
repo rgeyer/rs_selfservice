@@ -67,6 +67,13 @@ class GoogleAuthPluginTest extends AbstractHttpControllerTestCase {
     $this->assertResponseStatusCode(200);
   }
 
+  public function testDoesNotRedirectWhenRouteIsApi() {
+    $this->dispatch('/api/provisionedproduct');
+
+    $this->assertNotRedirect();
+    $this->assertControllerName('selfservice\controller\api\provisionedproduct');
+  }
+
   public function testDoesNotRedirectWhenAuthenticated() {
     $storage_adapter = $this->getMockForAbstractClass('Zend\Cache\Storage\Adapter\AbstractAdapter');
 

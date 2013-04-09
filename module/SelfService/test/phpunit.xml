@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="Bootstrap.php">
+<phpunit bootstrap="Bootstrap.php"
+         colors="true"
+         verbose="true"
+         stopOnFailure="false">
   <php>
         <env name="APPLICATION_ENV" value="testing" />
   </php>

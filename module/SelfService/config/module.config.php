@@ -116,6 +116,19 @@ return array(
           ),
         ),
       ),
+      'api-provisionedproduct' => array(
+        'type' => 'Segment',
+        'options' => array(
+          'route' => '/api/provisionedproduct[/:id]',
+          'constraints' => array(
+            'id' => '[0-9]+'
+          ),
+          'defaults' => array(
+            '__NAMESPACE__' => 'SelfService\Controller\Api',
+            'controller' => 'ProvisionedProduct'
+          ),
+        ),
+      ),
       // The following is a route to simplify getting started creating
       // new controllers and actions without needing to create a new
       // module. Simply drop new controllers in, and you can access them
@@ -279,6 +292,7 @@ return array(
     'invokables' => array(
       'SelfService\Service\Entity\UserService'      => 'SelfService\Service\Entity\UserService',
       'SelfService\Service\Entity\ProductService'   => 'SelfService\Service\Entity\ProductService',
+      'SelfService\Service\Entity\ProvisionedProductService'   => 'SelfService\Service\Entity\ProvisionedProductService',
     ),
   ),
   'translator' => array(
@@ -300,6 +314,9 @@ return array(
       'SelfService\Controller\MetaInput' => 'SelfService\Controller\MetaInputController',
       'SelfService\Controller\Cache' => 'SelfService\Controller\CacheController',
       'SelfService\Controller\User' => 'SelfService\Controller\UserController',
+
+      # API
+      'SelfService\Controller\Api\ProvisionedProduct' => 'SelfService\Controller\Api\ProvisionedProductController',
     ),
   ),
   'view_manager' => array(

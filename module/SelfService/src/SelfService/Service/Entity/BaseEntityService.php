@@ -93,4 +93,22 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
     $em->flush();
   }
 
+  /**
+   * @param $params An associative array of properties to set on the newly created entity.
+   * @return The newly created entity
+   */
+  public function create(array $params) {
+    $em = $this->getEntityManager();
+    $entity = new $this->entityClass;
+    $em = $this->getEntityManager();
+    foreach($params as $paramname => $param) {
+      if(property_exists($entity, $paramname)) {
+        $entity->{$paramname} = $param;
+      }
+    }
+    $em->persist($entity);
+    $em->flush();
+    return $entity;
+  }
+
 }
