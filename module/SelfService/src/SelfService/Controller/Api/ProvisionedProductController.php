@@ -134,12 +134,14 @@ class ProvisionedProductController extends AbstractRestfulController {
             $object = new ProvisionedDeployment(array('href'=>$post_params['href']));
             break;
         }
-        $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
         if($object != null) {
-          $em->persist($object);
+          $provisionedProductService = $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
+          $product = $provisionedProductService->find($this->param('id'));
+          $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+          $product->provisioned_objects[] = $object;
+          $em->persist($product);
           $em->flush();
         }
-        $retval = array_merge($retval, array('id' => $this->params('id'), 'post' => $this->params()->fromPost()));
       }
     }
     $retval['code'] = $this->getResponse()->getStatusCode();
