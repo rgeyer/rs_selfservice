@@ -17,7 +17,7 @@
       <td>{$product->owner->name}</td>
       <td>{$product->createdate|date_format}</td>
       <td>{count($product->provisioned_objects)}
-      <td>{foreach $actions as $key=>$action}<a href="{$action.uri_prefix}/{$product->id}"{if $action.is_ajax} class="ajaxaction"{/if}><img src="{$this->basePath()}/{$action.img_path}"/></a>{/foreach}</td>
+      <td>{foreach $actions as $key=>$action}<a href="{$action.uri_prefix}/{$product->id}"{if $action.is_ajax} class="ajaxaction"{/if}><img src="{$this->basePath()}{$action.img_path}"/></a>{/foreach}</td>
     </tr>
 {/foreach}
   </tbody>

@@ -54,6 +54,7 @@ class ProvisionedProductController extends AbstractRestfulController {
     $response->setStatusCode(Response::STATUS_CODE_201);
     $response->getHeaders()->addHeaderLine('Location',
       $this->url()->fromRoute('api-provisionedproduct', array('id' => $provisionedProduct->id)));
+    $this->getResponse()->sendHeaders();
     return new JsonModel();
   }
 
@@ -67,7 +68,7 @@ class ProvisionedProductController extends AbstractRestfulController {
   {
     $this->getResponse()->setStatusCode(Response::STATUS_CODE_501);
     $this->getResponse()->sendHeaders();
-    $this->getEvent()->stopPropagation(true);
+    return new JsonModel();
   }
 
   /**
@@ -80,7 +81,7 @@ class ProvisionedProductController extends AbstractRestfulController {
   {
     $this->getResponse()->setStatusCode(Response::STATUS_CODE_501);
     $this->getResponse()->sendHeaders();
-    $this->getEvent()->stopPropagation(true);
+    return new JsonModel();
   }
 
   /**
@@ -92,7 +93,7 @@ class ProvisionedProductController extends AbstractRestfulController {
   {
     $this->getResponse()->setStatusCode(Response::STATUS_CODE_501);
     $this->getResponse()->sendHeaders();
-    $this->getEvent()->stopPropagation(true);
+    return new JsonModel();
   }
 
   /**
@@ -106,6 +107,6 @@ class ProvisionedProductController extends AbstractRestfulController {
   {
     $this->getResponse()->setStatusCode(Response::STATUS_CODE_501);
     $this->getResponse()->sendHeaders();
-    $this->getEvent()->stopPropagation(true);
+    return new JsonModel();
   }
 }

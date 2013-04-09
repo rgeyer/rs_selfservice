@@ -23,8 +23,7 @@
   ->prependFile('http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
   ->appendFile('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js')
   ->appendFile($this->basePath()|cat:'/js/functions.js')
-  ->appendFile($this->basePath()|cat:'/js/image-picker.min.js')
-  ->appendFile($this->basePath()|cat:'/js/jquery.masonry.min.js')}
+  ->appendFile($this->basePath()|cat:'/js/image-picker.min.js')}
 
   {literal}
   <script>
