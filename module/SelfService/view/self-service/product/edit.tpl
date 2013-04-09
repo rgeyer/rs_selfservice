@@ -1,4 +1,4 @@
-<form method="POST" action="{$this->url('product')}/update/{$product->id}">
+<form method="POST" action="{$this->url('product', ['action' => 'update', 'id' => $product->id])}">
   <label for="name">Name:</label>
   <input type="text" name="name" id="name" value="{$product->name}" />
   <label for="launch_servers">Launch Servers:</label>

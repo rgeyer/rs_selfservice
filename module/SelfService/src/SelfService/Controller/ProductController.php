@@ -64,12 +64,12 @@ class ProductController extends BaseController {
     foreach($products as $product) {
       $actions[$product->id] = array(
         'delete' => array(
-          'uri' => $this->url()->fromRoute('product').'/delete/'.$product->id,
+          'uri' => $this->url()->fromRoute('product', array('action' => 'delete', 'id' => $product->id)),
           'img_path' => '/images/delete.png',
           'is_ajax' => true
         ),
         'edit' => array(
-          'uri' => $this->url()->fromRoute('product').'/edit/'.$product->id,
+          'uri' => $this->url()->fromRoute('product', array('action' => 'edit', 'id' => $product->id)),
           'img_path' => '/images/pencil.png',
           'is_ajax' => false
         )
@@ -113,7 +113,7 @@ class ProductController extends BaseController {
 
         $response['messages'][] = sprintf(
           "View your provisioned product in the admin panel <a href='%s'>here</a>.",
-          $this->url()->fromRoute('admin/provisionedproducts').'/provisionedproducts/show/'.$prov_prod->id
+          $this->url()->fromRoute('provisionedproducts', array('action' => 'show', 'id' => $prov_prod->id))
         );
 
         # TODO: Add a link to the RightScale deployment based on a configuration flag and/or user role

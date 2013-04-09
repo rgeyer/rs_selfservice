@@ -106,7 +106,7 @@ class GoogleAuthPluginTest extends AbstractHttpControllerTestCase {
     $sm->setAllowOverride(true);
     $sm->setService('cache_storage_adapter', $storage_adapter);
     \SelfServiceTest\Helpers::authenticateAsUnauthorizedUser($this->getApplicationServiceLocator());
-    $this->dispatch('/admin/user/unauthorized');
+    $this->dispatch('/user/unauthorized');
 
     $this->assertNotRedirect();
     $this->assertControllerName('selfservice\controller\user');

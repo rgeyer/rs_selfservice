@@ -30,7 +30,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testIndexActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/admin/provisionedproducts');
+    $this->dispatch('/provisionedproducts');
 
     $this->assertActionName('index');
     $this->assertControllerName('selfservice\controller\provisionedproduct');
@@ -39,7 +39,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testCleanupActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/admin/provisionedproducts/cleanup');
+    $this->dispatch('/provisionedproducts/cleanup');
 
     $response = strval($this->getResponse());
 
@@ -51,7 +51,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testShowActionCanBeAccessed() {
-//    $this->dispatch('/admin/provisionedproducts/show');
+//    $this->dispatch('/provisionedproducts/show');
 //
 //    $response = strval($this->getResponse());
 //
@@ -62,7 +62,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testServerStartActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/admin/provisionedproducts/serverstart');
+    $this->dispatch('/provisionedproducts/serverstart');
 
     $response = strval($this->getResponse());
 
@@ -74,7 +74,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testServerStopActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/admin/provisionedproducts/serverstop');
+    $this->dispatch('/provisionedproducts/serverstop');
 
     $response = strval($this->getResponse());
 

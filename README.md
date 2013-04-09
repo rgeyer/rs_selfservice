@@ -45,7 +45,6 @@ TODO:
   * All ajax calls are actually ajax with a progress bar.  Above still needs more love. (Done)
 * Handle "cloud not supported" errors when provisioning servers or arrays
   * Select default Datacenter when not specified and supported/required by the cloud
-* Tokenize all paths
 * Accept (meta, not dashboard) inputs for products.  Customized form during provisioning.  Also self referencing variables
   * Multiple Choice (dropdown)
   * If/Else options, like MySQL 5.1 or 5.5 with logic (use one ST over another depending upon selection)

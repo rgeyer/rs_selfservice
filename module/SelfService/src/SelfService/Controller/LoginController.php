@@ -36,7 +36,7 @@ use SelfService\Zend\Authentication\Adapter\GoogleAuthAdapter;
 class LoginController extends BaseController {
 
   public function indexAction() {
-    return array('form_action' => $this->url()->fromRoute('login').'/process');
+    return array('form_action' => $this->url()->fromRoute('login', array('action' => 'process')));
   }
 
   public function processAction() {

@@ -31,10 +31,10 @@ return array(
           ),
         ),
       ),
-      'admin/provisionedproducts' => array(
+      'provisionedproducts' => array(
         'type' => 'Segment',
         'options' => array(
-          'route' => '/admin/provisionedproducts[/:action][/:id]',
+          'route' => '/provisionedproducts[/:action][/:id]',
           'constraints' => array(
             'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
             'id' => '[0-9]+'
@@ -105,7 +105,7 @@ return array(
       'user' => array(
         'type' => 'Segment',
         'options' => array(
-          'route' => '/admin/user[/:action][/:email]',
+          'route' => '/user[/:action][/:email]',
           'constraints' => array(
             'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
           ),

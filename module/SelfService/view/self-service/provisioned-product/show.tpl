@@ -16,14 +16,14 @@
         <tr>
           <td>
             <div class="server">
-              <img src="/images/32server.png" />
-              <img src="/images/spacer.gif" class="state {$server->state}"/>
+              <img src="{$this->basePath()}/images/32server.png" />
+              <img src="{$this->basePath()}/images/spacer.gif" class="state {$server->state}"/>
             </div>
           </td>
           <td>{$server->name}</td>
           <td>{$server->created_at|date_format}</td>
           <td>{$server->ip}</td>
-          <td>{foreach $server->actions as $key=>$action}<a href="{$action.uri_prefix}/{$server->prov_server->id}"{if $action.is_ajax} class="ajaxaction"{/if}><img src="{$action.img_path}"/></a>{/foreach}</td>
+          <td>{foreach $server->actions as $key=>$action}<a href="{$action.uri_prefix}/{$server->prov_server->id}"{if $action.is_ajax} class="ajaxaction"{/if}><img src="{$this->basePath()}/{$action.img_path}"/></a>{/foreach}</td>
         </tr>
     {/foreach}
       </tbody>
@@ -35,8 +35,8 @@
       <tr>
         <td>
           <div class="server">
-            <img src="/images/32server.png" />
-            <img src="/images/spacer.gif" class="state inactive"/>
+            <img src="{$this->basePath()}/images/32server.png" />
+            <img src="{$this->basePath()}/images/spacer.gif" class="state inactive"/>
           </div>
         </td>
         <td>Not Runnin'</td>
@@ -44,8 +44,8 @@
       <tr>
         <td>
           <div class="server">
-            <img src="/images/32server.png" />
-            <img src="/images/spacer.gif" class="state operational"/>
+            <img src="{$this->basePath()}/images/32server.png" />
+            <img src="{$this->basePath()}/images/spacer.gif" class="state operational"/>
           </div>
         </td>
         <td>Runnin'</td>
@@ -53,8 +53,8 @@
       <tr>
         <td>
           <div class="server">
-            <img src="/images/32server.png" />
-            <img src="/images/spacer.gif" class="state booting"/>
+            <img src="{$this->basePath()}/images/32server.png" />
+            <img src="{$this->basePath()}/images/spacer.gif" class="state booting"/>
           </div>
         </td>
         <td>Startin' Up</td>
@@ -62,8 +62,8 @@
       <tr>
         <td>
           <div class="server">
-            <img src="/images/32server.png" />
-            <img src="/images/spacer.gif" class="state decommissioning"/>
+            <img src="{$this->basePath()}/images/32server.png" />
+            <img src="{$this->basePath()}/images/spacer.gif" class="state decommissioning"/>
           </div>
         </td>
         <td>Shuttin' Down</td>
@@ -71,8 +71,8 @@
       <tr>
         <td>
           <div class="server">
-            <img src="/images/32server.png" />
-            <img src="/images/spacer.gif" class="state stranded"/>
+            <img src="{$this->basePath()}/images/32server.png" />
+            <img src="{$this->basePath()}/images/spacer.gif" class="state stranded"/>
           </div>
         </td>
         <td>Broke</td>

@@ -79,7 +79,7 @@ class UserController extends BaseController {
         if($user->authorized) {
           $actions[$user->id] = array(
             'deauthorize' => array(
-              'uri' => $this->url()->fromRoute('user').'/deauthorize/'.urlencode($user->email),
+              'uri' => $this->url()->fromRoute('user', array('action' => 'deauthorize', 'email' => urlencode($user->email))),
               'img_path' => '/images/16keyblock.png',
               'is_ajax' => true
             )
@@ -87,7 +87,7 @@ class UserController extends BaseController {
         } else {
           $actions[$user->id] = array(
             'authorize' => array(
-              'uri' => $this->url()->fromRoute('user').'/authorize/'.urlencode($user->email),
+              'uri' => $this->url()->fromRoute('user', array('action', array('action' => 'authorize', 'email' => urlencode($user->email)))),
               'img_path' => '/images/16key.png',
               'is_ajax' => true
             )

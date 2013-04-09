@@ -1,4 +1,4 @@
-<form action="{$this->url('product')}/provision/{$id}" method="POST" id="product_{$id}_form" class="productform">
+<form action="{$this->url('product', ['action' => 'provision', 'id' => $id]}" method="POST" id="product_{$id}_form" class="productform">
   {foreach $meta_inputs as $meta_input}  
   <fieldset>
     <label for="{$meta_input->input_name}">{$meta_input->display_name}:</label>
@@ -28,7 +28,7 @@
       });
     </script>
     {/if}
-    <div style="font-size: -1; color: grey;"><img src="/images/info.png" /> {$meta_input->description}</div>
+    <div style="font-size: -1; color: grey;"><img src="{$this->basePath()}/images/info.png" /> {$meta_input->description}</div>
   </fieldset>
   {/foreach}
   <input type="submit" id="product_{$id}_submit"/>
@@ -94,7 +94,7 @@ $(function() {
       $(element).empty();
       instance_type_select_ids.push($(element).attr('id'));
     });
-    $.post('{$this->url('metainput')}/instancetypes/'+cloud_id, {literal}{'instance_type_ids':instance_type_select_ids}{/literal}, function(data, status, jqXHR) {
+    $.post('{$this->url('metainput', ['action' => 'instancetypes']}/'+cloud_id, {literal}{'instance_type_ids':instance_type_select_ids}{/literal}, function(data, status, jqXHR) {
       $(data.instance_type_ids).each(function(index, instance_type_id) {
         $(data.instance_types).each(function(idx, instance_type) {
           $("#"+instance_type_id).append("<option value='"+instance_type.href+"'>"+instance_type.name+"</option>");

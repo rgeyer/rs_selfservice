@@ -163,9 +163,9 @@
           <li class="active"><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
           <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{$this->translate('Admin')}</a>
             <ul class="dropdown-menu">
-              <li><a href="{$this->url('product')}/index">{$this->translate("Products")}</a></li>
-              <li><a href="{$this->url('admin/provisionedproducts')}/provisionedproducts">{$this->translate('Provisioned Products')}</a></li>
-              <li><a href="{$this->url('user')}">{$this->translate("Users")}</a></li>
+              <li><a href="{$this->url('product', ['action' => 'index'])}">{$this->translate("Products")}</a></li>
+              <li><a href="{$this->url('provisionedproducts', ['action' => 'index'])}">{$this->translate('Provisioned Products')}</a></li>
+              <li><a href="{$this->url('user', ['action' => 'index'])}">{$this->translate("Users")}</a></li>
             </ul>
           </li>
         </ul>
