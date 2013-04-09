@@ -122,7 +122,8 @@ class ProvisionedProductController extends AbstractRestfulController {
     } else {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
       $required_params = array('href', 'type');
-      $post_params = $this->params()->fromPost();
+      $body = strval($this->getRequest()->getContent());
+      $post_params = get_object_vars(json_decode($body));
       $missing_required_params = array_diff($required_params, array_keys($post_params));
       if(count($missing_required_params) > 0) {
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);

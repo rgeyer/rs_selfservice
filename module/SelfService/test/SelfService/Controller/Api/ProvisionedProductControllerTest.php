@@ -65,13 +65,15 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testObjectsCanBeAccessed() {
-    $this->dispatch('/api/provisionedproduct/1/objects',
-      Request::METHOD_POST,
-      array(
-        'type' => 'rs.deployment',
-        'href' => 'http://foo.bar.baz'
+    $this->getRequest()->setContent(
+      json_encode(
+        array(
+          'type' => 'rs.deployment',
+          'href' => 'http://foo.bar.baz'
+        )
       )
     );
+    $this->dispatch('/api/provisionedproduct/1/objects',Request::METHOD_POST);
 
     $this->assertResponseStatusCode(201);
   }
@@ -83,12 +85,15 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testObjectReturns400WhenTypeIsMissing() {
-    $this->dispatch('/api/provisionedproduct/1/objects',
-      Request::METHOD_POST,
-      array(
-        'href' => 'http://foo.bar.baz'
+    $this->getRequest()->setContent(
+      json_encode(
+        array(
+          'href' => 'http://foo.bar.baz'
+        )
       )
     );
+
+    $this->dispatch('/api/provisionedproduct/1/objects',Request::METHOD_POST);
 
     $response = strval($this->getResponse());
 
@@ -98,12 +103,15 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testObjectReturns400WhenHrefIsMissing() {
-    $this->dispatch('/api/provisionedproduct/1/objects',
-      Request::METHOD_POST,
-      array(
-        'type' => 'rs.deployment'
+    $this->getRequest()->setContent(
+      json_encode(
+        array(
+          'type' => 'rs.deployment'
+        )
       )
     );
+
+    $this->dispatch('/api/provisionedproduct/1/objects',Request::METHOD_POST);
 
     $response = strval($this->getResponse());
 
