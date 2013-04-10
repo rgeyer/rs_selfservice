@@ -30,6 +30,7 @@ use Zend\View\Model\JsonModel;
 use Zend\Mvc\Controller\AbstractRestfulController;
 
 use SelfService\Entity\ProvisionedDeployment;
+use SelfService\Entity\ProvisionedSecurityGroup;
 
 class ProvisionedProductController extends AbstractRestfulController {
 
@@ -129,15 +130,19 @@ class ProvisionedProductController extends AbstractRestfulController {
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         $retval['message'] = 'Missing required fields: '.join(',', $missing_required_params);
       } else {
+        # TODO: Validate the types and throw an error for unknown types
         $object = null;
         switch($post_params['type']) {
-          case "rs.deployment":
+          case "rs.deployments":
             $object = new ProvisionedDeployment(array('href'=>$post_params['href']));
+            break;
+          case "rs.security_groups":
+            $object = new ProvisionedSecurityGroup(array('href'=>$post_params['href']));
             break;
         }
         if($object != null) {
           $provisionedProductService = $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
-          $product = $provisionedProductService->find($this->param('id'));
+          $product = $provisionedProductService->find($this->params('id'));
           $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
           $product->provisioned_objects[] = $object;
           $em->persist($product);

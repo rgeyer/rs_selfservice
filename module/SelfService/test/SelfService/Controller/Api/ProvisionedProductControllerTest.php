@@ -65,6 +65,17 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testObjectsCanBeAccessed() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+    \SelfService\Product\php3tier::add($em);
+    $product = $productService->find(1);
+    $params = array(
+      'product' => $product,
+    );
+
+    $provisionedProductService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
+    $provisionedProductService->create($params);
+
     $this->getRequest()->setContent(
       json_encode(
         array(
