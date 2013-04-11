@@ -137,7 +137,7 @@ class ProvisionedProductController extends AbstractRestfulController {
             $object = new ProvisionedDeployment(array('href'=>$post_params['href']));
             break;
           case "rs.security_groups":
-            $object = new ProvisionedSecurityGroup(array('href'=>$post_params['href'],'cloud'=>$post_params['cloud_id']));
+            $object = new ProvisionedSecurityGroup(array('href'=>$post_params['href'],'cloud_id'=>$post_params['cloud_id']));
             break;
         }
         if($object != null) {
