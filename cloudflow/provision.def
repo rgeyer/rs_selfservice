@@ -26,8 +26,11 @@ define provision($json, $postbackurl)
     concurrent foreach $template in $desired_product['server_templates']
       $id = first($template)
       $templatehash = last($template)
-      @template = rs.publications(href: "/api/publications/"+$templatehash['publication_id']).import()
-      $$templates << {"id": $id, "href": @template:href[0]}
+      @publication = rs.publications.get(href: "/api/publications/"+$templatehash['publication_id'])
+      if size(@publication) == 1
+        @publication.import()
+        $$templates << {"id": $id, "href": @template:href[0]}
+      end
     end
 
     concurrent foreach $sg in $desired_product["security_groups"]
