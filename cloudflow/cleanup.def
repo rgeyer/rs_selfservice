@@ -1,0 +1,35 @@
+define cleanup($arrayOfHashesOfHrefsByType)
+
+  $obj = $arrayOfHashesOfHrefsByType
+
+  if type($arrayOfHashesOfHrefsByType) == "string"
+    $obj = from_json($arrayOfHashesOfHrefsByType)
+  end
+
+  concurrent foreach $href in $obj
+    if $href['type'] == "rs.security_groups"
+      @resource = rs.get(href: $href['href'])
+      @rules = @resource.security_group_rules()
+      if size(@rules) > 0
+        concurrent foreach @rule in @rules
+          @rule.destroy()
+        end
+      end
+    end
+  end
+
+  concurrent foreach $href in $obj
+    if $href['type'] == "rs.security_groups"
+      @resource = rs.get(href: $href['href'])
+      @resource.destroy()
+    end
+  end
+
+  concurrent foreach $href in $obj
+    if $href['type'] == "rs.deployments"
+      @resource = rs.get(href: $href['href'])
+      @resource.destroy()
+    end
+  end
+
+end
