@@ -233,6 +233,8 @@ class ProductService extends BaseEntityService {
   }
 
   public function toJson($id, array $params = array()) {
+    $config = $this->getServiceLocator()->get('Configuration');
+    $owners = $config['rsss']['cloud_credentials']['owners'];
     $product = $this->find($id);
     $product->mergeMetaInputs($params);
     $jsonProduct = $this->ormToStdclass(array(), $product);
@@ -273,6 +275,12 @@ class ProductService extends BaseEntityService {
         $jsonRule = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $rule);
         if($rule->ingress_group) {
           $jsonRule->ingress_group = array('rel' => 'security_groups', 'id' => $rule->ingress_group->id);
+          $cloud = $jsonSecurityGroup->cloud_id;
+          if(is_array($cloud)) {
+            $jsonRule->ingress_owner = $owners[$jsonProduct->meta_inputs[strval($cloud['id'])]['value']];
+          } else {
+            $jsonRule->ingress_owner = $owners[$cloud];
+          }
         }
         $jsonSecurityGroup->rules[] = $jsonRule;
       }

@@ -118,6 +118,7 @@ EOF;
 
     $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
     $jsonStr = $productService->toJson(1);
+    print $jsonStr;
     $jsonObj = json_decode($jsonStr);
     $this->assertTrue(property_exists($jsonObj, 'name'), "Product JSON did not include product name");
     $this->assertTrue(property_exists($jsonObj, 'icon_filename'), "Product JSON did not include product icon_filename");
@@ -141,6 +142,8 @@ EOF;
         );
         if(property_exists($rule, 'ingress_group')) {
           $this->assertIsReference($jsonObj, $rule->ingress_group);
+          # TODO: This assumes all clouds require owners, which is not always the case. I.E. Google
+          $this->assertTrue(property_exists($rule, 'ingress_owner'), "Security Group Rule $rule_idx for Security Group $propname specified an ingress_group, but no ingress_owner");
         }
       }
       $this->assertTrue(property_exists($propval, 'cloud_id'), "Security Group JSON did not include cloud_id");
