@@ -2,118 +2,170 @@ define provision($json, $postbackurl)
   $desired_product = from_json($json)
   $$postbackurl = $postbackurl
   $$provisioned_objects = []
-  $$provisioned_security_groups = []
-  $$templates = []
 
-  $create_product_response = http_post(href: $$postbackurl+"/api/provisionedproduct")
+  $create_product_response = http_post("href": $$postbackurl+"/api/provisionedproduct")
 
   # TODO: Error handling for postbacks
-  $$postbackurl = $$postbackurl+$create_product_response['headers']['location']
+  $$postbackurl = $$postbackurl+$create_product_response["headers"]["location"]
 
   $tags = ["rsss:provisioned_product_url="+$$postbackurl]
-  @deployment = rs.deployments.create(deployment: {"name": $desired_product["name"]})
+  @deployment = rs.deployments.create("deployment": {"name": $desired_product["name"]})
   call postback(@deployment)
-  rs.tags.multi_add(resource_hrefs: @deployment:href, tags: $tags)
+  rs.tags.multi_add("resource_hrefs": @deployment:href, "tags": $tags)
   $inputs2_0 = {}
-  foreach $input in $desired_product['parameters']
-    call convertMetaInputToValue($input['name']) retrieve $name
-    call convertMetaInputToValue($input['value']) retrieve $value
+  foreach $input in $desired_product["parameters"]
+    $name = $input["name"]
+    $value = $input["value"]
     $inputs2_0[$name] = $value
   end
-  @deployment.inputs.multi_update(inputs: $inputs2_0)
+  @deployment.inputs.multi_update("inputs": $inputs2_0)
 
   begin
-    concurrent foreach $template in $desired_product['server_templates']
+    concurrent foreach $template in $desired_product["server_templates"]
       $id = first($template)
       $templatehash = last($template)
-      @publication = rs.publications.get(href: "/api/publications/"+$templatehash['publication_id'])
+      @publication = rs.publications.get("href": "/api/publications/"+$templatehash["publication_id"])
       if size(@publication) == 1
-        @publication.import()
-        $$templates << {"id": $id, "href": @template:href[0]}
+        @template = @publication.import()
+        $$provisioned_objects << {"id": $id, "href": @template:href[0], "rel": "server_templates", "type": type(@template)}
       end
     end
 
     concurrent foreach $sg in $desired_product["security_groups"]
       $id = first($sg)
       $grouphash = last($sg)
-      call convertMetaInputToValue($grouphash['cloud_id']) retrieve $cloud_id
-      @cloud = rs.clouds.get(href: "/api/clouds/"+$cloud_id)
+      $cloud_id = $grouphash["cloud_id"]
+      @cloud = rs.clouds.get("href": "/api/clouds/"+$cloud_id)
       call doesCloudSupport(@cloud, "security_groups") retrieve $cloudSupportsSecurityGroup
       if $cloudSupportsSecurityGroup
-        call convertMetaInputToValue($grouphash['name']) retrieve $name
+        $name = $grouphash["name"]
         $name = "rsss-"+$name+"-"+to_n(now())
-        call convertMetaInputToValue($grouphash['description']) retrieve $description
-        @security_group = @cloud.security_groups.create(security_group: {name: $name, description: $description})
+        $description = $grouphash["description"]
+        @security_group = @cloud.security_groups.create("security_group": {"name": $name, "description": $description})
         call postback(@security_group)
-        $$provisioned_security_groups << {id: $id, href: @security_group:href[0], name: $name}
+        $$provisioned_objects << {"id": $id, "href": @security_group:href[0], "name": $name, "rel": "security_groups", "type": type(@security_group)}
       end
     end
 
-    concurrent foreach $prov_sg in $$provisioned_security_groups
-      $id = $prov_sg['id']
-      $href = $prov_sg['href']
-      $sg = $desired_product['security_groups'][to_s($id)]
-      @sg = rs.get(href: $href)
-      concurrent foreach $rule in $sg['rules']
-        call convertMetaInputToValue($rule['ingress_protocol']) retrieve $protocol
-        call convertMetaInputToValue($rule['ingress_to_port']) retrieve $end_port
-        call convertMetaInputToValue($rule['ingress_from_port']) retrieve $start_port
+    concurrent foreach $prov_sg in select($$provisioned_objects, {"rel": "security_groups"})
+      $id = $prov_sg["id"]
+      $href = $prov_sg["href"]
+      $sg = $desired_product["security_groups"][to_s($id)]
+      @sg = rs.get("href": $href)
+      concurrent foreach $rule in $sg["rules"]
+        $protocol = $rule["ingress_protocol"]
+        $end_port = $rule["ingress_to_port"]
+        $start_port = $rule["ingress_from_port"]
         $rule_params = {
-          protocol: $protocol,
-          security_group_href: $href,
-          protocol_details: {
-            end_port: $end_port,
-            start_port: $start_port
+          "protocol": $protocol,
+          "security_group_href": $href,
+          "protocol_details": {
+            "end_port": $end_port,
+            "start_port": $start_port
           }
         }
-        if contains?(keys($rule), ['ingress_group'])
-          call convertMetaInputToValue($rule['ingress_owner']) retrieve $owner
-          $ingress_prov_group_id = to_s($rule['ingress_group']['id'])
-          $ingress_prov_group = first(select($$provisioned_security_groups, {'id': $ingress_prov_group_id}))
-          $rule_params['source_type'] = 'group'
-          $rule_params['group_name'] = $ingress_prov_group['name']
-          $rule_params['group_owner'] = $owner
-        elsif contains?(keys($rule), ['ingress_cidr_ips'])
-          call convertMetaInputToValue($rule['ingress_cidr_ips']) retrieve $cidr_ips
-          $rule_params['source_type'] = 'cidr_ips';
-          $rule_params['cidr_ips'] = $cidr_ips
+        if contains?(keys($rule), ["ingress_group"])
+          $owner = $rule["ingress_owner"]
+          call findRelatedObject($rule["ingress_group"]) retrieve $ingress_prov_group
+          $rule_params["source_type"] = "group"
+          $rule_params["group_name"] = $ingress_prov_group["name"]
+          $rule_params["group_owner"] = $owner
+        elsif contains?(keys($rule), ["ingress_cidr_ips"])
+          $cidr_ips = $rule["ingress_cidr_ips"]
+          $rule_params["source_type"] = "cidr_ips";
+          $rule_params["cidr_ips"] = $cidr_ips
         end
-        @sg.security_group_rules.create(security_group_rule: $rule_params)
+        @sg.security_group_rules.create("security_group_rule": $rule_params)
       end
     end
 
-    concurrent foreach $server in $desired_product['servers']
+    concurrent foreach $server in $desired_product["servers"]
       $id = first($server)
       $serverhash = last($server)
-      call convertMetaInputToValue($grouphash['cloud_id']) retrieve $cloud_id
-      call convertMetaInputToValue($serverhash['nickname']) retrieve $nickname
-      call convertMetaInputToValue($serverhash['count']) retrieve $count
+      $cloud_id = $serverhash["cloud_id"]
+      $nickname = $serverhash["nickname"]
+      $count = $serverhash["count"]
       $cloud_href = "/api/clouds/"+$cloud_id
-      $template = first(select($$templates, {"id": $serverhash['server_template']['id']}))
-      $template_href = $template['href']
+      @cloud = rs.clouds.get("href": $cloud_href)
+      call findRelatedObject($serverhash["server_template"]) retrieve $template
+      $template_href = $template["href"]
+      @template = rs.server_templates.get("href": $template_href)
 
-      $i = 0
-      while $i < $count
-        $params = {
-          name: $nickname+to_s($i),
-          deployment_href: @deployment:href[0],
-          instance: {
-            server_template_href: $template_href
-          }
+      $mci_href = false
+      $instance_type_href = false
+      concurrent foreach @image in @template.multi_cloud_images()
+        concurrent foreach @setting in @image.settings()
+          $cloud_rel = first(select(@setting:links[0], {"rel": "cloud"}))
+          if $cloud_rel["href"] == $cloud_href
+            $mci_href = @image:href[0]
+            $instance_type_rel = first(select(@setting:links[0], {"rel": "instance_type"}))
+            $instance_type_href = $instance_type_rel["href"]
+          end
+        end
+      end
+
+      $base_params = {
+        "deployment_href": @deployment:href[0],
+        "instance": {
+          "server_template_href": $template_href,
+          "cloud_href": $cloud_href,
+          "multi_cloud_image_href": $mci_href
         }
+      }
+
+      $security_group_hrefs = []
+      foreach $security_group in $serverhash["security_groups"]
+        call findRelatedObject($security_group) retrieve $group
+        $security_group_hrefs << $group["href"]
+      end
+      if size($security_group_hrefs) > 0
+        $base_params["instance"]["security_group_hrefs"] = $security_group_hrefs
+      end
+
+      if contains?(keys($serverhash), ["instance_type"])
+        $base_params["instance"]["instance_type_href"] = $serverhash["instance_type"]
+      elsif $instance_type_href
+        $base_params["instance"]["instance_type_href"] = $instance_type_href
+      else
+        @instance_type = first(@cloud.instance_types())
+        $base_params["instance"]["instance_type_href"] = @instance_type:href[0]
+      end
+
+      call doesCloudSupport(@cloud, "datacenters") retrieve $datacenters
+      if $datacenters
+        @datacenters = @cloud.datacenters()
+        $base_params["instance"]["datacenter_href"] = @datacenters:href[$i % size(@datacenters)]
+      end
+
+      $i = 1
+      while $i <= $count
+        $params = $base_params
+        $params["name"] = $nickname+to_s($i)
         call log("DEBUG", "Would create a new server with these params "+to_json($params))
+        $i = $i + 1
       end
     end
   end
 
+  define findRelatedObject($relatedObject) return $provisioned_object
+    $rel = $relatedObject["rel"]
+    $id = to_s($relatedObject["id"])
+    $matching = select($$provisioned_objects, {"rel": $rel, "id": $id})
+    if size($matching) > 1
+      raise "Expected to find only one "+$rel+" with id of "+$id+" but "+size($matching)+" were found"
+    end
+    $provisioned_object = first($matching)
+    call log("DEBUG", "Returning the following provisioned object for a search of {rel:"+$rel+",id:"+$id+"} -- "+to_json($provisioned_object))
+  end
+
   define convertMetaInputToValue($metainput) return $value
-    if type($metainput) == 'hash'
-      $relgroup = $desired_product[$metainput['rel']]
-      if $metainput['rel'] == 'meta_inputs'
-        $value = $relgroup[to_s($metainput['id'])]['value']
+    if type($metainput) == "hash"
+      $relgroup = $desired_product[$metainput["rel"]]
+      if $metainput["rel"] == "meta_inputs"
+        $value = $relgroup[to_s($metainput["id"])]["value"]
       else
         call log("DEBUG", "relgroup when it wasnt a meta input "+to_json($relgroup))
-        $value = $relgroup[to_s($metainput['id'])]
+        $value = $relgroup[to_s($metainput["id"])]
       end
     else
       $value = $metainput
@@ -122,22 +174,20 @@ define provision($json, $postbackurl)
 
   define postback(@provisioned_object) return $postback_response
     begin
-      $href = $$postbackurl+'/objects'
+      $href = $$postbackurl+"/objects"
       $params = {
-        type: type(@provisioned_object),
-        href: @provisioned_object:href[0]
+        "type": type(@provisioned_object),
+        "href": @provisioned_object:href[0]
       }
       $cloudhref = select(@provisioned_object:links[0], {"rel": "cloud"})
       if size($cloudhref) > 0
         $cloudhref = first($cloudhref)
-        $params['cloud_id'] = last(split($cloudhref['href'], "/"))
+        $params["cloud_id"] = last(split($cloudhref["href"], "/"))
       end
-      $type = type(@provisioned_object)
-      $$provisioned_objects << {type: $type, href: @provisioned_object:href[0]}
       $postback_response = http_post(
-        href: $href,
-        headers: {content-type: "application/json"},
-        body: $params
+        "href": $href,
+        "headers": {"content-type": "application/json"},
+        "body": $params
       )
       log_info("Request for callback is; \nHREF:"+$href+"\nBody: "+to_json($params))
       log_info("Response from callback is as follows "+to_json($postback_response))
