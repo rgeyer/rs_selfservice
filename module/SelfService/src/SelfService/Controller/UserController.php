@@ -80,7 +80,7 @@ class UserController extends BaseController {
           $actions[$user->id] = array(
             'deauthorize' => array(
               'uri' => $this->url()->fromRoute('user', array('action' => 'deauthorize', 'email' => urlencode($user->email))),
-              'img_path' => '/images/16keyblock.png',
+              'img_path' => 'images/16keyblock.png',
               'is_ajax' => true
             )
           );
@@ -88,7 +88,7 @@ class UserController extends BaseController {
           $actions[$user->id] = array(
             'authorize' => array(
               'uri' => $this->url()->fromRoute('user', array('action', array('action' => 'authorize', 'email' => urlencode($user->email)))),
-              'img_path' => '/images/16key.png',
+              'img_path' => 'images/16key.png',
               'is_ajax' => true
             )
           );
