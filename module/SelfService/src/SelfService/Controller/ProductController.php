@@ -65,12 +65,12 @@ class ProductController extends BaseController {
       $actions[$product->id] = array(
         'delete' => array(
           'uri' => $this->url()->fromRoute('product', array('action' => 'delete', 'id' => $product->id)),
-          'img_path' => '/images/delete.png',
+          'img_path' => 'images/delete.png',
           'is_ajax' => true
         ),
         'edit' => array(
           'uri' => $this->url()->fromRoute('product', array('action' => 'edit', 'id' => $product->id)),
-          'img_path' => '/images/pencil.png',
+          'img_path' => 'images/pencil.png',
           'is_ajax' => false
         )
       );

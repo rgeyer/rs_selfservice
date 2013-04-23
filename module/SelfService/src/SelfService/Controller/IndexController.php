@@ -37,7 +37,7 @@ class IndexController extends BaseController {
     $products = $this->getEntityManager()->getRepository('SelfService\Entity\Provisionable\Product')->findAll();
 
 		foreach ( $products as $product ) {
-			$product->img_url = "/images/icons/" . $product->icon_filename;
+			$product->img_url = "images/icons/" . $product->icon_filename;
 		}
 
 		return array( 'products' => $products, 'use_layout' => false );

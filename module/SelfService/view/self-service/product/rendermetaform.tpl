@@ -28,7 +28,7 @@
       });
     </script>
     {/if}
-    <div style="font-size: -1; color: grey;"><img src="{$this->basePath()}images/info.png" /> {$meta_input->description}</div>
+    <div style="font-size: -1; color: grey;"><img src="{$this->basePath()}/images/info.png" /> {$meta_input->description}</div>
   </fieldset>
   {/foreach}
   <input type="submit" id="product_{$id}_submit"/>

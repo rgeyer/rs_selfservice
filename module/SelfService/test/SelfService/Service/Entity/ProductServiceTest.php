@@ -231,6 +231,18 @@ EOF;
       $this->assertTrue(property_exists($propval, 'version'), "Server Template JSON did not include version property");
       $this->assertTrue(property_exists($propval, 'publication_id'), "Server Template JSON did not include publication_id property");
     }
+    print $jsonStr;
+  }
+
+  public function testCanConvertToJsonWithStaticValues() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+
+    \SelfService\Product\php3tier::add($em);
+
+    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+    $jsonStr = $productService->toJson(1, array(), false);
+    $jsonObj = json_decode($jsonStr);
+    $this->assertFalse(property_exists($jsonObj, 'meta_inputs'));
   }
 
 }

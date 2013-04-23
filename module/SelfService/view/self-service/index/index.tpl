@@ -163,11 +163,11 @@ $(function() {
 <body bgcolor="#012b5d" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <div id="idxcontent">
   <div id="products">
-    <div id="leftlink"><img src="{$this->basePath()}images/left.png" /></div>
-    <div id="rightlink"><img src="{$this->basePath()}images/right.png" /></div>
+    <div id="leftlink"><img src="{$this->basePath()}/images/left.png" /></div>
+    <div id="rightlink"><img src="{$this->basePath()}/images/right.png" /></div>
     {foreach $products as $product}    
     <div class="product" id="product_{$product->id}">
-      <img src="{$this->basePath()}{$product->img_url}"/>
+      <img src="{$this->basePath()}/{$product->img_url}"/>
       <p>{$product->name}</p>
       <input type="hidden" value="{$product->id}" />
     </div>

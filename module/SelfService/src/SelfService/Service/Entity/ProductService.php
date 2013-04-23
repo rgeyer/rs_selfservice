@@ -212,15 +212,19 @@ class ProductService extends BaseEntityService {
   }
 
   /**
-   * @param $meta_inputs
-   * @param $object
-   * @return
+   * @param array $meta_input_ids An array of the unique ID's for metainputs
+   * @param $object The ORM class to be converted to a stdClass
+   * @param bool $meta_inputs_as_rels If true, properties which are of type
+   * \SelfService\Entity\Provisionable\MetaInputs\ProductMetaInputBase will be
+   * represented as a relationship link I.E. ["rel" => "meta_inputs", "id" => "1"].
+   * If false, properties will be set to the value returned by \SelfService\Entity|Provisionable\MetaInputs\ProductMetaInputBase::getVal()
+   * @return \stdClass
    */
-  protected function ormToStdclass($meta_input_ids, $object) {
+  protected function ormToStdclass($meta_input_ids, $object, $meta_inputs_as_rels = true) {
     $stdClass = new \stdClass();
     foreach(get_object_vars($object) as $propname => $var) {
       if(is_a($var, 'SelfService\Entity\Provisionable\MetaInputs\ProductMetaInputBase')) {
-        if(in_array($var->id, $meta_input_ids)) {
+        if($meta_inputs_as_rels && in_array($var->id, $meta_input_ids)) {
           $stdClass->{$propname} = array('rel' => 'meta_inputs', 'id' => $var->id);
         } else {
           $stdClass->{$propname} = $var->getVal();
@@ -232,47 +236,52 @@ class ProductService extends BaseEntityService {
     return $stdClass;
   }
 
-  public function toJson($id, array $params = array()) {
+  public function toJson($id, array $params = array(), $include_meta_inputs = true) {
     $config = $this->getServiceLocator()->get('Configuration');
     $owners = $config['rsss']['cloud_credentials']['owners'];
     $product = $this->find($id);
     $product->mergeMetaInputs($params);
-    $jsonProduct = $this->ormToStdclass(array(), $product);
+    $jsonProduct = $this->ormToStdclass(array(), $product, $include_meta_inputs);
+    if(!$include_meta_inputs) {
+      unset($jsonProduct->meta_inputs);
+    }
     $jsonProduct->server_templates = array();
 
-    $jsonProduct->meta_inputs = array();
-    foreach($product->meta_inputs as $meta_input) {
-      $type = '';
-      switch(strtolower(get_class($meta_input))) {
-        case 'selfservice\entity\provisionable\metainputs\cloudproductmetainput':
-          $type = 'cloud';
-          break;
-        case 'selfservice\entity\provisionable\metainputs\textproductmetainput':
-          $type = 'text';
-          break;
-        case 'selfservice\entity\provisionable\metainputs\inputproductmetainput':
-          $type = 'input';
-          break;
-        case 'selfservice\entity\provisionable\metainputs\instancetypeproductmetainput':
-          $type = 'instancetype';
-          break;
-        default:
-          $type = 'unknown';
-          break;
+    if($include_meta_inputs) {
+      $jsonProduct->meta_inputs = array();
+      foreach($product->meta_inputs as $meta_input) {
+        $type = '';
+        switch(strtolower(get_class($meta_input))) {
+          case 'selfservice\entity\provisionable\metainputs\cloudproductmetainput':
+            $type = 'cloud';
+            break;
+          case 'selfservice\entity\provisionable\metainputs\textproductmetainput':
+            $type = 'text';
+            break;
+          case 'selfservice\entity\provisionable\metainputs\inputproductmetainput':
+            $type = 'input';
+            break;
+          case 'selfservice\entity\provisionable\metainputs\instancetypeproductmetainput':
+            $type = 'instancetype';
+            break;
+          default:
+            $type = 'unknown';
+            break;
+        }
+        $jsonProduct->meta_inputs[$meta_input->id] =
+          array(
+            'type' => $type,
+            'extra' => $this->ormToStdclass(array(), $meta_input, $include_meta_inputs),
+            'value' => $meta_input->getVal()
+          );
       }
-      $jsonProduct->meta_inputs[$meta_input->id] =
-        array(
-          'type' => $type,
-          'extra' => $this->ormToStdclass(array(), $meta_input),
-          'value' => $meta_input->getVal()
-        );
     }
     $jsonProduct->security_groups = array();
     foreach($product->security_groups as $security_group) {
-      $jsonSecurityGroup = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $security_group);
+      $jsonSecurityGroup = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $security_group, $include_meta_inputs);
       $jsonSecurityGroup->rules = array();
       foreach($security_group->rules as $rule) {
-        $jsonRule = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $rule);
+        $jsonRule = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $rule, $include_meta_inputs);
         if($rule->ingress_group) {
           $jsonRule->ingress_group = array('rel' => 'security_groups', 'id' => $rule->ingress_group->id);
           $cloud = $jsonSecurityGroup->cloud_id;
@@ -288,8 +297,8 @@ class ProductService extends BaseEntityService {
     }
     $jsonProduct->arrays = array();
     foreach($product->arrays as $array) {
-      $jsonArray = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array);
-      $jsonProduct->server_templates[$array->server_template->id] = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array->server_template);
+      $jsonArray = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array, $include_meta_inputs);
+      $jsonProduct->server_templates[$array->server_template->id] = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $array->server_template, $include_meta_inputs);
       $jsonArray->server_template = array('rel' => 'server_templates', 'id' => $array->server_template->id);
       $jsonArray->security_groups = array();
       foreach($array->security_groups as $security_group) {
@@ -299,8 +308,8 @@ class ProductService extends BaseEntityService {
     }
     $jsonProduct->servers = array();
     foreach($product->servers as $server) {
-      $jsonServer = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server);
-      $jsonProduct->server_templates[$server->server_template->id] = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server->server_template);
+      $jsonServer = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server, $include_meta_inputs);
+      $jsonProduct->server_templates[$server->server_template->id] = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $server->server_template, $include_meta_inputs);
       $jsonServer->server_template = array('rel' => 'server_templates', 'id' => $server->server_template->id);
       $jsonServer->security_groups = array();
       foreach($server->security_groups as $security_group) {
@@ -310,7 +319,7 @@ class ProductService extends BaseEntityService {
     }
     $jsonProduct->alerts = array();
     foreach($product->alerts as $alert) {
-      $jsonAlert = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $alert);
+      $jsonAlert = $this->ormToStdclass(array_keys($jsonProduct->meta_inputs), $alert, $include_meta_inputs);
       $jsonAlert->subjects = array();
       foreach($alert->subjects as $subject) {
         $rel = array('rel' => 'unknown');
@@ -331,7 +340,7 @@ class ProductService extends BaseEntityService {
       $jsonProduct->parameters[] = array(
         'name' => $param->rs_input_name,
         'value' => $param->getVal(),
-        'extra' => $this->ormToStdclass(array(), $param)
+        'extra' => $this->ormToStdclass(array(), $param, $include_meta_inputs)
       );
     }
 
