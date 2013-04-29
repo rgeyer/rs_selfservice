@@ -79,6 +79,7 @@ TODO:
 * Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
 * Add Authorization functionality (admin, read_all, act_all, read_mine, act_mine, etc)
   * Partly done, users are now either authorized or not, no roles yet (Done)
+  * http://opauth.org/
 * Filter cloud menu based on product ST support?
 * Make sure ServerTemplate is done importing before starting servers
 * Make the windows product work by properly passing inputs into the server or deployment.
