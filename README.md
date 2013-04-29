@@ -92,6 +92,8 @@ TODO:
 * Importing templates can be tough, and time consuming, possibly batch this when the provisionable product is added to the catalog rather than making the end user wait.
 * Seriously consider using ODM and a NoSQL store for products, provisioned products, etc.  All of them are really self contained things anyway.
 * Allow an Opt-In phone home to allow the tracking of multiple vending machines by a single person/organization
+* Integrate with PlanForCloud so that each product can be analyzed for cost forecasting! Brilliant
+* Create scheduled reports to show run rates of provisioned products in the RSSS
 
 Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
