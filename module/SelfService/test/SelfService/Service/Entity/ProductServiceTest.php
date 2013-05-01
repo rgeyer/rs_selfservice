@@ -231,7 +231,6 @@ EOF;
       $this->assertTrue(property_exists($propval, 'version'), "Server Template JSON did not include version property");
       $this->assertTrue(property_exists($propval, 'publication_id'), "Server Template JSON did not include publication_id property");
     }
-    print $jsonStr;
   }
 
   public function testCanConvertToJsonWithStaticValues() {
