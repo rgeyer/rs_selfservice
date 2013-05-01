@@ -58,6 +58,7 @@ class UserService extends BaseEntityService {
    */
   public function findByEmail($email) {
     $em = $this->getEntityManager();
+    $email = urldecode($email);
     $users = $em->getRepository($this->entityClass)->findByEmail($email);
     # TODO: What if it returns more than one?
     if($users && count($users) == 1) {
