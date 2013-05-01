@@ -87,7 +87,7 @@ class UserController extends BaseController {
         } else {
           $actions[$user->id] = array(
             'authorize' => array(
-              'uri' => $this->url()->fromRoute('user', array('action', array('action' => 'authorize', 'email' => urlencode($user->email)))),
+              'uri' => $this->url()->fromRoute('user', array('action' => 'authorize', 'email' => urlencode($user->email))),
               'img_path' => 'images/16key.png',
               'is_ajax' => true
             )
