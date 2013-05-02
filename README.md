@@ -39,7 +39,32 @@ Travis-CI Build Status [![Build Status](https://travis-ci.org/rgeyer/rs_selfserv
 
 5. Change the vhost for your application to allow overrides, either manually or by changing the templates at /usr/local/zend/share/
 
-TODO:
+# Usage
+
+## Commandline options
+
+List users
+
+        php /public/index.php users list
+
+Authorize a user
+
+        php /public/index.php users authorize foo@bar.baz
+
+(De)Authorize a user
+
+        php /public/index.php users deauthorize foo@bar.baz
+
+
+Update Memcached data for RightScale Resources (ServerTemplates, Clouds, InstanceTypes, etc)
+
+        php /public/index.php cache update rightscale
+
+Add products from definition files (TODO: Document the description file format) found in /module/SelfService/src/SelfService/Product
+
+        php /public/index.php product add php3tier
+
+# TODO
 * Soft deletes for products, provisioned products, perhaps others?
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
   * All ajax calls are actually ajax with a progress bar.  Above still needs more love. (Done)
@@ -94,19 +119,33 @@ TODO:
 * Allow an Opt-In phone home to allow the tracking of multiple vending machines by a single person/organization
 * Integrate with PlanForCloud so that each product can be analyzed for cost forecasting! Brilliant
 * Create scheduled reports to show run rates of provisioned products in the RSSS
+* CF for generating json from running/created deployment
+* CF for performing callbacks to RSSS (async)
+* On Products Admin, allow changes to ServerTemplate and revision, which metainputs are requested and their default values.
 
-Icon Pack
+# Misc Useful stuff
+## Icon Pack
 http://findicons.com/pack/42/basic - Symbols, basic stuff
+
 http://findicons.com/pack/2580/android_icons - Server Icons
+
 http://findicons.com/pack/1689/splashy - More symbols, candidate for replacing the first icon pack
 
-Handy useful queries..
+## Queries
 select
+
   server_templates.id,
+
   nickmeta.default_value as nickname,
+
   vermeta.default_value as version,
+
   pubmeta.default_value as publication_id
+
 from server_templates
+
 	join product_meta_inputs as nickmeta on (server_templates.nickname_id = nickmeta.id)
+
 	join product_meta_inputs as vermeta on (server_templates.version_id = vermeta.id)
+
 	join product_meta_inputs as pubmeta on (server_templates.publication_id_id = pubmeta.id);
