@@ -5,11 +5,11 @@ Travis-CI Build Status [![Build Status](https://travis-ci.org/rgeyer/rs_selfserv
 ## For a LAMP All-in-One or PHP App server
 1. Download and install Composer:
 
-    curl -s http://getcomposer.org/installer | php
+```curl -s http://getcomposer.org/installer | php```
 
 2. Install the composer managed dependencies:
 
-    php composer.phar install
+```php composer.phar install```
 
 3. Make sure that /path/to/rsss/logs exists, and is writable by apache2/httpd
 
@@ -17,23 +17,23 @@ Travis-CI Build Status [![Build Status](https://travis-ci.org/rgeyer/rs_selfserv
 
 5. Run the following commands which will create the schema in the DB specified in config/autoload/local.php and populate the 3 "standard" products.
 
-    vendor/bin/doctrine-module orm:schema-tool:create
-    php public/index.php product add
+```vendor/bin/doctrine-module orm:schema-tool:create```
+```php public/index.php product add```
 
 6. Enjoy.. Hopefully!
 
 ## For Zend Server (Temporarily deprecated/untested)
 1. Download and install Composer:
 
-    curl -s http://getcomposer.org/installer | php
+```curl -s http://getcomposer.org/installer | php```
 
 2. Install the composer managed dependencies:
 
-    php composer.phar install
+```php composer.phar install```
 
 3. Create a Zend Deployment package
 
-    zdpack --src-dir=. pack
+```zdpack --src-dir=. pack```
 
 4. Deploy using Zend Server/Cluster mechanism of choice
 
@@ -45,24 +45,24 @@ Travis-CI Build Status [![Build Status](https://travis-ci.org/rgeyer/rs_selfserv
 
 List users
 
-    php /public/index.php users list
+```php /public/index.php users list```
 
 Authorize a user
 
-    php /public/index.php users authorize foo@bar.baz
+```php /public/index.php users authorize foo@bar.baz```
 
 (De)Authorize a user
 
-    php /public/index.php users deauthorize foo@bar.baz
+```php /public/index.php users deauthorize foo@bar.baz```
 
 
 Update Memcached data for RightScale Resources (ServerTemplates, Clouds, InstanceTypes, etc)
 
-    php /public/index.php cache update rightscale
+```php /public/index.php cache update rightscale```
 
 Add products from definition files (TODO: Document the description file format) found in /module/SelfService/src/SelfService/Product
 
-    php /public/index.php product add php3tier
+```php /public/index.php product add php3tier```
 
 # TODO
 * Soft deletes for products, provisioned products, perhaps others?
@@ -125,17 +125,17 @@ Add products from definition files (TODO: Document the description file format) 
 
 # Misc Useful stuff
 ## Icon Pack
-http://findicons.com/pack/42/basic - Symbols, basic stuff
-http://findicons.com/pack/2580/android_icons - Server Icons
+http://findicons.com/pack/42/basic - Symbols, basic stuff  
+http://findicons.com/pack/2580/android_icons - Server Icons  
 http://findicons.com/pack/1689/splashy - More symbols, candidate for replacing the first icon pack
 
 ## Queries
-select
-  server_templates.id,
-  nickmeta.default_value as nickname,
-  vermeta.default_value as version,
-  pubmeta.default_value as publication_id
-from server_templates
-	join product_meta_inputs as nickmeta on (server_templates.nickname_id = nickmeta.id)
-	join product_meta_inputs as vermeta on (server_templates.version_id = vermeta.id)
+select  
+  server_templates.id,  
+  nickmeta.default_value as nickname,  
+  vermeta.default_value as version,  
+  pubmeta.default_value as publication_id  
+from server_templates  
+	join product_meta_inputs as nickmeta on (server_templates.nickname_id = nickmeta.id)  
+	join product_meta_inputs as vermeta on (server_templates.version_id = vermeta.id)  
 	join product_meta_inputs as pubmeta on (server_templates.publication_id_id = pubmeta.id);
