@@ -61,19 +61,30 @@
       "6:9999-9999-9999",
       "7:9999-9999-9999",
       "8:9999-9999-9999"
-    ]
+    ],
+    "dns": {
+      "id": "id",
+      "region": "only for CloudDNS"
+    }
   },
   "system": {
     "short_hostname": "vg",
     "domain_name": "wordpressaio"
   },
   "resolver": {
-    "nameservers": ["8.8.8.8","8.8.4.4","4.2.2.3","4.2.2.6"]
+    "nameservers": ["8.8.8.8","8.8.4.4","4.2.2.3","4.2.2.6"],
+    "search": "foo.bar.baz"
+  },
+  "sys_dns": {
+    "choice": "DNSMadeEasy",
+    "user": "user",
+    "password": "password"
   },
   "run_list": [
     "recipe[rs_vagrant_shim]",
     "recipe[system::hostname]",
     "recipe[resolver]",
+    "recipe[sys_dns::default]",
     "recipe[logging::default]",
     "recipe[sys_firewall::default]",
     "recipe[sys_ntp::default]",
