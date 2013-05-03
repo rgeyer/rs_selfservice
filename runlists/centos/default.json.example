@@ -8,6 +8,7 @@
   "block_device": {
     "devices": {
       "device1": {
+        "mount_point": "/mnt/storage",
         "backup": {
           "lineage": "lineage"
         }
@@ -43,11 +44,12 @@
     "application_name": "rsss"
   },
   "rsss": {
-    "install_dir": "/home/webapps/rsss",
     "rightscale_email": "foo@bar.baz",
     "rightscale_password": "password",
     "rightscale_acct_num": "12345",
-    "fqdn": "33.33.33.9",
+    "revision": "master",
+    "dbpass": "password",
+    "fqdn": "foo.bar.baz",
     "products": ["baselinux","php3tier"],
     "users": ["foo@bar.baz"],
     "owners": [
@@ -65,9 +67,13 @@
     "short_hostname": "vg",
     "domain_name": "wordpressaio"
   },
+  "resolver": {
+    "nameservers": ["8.8.8.8","8.8.4.4","4.2.2.3","4.2.2.6"]
+  },
   "run_list": [
     "recipe[rs_vagrant_shim]",
     "recipe[system::hostname]",
+    "recipe[resolver]",
     "recipe[logging::default]",
     "recipe[sys_firewall::default]",
     "recipe[sys_ntp::default]",
@@ -87,6 +93,6 @@
     "recipe[web_apache::setup_monitoring]",
     "recipe[db::setup_monitoring]",
     "recipe[memcached::install_server]",
-    "recipe[rsss::setup_rsss]"
+    "recipe[rsss::setup_rsss_aio]"
   ]
 }
