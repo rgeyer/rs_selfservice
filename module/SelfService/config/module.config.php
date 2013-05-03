@@ -280,8 +280,10 @@ return array(
         return $logger;
       },
       'AuthenticationService' => function($serviceManager) {
+        $config = $serviceManager->get('Configuration');
+        $acct_id = $config['rsss']['cloud_credentials']['rightscale']['account_id'];
         $storage_adapter = $serviceManager->get('cache_storage_adapter');
-        $storage_adapter->getOptions()->setNamespace('auth');
+        $storage_adapter->getOptions()->setNamespace('auth'.$acct_id);
         $cache_save_handler = new \Zend\Session\SaveHandler\Cache($storage_adapter);
         $manager = new \Zend\Session\SessionManager();
         $manager->setSaveHandler($cache_save_handler);

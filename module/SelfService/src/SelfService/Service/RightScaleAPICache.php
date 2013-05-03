@@ -31,8 +31,10 @@ class RightScaleAPICache {
 
   public function __construct(ServiceManager $sm) {
     $this->service_manager = $sm;
+    $config = $this->service_manager->get('Configuration');
+    $acct_id = $config['rsss']['cloud_credentials']['rightscale']['account_id'];
     $this->adapter = $sm->get('cache_storage_adapter');
-    $this->adapter->getOptions()->setNamespace('rsapi');
+    $this->adapter->getOptions()->setNamespace('rsapi'.$acct_id);
     $this->adapter->getOptions()->setTtl(3600);
     $this->client = $sm->get('RightScaleAPIClient');
   }
