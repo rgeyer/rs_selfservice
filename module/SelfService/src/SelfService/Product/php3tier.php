@@ -37,7 +37,7 @@ use SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput;
 use SelfService\Entity\Provisionable\MetaInputs\CloudProductMetaInput;
 use SelfService\Entity\Provisionable\MetaInputs\NumberProductMetaInput;
 
-class php3tier implements ProductInterface {
+class php3tier {
 
   public static function add(EntityManager $em) {
     $product = new Product();
