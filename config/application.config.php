@@ -5,6 +5,7 @@ return array(
         'SelfService',
         'DoctrineModule',
         'DoctrineORMModule',
+        'DoctrineMongoODMModule',
         'SmartyModule',
         'ZendDeveloperTools'
     ),

@@ -23,11 +23,15 @@ return array(
   // ...
   'doctrine' => array(
     'connection' => array(
-      'orm_default' => array(
-        'driverClass' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
-        'params' => array(
-          'dbname'   => 'rs_selfservice',
-        )
+      'odm_default' => array(
+        'server' => 'localhost',
+        'port' => '27017',
+        'dbname' => 'rs_selfservice_test'
+      )
+    ),
+    'configuration' => array(
+      'odm_default' => array(
+        'default_db' => 'rs_selfservice_test'
       )
     )
   ),

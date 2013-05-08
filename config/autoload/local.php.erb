@@ -26,15 +26,31 @@ return array(
   // ...
   'doctrine' => array(
     'connection' => array(
-      'orm_default' => array(
-        'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-        'params' => array(
-          'host'     => '<%= @db_host %>',
-          'port'     => '3306',
-          'user'     => '<%= @db_user %>',
-          'password' => '<%= @db_pass %>',
-          'dbname'   => '<%= @db_name %>',
+      'odm_default' => array(
+        'server' => '<% @db_host %>',
+        'port' => '27017',
+        <% if @db_user %>'user' => '<%= @db_user %>',<% end %>
+        <% if @db_pass %>'password' => '<%= @db_pass %>',<% end %>
+        'dbname' => '<%= @db_name %>'
+      )
+    ),
+    'driver' => array(
+      'odm_default' => array(
+        'drivers' => array(
+          'SelfService\Entity' => 'annotation_driver'
         )
+      ),
+      'annotation_driver' => array(
+        'class' => 'Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver',
+        'cache' => 'array',
+        'paths' => array(
+          __DIR__ . '/../../module/SelfService/src/SelfService/Entity'
+        )
+      )
+    ),
+    'configuration' => array(
+      'odm_default' => array(
+        'default_db' => '<%= @db_name %>'
       )
     )
   ),
