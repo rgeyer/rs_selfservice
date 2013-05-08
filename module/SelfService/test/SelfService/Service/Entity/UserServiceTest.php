@@ -12,41 +12,44 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
       include __DIR__ . '/../../../../../../config/application.config.php'
     );
     parent::setUp();
-    $serviceManager = $this->getApplicationServiceLocator();
 
-    // Initialize the schema.. Maybe I should register a module for clearing the schema/data
-    // and/or loading mock test data
-    $em = $serviceManager->get('doctrine.entitymanager.orm_default');
-    $cli = new \Symfony\Component\Console\Application("PHPUnit Bootstrap", 1);
+    $cli = $this->getApplicationServiceLocator()->get('doctrine.cli');
     $cli->setAutoExit(false);
-    $helperSet = $cli->getHelperSet();
-    $helperSet->set(new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em), 'em');
-    $cli->addCommands(array(new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand()));
+
     $cli->run(
-      new \Symfony\Component\Console\Input\ArrayInput(array('orm:schema-tool:create')),
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:drop')),
+      new \Symfony\Component\Console\Output\NullOutput()
+    );
+
+    $cli->run(
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:create')),
       new \Symfony\Component\Console\Output\NullOutput()
     );
   }
 
+  public function tearDown() {
+    parent::tearDown();
+  }
+
   public function testCanGetAllUsers() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $em = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
     $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
 
-    $this->assertEquals(0, count($userService->findAll()));
+    $this->assertEquals(0, $userService->findAll()->count());
 
     $newUser = new User();
     $newUser->email = "foo@bar.baz";
     $em->persist($newUser);
     $em->flush();
 
-    $this->assertEquals(1, count($userService->findAll()));
+    $this->assertEquals(1, $userService->findAll()->count());
   }
 
   public function testCanAuthorizeExistingUserByEmail() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $em = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
     $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
 
-    $this->assertEquals(0, count($userService->findAll()));
+    $this->assertEquals(0, $userService->findAll()->count());
 
     $newUser = new User();
     $newUser->email = "foo@bar.baz";
@@ -55,19 +58,21 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
 
     $users = $userService->findAll();
 
-    $this->assertEquals(1, count($users));
-    $this->assertFalse($users[0]->authorized, "User was authorized before authorize action was taken");
+    $this->assertEquals(1, $users->count());
+    $user = $users->getNext();
+    $this->assertFalse($user->authorized, "User was authorized before authorize action was taken");
     $userService->authorizeByEmail("foo@bar.baz");
 
     $users = $userService->findAll();
-    $this->assertTrue($users[0]->authorized, "User was not authorized after authorize action was taken");
+    $user = $users->getNext();
+    $this->assertTrue($user->authorized, "User was not authorized after authorize action was taken");
   }
 
   public function testCanAuthorizeExistingUserByUrlEncodedEmail() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $em = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
     $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
 
-    $this->assertEquals(0, count($userService->findAll()));
+    $this->assertEquals(0, $userService->findAll()->count());
 
     $newUser = new User();
     $newUser->email = "foo@bar.baz";
@@ -76,30 +81,30 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
 
     $users = $userService->findAll();
 
-    $this->assertEquals(1, count($users));
-    $this->assertFalse($users[0]->authorized, "User was authorized before authorize action was taken");
+    $this->assertEquals(1, $users->count());
+    $this->assertFalse($users->getNext()->authorized, "User was authorized before authorize action was taken");
     $userService->authorizeByEmail(urlencode("foo@bar.baz"));
 
     $users = $userService->findAll();
-    $this->assertTrue($users[0]->authorized, "User was not authorized after authorize action was taken");
+    $this->assertTrue($users->getNext()->authorized, "User was not authorized after authorize action was taken");
   }
 
   public function testCanPreauthorizeNonExistingUserByEmail() {
     $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
 
-    $this->assertEquals(0, count($userService->findAll()));
+    $this->assertEquals(0, $userService->findAll()->count());
     $userService->authorizeByEmail("foo@bar.baz");
 
     $users = $userService->findAll();
-    $this->assertEquals(1, count($users));
-    $this->assertTrue($users[0]->authorized, "User was not authorized after authorize action was taken");
+    $this->assertEquals(1, $users->count());
+    $this->assertTrue($users->getNext()->authorized, "User was not authorized after authorize action was taken");
   }
 
   public function testCanDeauthorizeExistingUserByEmail() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $em = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
     $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
 
-    $this->assertEquals(0, count($userService->findAll()));
+    $this->assertEquals(0, $userService->findAll()->count());
 
     $newUser = new User();
     $newUser->email = "foo@bar.baz";
@@ -109,12 +114,12 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
 
     $users = $userService->findAll();
 
-    $this->assertEquals(1, count($users));
-    $this->assertTrue($users[0]->authorized, "User was deauthorized before deauthorize action was taken");
+    $this->assertEquals(1, $users->count());
+    $this->assertTrue($users->getNext()->authorized, "User was deauthorized before deauthorize action was taken");
     $userService->deauthorizeByEmail("foo@bar.baz");
 
     $users = $userService->findAll();
-    $this->assertFalse($users[0]->authorized, "User was not deauthorized after deauthorize action was taken");
+    $this->assertFalse($users->getNext()->authorized, "User was not deauthorized after deauthorize action was taken");
   }
 
 }

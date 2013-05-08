@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Service\Entity;
 
-use Doctrine\DBAL\LockMode;
+use Doctrine\ODM\MongoDB\LockMode;
 use SelfService\Entity\User;
 use Doctrine\ORM\EntityManager;
 
@@ -57,12 +57,12 @@ class UserService extends BaseEntityService {
    * @return \SelfService\Entity\User|null
    */
   public function findByEmail($email) {
-    $em = $this->getEntityManager();
+    $dm = $this->getDocumentManager();
     $email = urldecode($email);
-    $users = $em->getRepository($this->entityClass)->findByEmail($email);
+    $users = $dm->getRepository($this->entityClass)->findByEmail($email);
     # TODO: What if it returns more than one?
-    if($users && count($users) == 1) {
-      return array_pop($users);
+    if($users && $users->count() == 1) {
+      return $users->getNext();
     } else {
       return null;
     }
@@ -73,15 +73,15 @@ class UserService extends BaseEntityService {
    * @return void
    */
   public function authorizeByEmail($email) {
-    $em = $this->getEntityManager();
+    $dm = $this->getDocumentManager();
     $user = $this->findByEmail($email);
     if(!$user) {
       $user = new User();
       $user->email = $email;
     }
     $user->authorized = true;
-    $em->persist($user);
-    $em->flush();
+    $dm->persist($user);
+    $dm->flush();
   }
 
   /**
@@ -89,12 +89,12 @@ class UserService extends BaseEntityService {
    * @return void
    */
   public function deauthorizeByEmail($email) {
-    $em = $this->getEntityManager();
+    $dm = $this->getDocumentManager();
     $user = $this->findByEmail($email);
     if($user) {
       $user->authorized = false;
-      $em->persist($user);
-      $em->flush();
+      $dm->persist($user);
+      $dm->flush();
     }
   }
 

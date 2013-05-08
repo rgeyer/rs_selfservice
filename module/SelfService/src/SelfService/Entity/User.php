@@ -25,41 +25,59 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="users",indexes={@ORM\Index(name="oid_url", columns={"oid_url"})})
- * @author Ryan J. Geyer <me@ryangeyer.com>
  *
+ * @ODM\Document
+ *
+ * @author Ryan J. Geyer <me@ryangeyer.com>
  */
 class User
 {
 	/**
 	 * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+   *
+   * @ODM\Id
+   *
 	 * @var integer
 	 */
 	public $id;
 	
 	/**
 	 * @ORM\Column(type="string", nullable=true)
+   *
+   * @ODM\Field(type="string")
+   *
 	 * @var string
 	 */
 	public $name;
 	
 	/**
 	 * @ORM\Column(type="string", nullable=true)
+   *
+   * @ODM\Field(type="string")
+   *
 	 * @var string
 	 */
 	public $email;
 
 	/**
 	 * @ORM\Column(type="string", unique=true, nullable=true)
+   *
+   * @ODM\Field(type="string")
+   *
 	 * @var string
 	 */
 	public $oid_url;
 
   /**
    * @ORM\Column(type="boolean")
+   *
+   * @ODM\Field(type="boolean")
+   *
    * @var bool
    */
   public $authorized = false;
@@ -68,12 +86,18 @@ class User
 	
 	/**
 	 * @ORM\Column(type="string", nullable=true)
+   *
+   * @ODM\Field(type="string")
+   *
 	 * @var string
 	 */
 	protected $password;
 	
 	/**
 	 * @ORM\Column(length=32, nullable=true)
+   *
+   * @ODM\Field(type="string")
+   *
 	 * @var string
 	 */
 	protected $salt;

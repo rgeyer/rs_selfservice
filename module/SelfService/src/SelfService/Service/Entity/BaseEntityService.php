@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Service\Entity;
 
-use Doctrine\DBAL\LockMode;
+use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ORM\EntityManager;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -43,10 +43,10 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
   protected $serviceLocator;
 
   /**
-   * @return \Doctrine\ORM\EntityManager
+   * @return \Doctrine\ODM\MongoDB\DocumentManager
    */
-  protected function getEntityManager() {
-    return $this->serviceLocator->get('doctrine.entitymanager.orm_default');
+  protected function getDocumentManager() {
+    return $this->serviceLocator->get('doctrine.documentmanager.odm_default');
   }
 
   /**
@@ -65,22 +65,22 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
   }
 
   /**
-   * @return array An array of all entities of the concrete type
+   * @return \Doctrine\ODM\MongoDB\Cursor An array of all entities of the concrete type
    */
   public function findAll() {
-    $em = $this->getEntityManager();
-    return $em->getRepository($this->entityClass)->findAll();
+    $dm = $this->getDocumentManager();
+    return $dm->getRepository($this->entityClass)->findAll();
   }
 
   /**
    * @param $id The ID of the entity to return
    * @param int $lockMode
    * @param null $lockVersion
-   * @return \Doctrine\ORM\The|object
+   * @return object $document
    */
   public function find($id, $lockMode = LockMode::NONE, $lockVersion = null) {
-    $em = $this->getEntityManager();
-    return $em->getRepository($this->entityClass)->find($id, $lockMode, $lockVersion);
+    $dm = $this->getDocumentManager();
+    return $dm->getRepository($this->entityClass)->find($id, $lockMode, $lockVersion);
   }
 
   /**
@@ -88,9 +88,9 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
    * @return void
    */
   public function remove($id) {
-    $em = $this->getEntityManager();
-    $em->remove($this->find($id));
-    $em->flush();
+    $dm = $this->getDocumentManager();
+    $dm->remove($this->find($id));
+    $dm->flush();
   }
 
   /**
@@ -98,16 +98,15 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
    * @return The newly created entity
    */
   public function create(array $params) {
-    $em = $this->getEntityManager();
     $entity = new $this->entityClass;
-    $em = $this->getEntityManager();
+    $dm = $this->getDocumentManager();
     foreach($params as $paramname => $param) {
       if(property_exists($entity, $paramname)) {
         $entity->{$paramname} = $param;
       }
     }
-    $em->persist($entity);
-    $em->flush();
+    $dm->persist($entity);
+    $dm->flush();
     return $entity;
   }
 
