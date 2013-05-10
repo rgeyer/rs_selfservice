@@ -6,16 +6,6 @@
   "launch_servers": true,
   "resources": [
     {
-      "id": "ssl_enable_product_input",
-      "resource_type": "select_product_input",
-      "options": ["true", "false"],
-      "default_value": "false",
-      "input_name": "ssl_enable",
-      "display_name": "Enable SSL",
-      "description": "Enable SSL for application servers?",
-      "advanced": true
-    },
-    {
       "id": "deployment_name",
       "resource_type": "text_product_input",
       "default_value": "PHP 3-Tier",
@@ -47,6 +37,26 @@
       "input_name": "repo_revision",
       "display_name": "Repository Revision",
       "description": "Repository Revision",
+      "advanced": true
+    },
+    {
+      "id": "ssl_enable_product_input",
+      "resource_type": "select_product_input",
+      "options": ["true", "false"],
+      "default_value": "false",
+      "input_name": "ssl_enable",
+      "display_name": "Enable SSL",
+      "description": "Enable SSL for application servers?",
+      "advanced": true
+    },
+    {
+      "id": "schedule_array_product_input",
+      "resource_type": "select_product_input",
+      "options": ["true", "false"],
+      "default_value": "false",
+      "input_name": "schedule_array",
+      "display_name": "Enable Array Schedule",
+      "description": "Add an additional server at 8AM Monday, and remove it at 5PM Monday.",
       "advanced": true
     },
     {
@@ -126,6 +136,38 @@
       "input_name": "db_instance_type",
       "display_name": "Doesn't Matter",
       "display": false
+    },
+    {
+      "id": "vote_tag",
+      "resource_type": "text_product_input",
+      "default_value": "apptag",
+      "input_name": "apptag",
+      "display_name": "Array Voting Tag",
+      "advanced": true
+    },
+    {
+      "id": "ApplicationScaleUpAlertSpec",
+      "resource_type": "alert_spec",
+      "name": "Apache Scale Up",
+      "file": "apache/apache_requests",
+      "variable": "count",
+      "condition": ">",
+      "threshold": "25",
+      "duration": "1",
+      "vote_tag": { "ref": "text_product_input", "id": "vote_tag" },
+      "vote_type": "grow"
+    },
+    {
+      "id": "ApplicationScaleDownAlertSpec",
+      "resource_type": "alert_spec",
+      "name": "Apache Scale Down",
+      "file": "apache/apache_requests",
+      "variable": "count",
+      "condition": "<",
+      "threshold": "75",
+      "duration": "1",
+      "vote_tag": { "ref": "text_product_input", "id": "vote_tag" },
+      "vote_type": "shrink"
     },
     {
       "id": "Deployment",
@@ -245,6 +287,62 @@
             "server_template": { "ref": "server_template", "id": "PhpMysqlServerTemplate" }
           }
         }
+      ],
+      "server_arrays": [
+        {
+          "id": "ApplicationServerArray",
+          "resource_type": "server_array",
+          "name": "Application Servers",
+          "optimized": false,
+          "state": "disabled",
+          "array_type": "alert",
+          "elasticity_params": {
+            "id": "ElasticityParams",
+            "resource_type": "elasticity_params",
+            "bounds": {
+              "min_count": "2",
+              "max_count": "10"
+            },
+            "pacing": {
+              "resize_calm_time": "5",
+              "resize_down_by": "1",
+              "resize_up_by": "2"
+            },
+            "alert_specific_params": {
+              "decision_threshold": "51",
+              "voters_tag_predicate": { "ref": "text_product_input", "id": "vote_tag" }
+            },
+            "schedule": [
+              {
+                "day": "Monday",
+                "min_count": "3",
+                "max_count": "10",
+                "time": "08:00",
+                "depends": {
+                  "id": "schedule_array_product_input",
+                  "ref": "text_product_input",
+                  "value": ["true"]
+                }
+              },
+              {
+                "day": "Monday",
+                "min_count": "2",
+                "max_count": "10",
+                "time": "17:00",
+                "depends": {
+                  "id": "schedule_array_product_input",
+                  "ref": "text_product_input",
+                  "value": ["true"]
+                }
+              }
+            ]
+          },
+          "instance": { "ref": "instance", "id": "ApplicationInstance" },
+          "alert_specs": [
+            { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
+            { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
+          ]
+        }
       ]
     },
     {
@@ -351,7 +449,11 @@
       "description": "PHP Application Server",
       "optimized": false,
       "count": "1",
-      "instance": { "ref": "instance", "id": "ApplicationInstance" }
+      "instance": { "ref": "instance", "id": "ApplicationInstance" },
+      "alert_specs": [
+        { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
+        { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
+      ]
     },
     {
       "id": "ApplicationInstance",

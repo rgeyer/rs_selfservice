@@ -52,7 +52,7 @@
       "properties": {
         "id": {
           "type":"string",
-          "description": "The unique id of the *_product_input which should be depended upon.  The *_product_input must be a child of #/resources and not nested in any other resource",
+          "description": "The unique id of the *_product_input which should be depended upon.  The *_product_input must be a child of #/resources and not nested in any other resource"
         },
         "ref": {
           "enum": [
@@ -73,7 +73,8 @@
         },
         "match": {
           "enum": ["all","any"],
-          "description": "When the *_product_input value may be an array, how should the dependency be calculated.  When set to 'all' the *_product_input array must contain all of the values in the dependency set.  When set to 'any' the *_product_input array must contain any one of the values in the dependency set"
+          "description": "When the *_product_input value may be an array, how should the dependency be calculated.  When set to 'all' the *_product_input array must contain all of the values in the dependency set.  When set to 'any' the *_product_input array must contain any one of the values in the dependency set",
+          "default": "all"
         }
       }
     },
@@ -131,7 +132,7 @@
     },
     "alert_spec": {
       "type": "object",
-      "required": ["id", "resource_type", "name", "condition", "duration", "file", "name", "threshold", "variable"],
+      "required": ["id", "resource_type", "name", "condition", "duration", "file", "threshold", "variable"],
       "properties": {
         "id": { "type":"string" },
         "resource_type": { "enum": ["alert_spec"] },
@@ -199,7 +200,7 @@
         },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
@@ -217,7 +218,14 @@
           "required": ["min_count","max_count"],
           "properties": {
             "max_count": { "$ref": "#/definitions/string_or_input" },
-            "min_count": { "$ref": "#/definitions/string_or_input" }
+            "min_count": { "$ref": "#/definitions/string_or_input" },
+            "depends": {
+              "type": "object",
+              "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+              "oneOf": [
+                { "$ref": "#/definitions/depends" }
+              ]
+            }
           }
         },
         "pacing": {
@@ -226,14 +234,28 @@
           "properties": {
             "resize_calm_time": { "$ref": "#/definitions/string_or_input" },
             "resize_down_by": { "$ref": "#/definitions/string_or_input" },
-            "resize_up_by": { "$ref": "#/definitions/string_or_input" }
+            "resize_up_by": { "$ref": "#/definitions/string_or_input" },
+            "depends": {
+              "type": "object",
+              "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+              "oneOf": [
+                { "$ref": "#/definitions/depends" }
+              ]
+            }
           }
         },
         "alert_specific_params": {
           "type": "object",
           "properties": {
             "decision_threshold": { "$ref": "#/definitions/string_or_input" },
-            "voters_tag_predicate": { "$ref": "#/definitions/string_or_input" }
+            "voters_tag_predicate": { "$ref": "#/definitions/string_or_input" },
+            "depends": {
+              "type": "object",
+              "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+              "oneOf": [
+                { "$ref": "#/definitions/depends" }
+              ]
+            }
           }
         },
         "queue_specific_params": {
@@ -253,6 +275,13 @@
               "properties": {
                 "items_per_instance": { "$ref": "#/definitions/string_or_input" }
               }
+            },
+            "depends": {
+              "type": "object",
+              "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+              "oneOf": [
+                { "$ref": "#/definitions/depends" }
+              ]
             }
           }
         },
@@ -265,13 +294,20 @@
               "day": { "enum": ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"] },
               "max_count": { "$ref": "#/definitions/string_or_input" },
               "min_count": { "$ref": "#/definitions/string_or_input" },
-              "time": { "type": "string", "pattern": "^\\d\\d:\\d\\d$" }
+              "time": { "type": "string", "pattern": "^\\d\\d:\\d\\d$" },
+              "depends": {
+                "type": "object",
+                "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+                "oneOf": [
+                  { "$ref": "#/definitions/depends" }
+                ]
+              }
             }
           }
         },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
@@ -306,7 +342,7 @@
         },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
@@ -365,7 +401,7 @@
         },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
@@ -385,7 +421,7 @@
         },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
@@ -400,7 +436,14 @@
         "resource_type": { "enum": ["server_template"] },
         "name": { "$ref": "#/definitions/string_or_input" },
         "revision": { "$ref": "#/definitions/string_or_input" },
-        "publication_id": { "$ref": "#/definitions/string_or_input" }
+        "publication_id": { "$ref": "#/definitions/string_or_input" },
+        "depends": {
+          "type": "object",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "oneOf": [
+            { "$ref": "#/definitions/depends" }
+          ]
+        }
       }
     },
     "security_group": {
@@ -428,7 +471,7 @@
         },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
@@ -458,7 +501,7 @@
         },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
