@@ -47,17 +47,33 @@
   "definitions": {
     "depends": {
       "type": "object",
-      "description": "An object describing a dependency on a particular value in a particular product_input.  TODO: For product_inputs who's values are arrays, what is the matching criteria? All, or any?",
+      "description": "An object describing a dependency on a specified value of a specified *_product_input.",
       "required": ["id","ref","value"],
       "properties": {
-        "id": { "type":"string" },
-        "ref": { "enum": ["text_product_input","cloud_product_input","instance_type_product_input","datacenter_product_input"] },
+        "id": {
+          "type":"string",
+          "description": "The unique id of the *_product_input which should be depended upon.  The *_product_input must be a child of #/resources and not nested in any other resource",
+        },
+        "ref": {
+          "enum": [
+            "text_product_input",
+            "select_product_input",
+            "cloud_product_input",
+            "instance_type_product_input",
+            "datacenter_product_input"
+          ],
+          "description": "The expected type of the input dependency"
+        },
         "value": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "string"
           }
+        },
+        "match": {
+          "enum": ["all","any"],
+          "description": "When the *_product_input value may be an array, how should the dependency be calculated.  When set to 'all' the *_product_input array must contain all of the values in the dependency set.  When set to 'any' the *_product_input array must contain any one of the values in the dependency set"
         }
       }
     },
@@ -65,7 +81,10 @@
       "type":"object",
       "required": ["id", "resource_type", "name", "servers"],
       "properties":{
-        "id": { "type":"string" },
+        "id": {
+          "type":"string",
+          "description": "A unique ID for this deployment within the product."
+        },
         "resource_type": { "enum": ["deployment"] },
         "name": { "$ref": "#/definitions/string_or_input" },
         "server_tag_scope": { "enum": ["deployment","account"] },
@@ -103,7 +122,7 @@
         },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
@@ -130,7 +149,7 @@
         "vote_type": { "enum": ["grow","shrink"] },
         "depends": {
           "type": "object",
-          "description": "Makes this resource dependent upon the specified product_input being set to any value in the value array.  Only if the constraint is matched, this resource will be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
@@ -448,11 +467,10 @@
     },
     "text_product_input" : {
       "type":"object",
-      "required":["id","resource_type","type","default_value","input_name","display_name"],
+      "required":["id","resource_type","default_value","input_name","display_name"],
       "properties":{
         "id": { "type":"string" },
         "resource_type": { "enum": ["text_product_input"] },
-        "type": { "enum": ["text"] },
         "default_value": { "type":"string" },
         "input_name": { "type":"string" },
         "display_name": { "type":"string" },
@@ -463,11 +481,10 @@
     },
     "select_product_input" : {
       "type":"object",
-      "required":["id","resource_type","type","options","default_value","input_name","display_name"],
+      "required":["id","resource_type","options","default_value","input_name","display_name"],
       "properties":{
         "id": { "type":"string" },
         "resource_type": { "enum": ["select_product_input"] },
-        "type": { "enum": ["select"] },
         "options": {
           "type": "array",
           "items": {
@@ -479,16 +496,16 @@
         "display_name": { "type":"string" },
         "description": { "type":"string" },
         "display": { "type": "boolean", "default": true },
-        "advanced": { "type": "boolean", "default": false }
+        "advanced": { "type": "boolean", "default": false },
+        "multiselect": { "type": "boolean", "default": false }
       }
     },
     "cloud_product_input" : {
       "type":"object",
-      "required":["id","resource_type","type","default_value","input_name","display_name"],
+      "required":["id","resource_type","default_value","input_name","display_name"],
       "properties":{
         "id": { "type":"string" },
         "resource_type": { "enum": ["cloud_product_input"] },
-        "type": { "enum": ["cloud"] },
         "default_value": { "type":"string" },
         "input_name": { "type":"string" },
         "display_name": { "type":"string" },
@@ -499,11 +516,10 @@
     },
     "instance_type_product_input" : {
       "type":"object",
-      "required":["id","resource_type","type","cloud_product_input","default_value","input_name","display_name"],
+      "required":["id","resource_type","cloud_product_input","default_value","input_name","display_name"],
       "properties":{
         "id": { "type":"string" },
         "resource_type": { "enum": ["instance_type_product_input"] },
-        "type": { "enum": ["instance_type"] },
         "cloud_product_input": { "$ref": "#/definitions/cloud_product_input_relationship" },
         "default_value": {
           "type":"array",
@@ -523,11 +539,10 @@
     },
     "datacenter_product_input" : {
       "type":"object",
-      "required":["id","resource_type","type","cloud_product_input","default_value","input_name","display_name"],
+      "required":["id","resource_type","cloud_product_input","default_value","input_name","display_name"],
       "properties":{
         "id": { "type":"string" },
         "resource_type": { "enum": ["datacenter_product_input"] },
-        "type": { "enum": ["datacenter"] },
         "cloud_product_input": { "$ref": "#/definitions/cloud_product_input_relationship" },
         "default_value": {
           "type":"array",
@@ -542,7 +557,8 @@
         "display_name": { "type":"string" },
         "description": { "type":"string" },
         "display": { "type": "boolean", "default": true },
-        "advanced": { "type": "boolean", "default": false }
+        "advanced": { "type": "boolean", "default": false },
+        "multiselect": { "type": "boolean", "default": true }
       }
     },
     "cloud_to_resource_href_hash": {
@@ -564,6 +580,7 @@
       "oneOf": [
         { "type": "string" },
         { "$ref": "#/definitions/text_product_input_relationship" },
+        { "$ref": "#/definitions/select_product_input_relationship" },
         { "$ref": "#/definitions/cloud_product_input_relationship" },
         { "$ref": "#/definitions/instance_type_product_input_relationship" },
         { "$ref": "#/definitions/datacenter_product_input_relationship" }

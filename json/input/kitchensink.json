@@ -8,7 +8,6 @@
     {
       "id": "ssl_enable_product_input",
       "resource_type": "select_product_input",
-      "type": "select",
       "options": ["true", "false"],
       "default_value": "false",
       "input_name": "ssl_enable",
@@ -19,7 +18,6 @@
     {
       "id": "deployment_name",
       "resource_type": "text_product_input",
-      "type": "text",
       "default_value": "PHP 3-Tier",
       "input_name": "deployment_name",
       "display_name": "Deployment Name",
@@ -28,7 +26,6 @@
     {
       "id": "cloud",
       "resource_type": "cloud_product_input",
-      "type": "cloud",
       "default_value": "/api/clouds/1",
       "input_name": "cloud",
       "display_name": "Cloud",
@@ -37,7 +34,6 @@
     {
       "id": "repo_repository",
       "resource_type": "text_product_input",
-      "type": "text",
       "default_value": "text:git:\/\/github.com\/rightscale\/examples.git",
       "input_name": "repo_repository",
       "display_name": "Repository URL",
@@ -47,7 +43,6 @@
     {
       "id": "repo_revision",
       "resource_type": "text_product_input",
-      "type": "text",
       "default_value": "text:unified_php",
       "input_name": "repo_revision",
       "display_name": "Repository Revision",
@@ -57,7 +52,6 @@
     {
       "id": "datacenter",
       "resource_type": "datacenter_product_input",
-      "type": "datacenter",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
       "default_value": [
         {
@@ -82,7 +76,6 @@
     {
       "id": "lb_instance_type",
       "resource_type": "instance_type_product_input",
-      "type": "instance_type",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
       "default_value": [
         {
@@ -101,7 +94,6 @@
     {
       "id": "app_instance_type",
       "resource_type": "instance_type_product_input",
-      "type": "instance_type",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
       "default_value": [
         {
@@ -120,7 +112,6 @@
     {
       "id": "db_instance_type",
       "resource_type": "instance_type_product_input",
-      "type": "instance_type",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
       "default_value": [
         {
