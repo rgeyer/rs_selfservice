@@ -6,113 +6,272 @@
   "launch_servers": true,
   "resources": [
     {
+      "id": "ssl_enable_product_input",
+      "resource_type": "select_product_input",
+      "type": "select",
+      "options": ["true", "false"],
+      "default_value": "false",
+      "input_name": "ssl_enable",
+      "display_name": "Enable SSL",
+      "description": "Enable SSL for application servers?",
+      "advanced": true
+    },
+    {
+      "id": "deployment_name",
+      "resource_type": "text_product_input",
+      "type": "text",
+      "default_value": "PHP 3-Tier",
+      "input_name": "deployment_name",
+      "display_name": "Deployment Name",
+      "description": "The deployment name"
+    },
+    {
+      "id": "cloud",
+      "resource_type": "cloud_product_input",
+      "type": "cloud",
+      "default_value": "/api/clouds/1",
+      "input_name": "cloud",
+      "display_name": "Cloud",
+      "description": "The cloud where the 3-Tier will be provisioned"
+    },
+    {
+      "id": "repo_repository",
+      "resource_type": "text_product_input",
+      "type": "text",
+      "default_value": "text:git:\/\/github.com\/rightscale\/examples.git",
+      "input_name": "repo_repository",
+      "display_name": "Repository URL",
+      "description": "Repository URL",
+      "advanced": true
+    },
+    {
+      "id": "repo_revision",
+      "resource_type": "text_product_input",
+      "type": "text",
+      "default_value": "text:unified_php",
+      "input_name": "repo_revision",
+      "display_name": "Repository Revision",
+      "description": "Repository Revision",
+      "advanced": true
+    },
+    {
+      "id": "datacenter",
+      "resource_type": "datacenter_product_input",
+      "type": "datacenter",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
+      "default_value": [
+        {
+          "cloud_href": "/api/clouds/1",
+          "resource_hrefs": [
+            "/api/clouds/1/datacenters/36F8AT46B08LN",
+            "/api/clouds/1/datacenters/6BFHL6M8K8FHH"
+          ]
+        },
+        {
+          "cloud_href": "/api/clouds/2",
+          "resource_hrefs": [
+            "/api/clouds/2/datacenters/2T6TBBRK2E94D",
+            "/api/clouds/2/datacenters/83CG48S3I2H31"
+          ]
+        }
+      ],
+      "input_name": "datacenter",
+      "display_name": "Doesn't Matter",
+      "display": false
+    },
+    {
+      "id": "lb_instance_type",
+      "resource_type": "instance_type_product_input",
+      "type": "instance_type",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
+      "default_value": [
+        {
+          "cloud_href": "/api/clouds/1",
+          "resource_hrefs": ["/api/clouds/1/instance_types/CQQV62T389R32"]
+        },
+        {
+          "cloud_href": "/api/clouds/2",
+          "resource_hrefs": ["/api/clouds/2/instance_types/F1KMCJ2VTC975"]
+        }
+      ],
+      "input_name": "lb_instance_type",
+      "display_name": "Doesn't Matter",
+      "display": false
+    },
+    {
+      "id": "app_instance_type",
+      "resource_type": "instance_type_product_input",
+      "type": "instance_type",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
+      "default_value": [
+        {
+          "cloud_href": "/api/clouds/1",
+          "resource_hrefs": ["/api/clouds/1/instance_types/6U7NRRI3I0UM"]
+        },
+        {
+          "cloud_href": "/api/clouds/2",
+          "resource_hrefs": ["/api/clouds/2/instance_types/DSPQL6A26DJIA"]
+        }
+      ],
+      "input_name": "app_instance_type",
+      "display_name": "Doesn't Matter",
+      "display": false
+    },
+    {
+      "id": "db_instance_type",
+      "resource_type": "instance_type_product_input",
+      "type": "instance_type",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
+      "default_value": [
+        {
+          "cloud_href": "/api/clouds/1",
+          "resource_hrefs": ["/api/clouds/1/instance_types/OUQRFL1LE28V"]
+        },
+        {
+          "cloud_href": "/api/clouds/2",
+          "resource_hrefs": ["/api/clouds/2/instance_types/1CUDTILROQ9LR"]
+        }
+      ],
+      "input_name": "db_instance_type",
+      "display_name": "Doesn't Matter",
+      "display": false
+    },
+    {
       "id": "Deployment",
-      "type": "deployment",
-      "name": { "rel": "rsss_inputs", "id": "deployment_name" },
+      "resource_type": "deployment",
+      "name": { "ref": "text_product_input", "id": "deployment_name" },
       "inputs": [
         {
           "id": "SslEnableInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "web_apache\/ssl_enable",
-          "value": "text:false"
+          "value": "text:false",
+          "depends": {
+            "ref": "text_product_input",
+            "id": "ssl_enable_product_input",
+            "value": ["false"]
+          }
+        },
+        {
+          "id": "SslEnableInput",
+          "resource_type": "input",
+          "name": "web_apache\/ssl_enable",
+          "value": "text:true",
+          "depends": {
+            "ref": "text_product_input",
+            "id": "ssl_enable_product_input",
+            "value": ["true"]
+          }
         },
         {
           "id": "DbFqdnInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "db\/dns\/master\/fqdn",
           "value": "text:localhost"
         },
         {
           "id": "DbLineageInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "db\/backup\/lineage",
           "value": "text:changeme"
         },
         {
           "id": "DbProviderInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "db\/provider_type",
           "value": "text:db_mysql_5.5"
         },
         {
           "id": "RepoInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "repo\/default\/repository",
-          "value": { "ref": "rsss_inputs", "id": "repo_repository" }
+          "value": { "ref": "text_product_input", "id": "repo_repository" }
         },
         {
           "id": "RevisionInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "repo\/default\/revision",
-          "value": { "ref": "rsss_inputs", "id": "repo_revision" }
+          "value": { "ref": "text_product_input", "id": "repo_revision" }
         },
         {
           "id": "DnsChoiceInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "sys_dns\/choice",
           "value": "text:DNSMadeEasy"
         },
         {
           "id": "DnsPasswordInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "sys_dns\/password",
           "value": "text:password"
         },
         {
           "id": "DnsUserInput",
-          "type": "input",
+          "resource_type": "input",
           "name": "sys_dns\/user",
           "value": "text:user"
         }
       ],
       "servers": [
-        { "rel": "resources", "id": "ApplicationServer" },
+        { "ref": "server", "id": "ApplicationServer" },
         {
-          "type": "server",
-          "name": "LB",
+          "id": "LbServer",
+          "resource_type": "server",
+          "name_prefix": "LB",
           "description": "Apache/HAProxy Load Balancer",
           "optimized": false,
-          "count": "2",
+          "count": "1",
           "instance": {
-            "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+            "id": "LbInstance",
+            "resource_type": "instance",
+            "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+            "datacenter_href": { "ref": "datacenter_product_input", "id": "datacenter" },
+            "instance_type_href": { "ref": "instance_type_product_input", "id": "lb_instance_type" },
             "security_groups": [
-              { "ref": "resources", "id": "PhpDefaultSecurityGroup" },
-              { "ref": "resources", "id": "PhpLbSecurityGroup" }
+              { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
+              { "ref": "security_group", "id": "PhpLbSecurityGroup" }
             ],
-            "server_template": { "ref": "resources", "id": "PhpLbServerTemplate" }
+            "server_template": { "ref": "server_template", "id": "PhpLbServerTemplate" }
           }
         },
         {
-          "type": "server",
-          "name": "DB",
+          "id": "DbServer",
+          "resource_type": "server",
+          "name_prefix": "DB",
           "description": "MySQL 5.5 Database Server",
           "optimized": false,
           "count": "2",
           "instance": {
-            "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+            "id": "DbInstance",
+            "resource_type": "instance",
+            "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+            "datacenter_href": { "ref": "datacenter_product_input", "id": "datacenter" },
+            "instance_type_href": { "ref": "instance_type_product_input", "id": "db_instance_type" },
             "security_groups": [
-              { "ref": "resources", "id": "PhpDefaultSecurityGroup" },
-              { "ref": "resources", "id": "PhpMysqlSecurityGroup" }
+              { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
+              { "ref": "security_group", "id": "PhpMysqlSecurityGroup" }
             ],
-            "server_template": { "ref": "resources", "id": "PhpMysqlServerTemplate" }
+            "server_template": { "ref": "server_template", "id": "PhpMysqlServerTemplate" }
           }
         }
       ]
     },
     {
       "id": "AppDbNameInput",
-      "type": "input",
+      "resource_type": "input",
       "name": "app\/database_name",
       "value": "text:dbschema"
     },
     {
       "id": "PhpDefaultSecurityGroup",
-      "type": "security_group",
+      "resource_type": "security_group",
       "name": "php-default",
       "description": "PHP 3-Tier",
-      "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
       "security_group_rules": [
         {
+          "id": "SshIngressSecurityGroupRule",
+          "resource_type": "security_group_rule",
           "protocol": "tcp",
           "cidr_ips": "0.0.0.0\/0",
           "source_type": "cidr_ips",
@@ -124,15 +283,17 @@
       ]
     },
     {
-      "id": "PhpDefaultSecurityGroup",
-      "type": "security_group",
+      "id": "PhpAppSecurityGroup",
+      "resource_type": "security_group",
       "name": "php-app",
       "description": "PHP 3-Tier",
-      "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
       "security_group_rules": [
         {
+          "id": "AppIngressSecurityGroupRule",
+          "resource_type": "security_group_rule",
           "protocol": "tcp",
-          "ingress_group": { "ref": "resources", "id": "PhpLbSecurityGroup" },
+          "ingress_group": { "ref": "security_group", "id": "PhpLbSecurityGroup" },
           "source_type": "group",
           "protocol_details": {
             "end_port": "8000",
@@ -143,12 +304,14 @@
     },
     {
       "id": "PhpLbSecurityGroup",
-      "type": "security_group",
+      "resource_type": "security_group",
       "name": "php-lb",
       "description": "PHP 3-Tier",
-      "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
       "security_group_rules": [
         {
+          "id": "HttpIngresSecurityGroupRule",
+          "resource_type": "security_group_rule",
           "protocol": "tcp",
           "cidr_ips": "0.0.0.0\/0",
           "source_type": "cidr_ips",
@@ -161,14 +324,16 @@
     },
     {
       "id": "PhpMysqlSecurityGroup",
-      "type": "security_group",
+      "resource_type": "security_group",
       "name": "php-mysql",
       "description": "PHP 3-Tier",
-      "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
       "security_group_rules": [
         {
+          "id": "DbAppIngressSecurityGroupRule",
+          "resource_type": "security_group_rule",
           "protocol": "tcp",
-          "ingress_group": { "ref": "resources", "id": "PhpAppSecurityGroup" },
+          "ingress_group": { "ref": "security_group", "id": "PhpAppSecurityGroup" },
           "source_type": "group",
           "protocol_details": {
             "end_port": "3306",
@@ -176,8 +341,10 @@
           }
         },
         {
+          "id": "DbSelfIngressSecurityGroupRule",
+          "resource_type": "security_group_rule",
           "protocol": "tcp",
-          "ingress_group": { "ref": "resources", "id": "PhpMysqlSecurityGroup" },
+          "ingress_group": { "ref": "security_group", "id": "PhpMysqlSecurityGroup" },
           "source_type": "group",
           "protocol_details": {
             "end_port": "3306",
@@ -188,75 +355,52 @@
     },
     {
       "id": "ApplicationServer",
-      "type": "server",
-      "name": "App",
+      "resource_type": "server",
+      "name_prefix": "App",
       "description": "PHP Application Server",
       "optimized": false,
       "count": "1",
-      "instance": {
-        "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
-        "inputs": [
-          { "ref": "resources", "id": "AppDbNameInput" },
-          { "type": "input", "name": "web_apache\/application_name", "value": "text:rsss" }
-        ],
-        "security_groups": [
-          { "ref": "resources", "id": "PhpDefaultSecurityGroup" },
-          { "ref": "resources", "id": "PhpAppSecurityGroup" }
-        ],
-        "server_template": { "ref": "resources", "id": "PhpAppServerTemplate" }
-      }
+      "instance": { "ref": "instance", "id": "ApplicationInstance" }
+    },
+    {
+      "id": "ApplicationInstance",
+      "resource_type": "instance",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "inputs": [
+        { "ref": "input", "id": "AppDbNameInput" },
+        {
+          "id": "AppNameInput",
+          "resource_type": "input",
+          "name": "web_apache\/application_name",
+          "value": "text:rsss"
+        }
+      ],
+      "security_groups": [
+        { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
+        { "ref": "security_group", "id": "PhpAppSecurityGroup" }
+      ],
+      "server_template": { "ref": "server_template", "id": "PhpAppServerTemplate" }
     },
     {
       "id": "PhpAppServerTemplate",
+      "resource_type": "server_template",
       "name": "PHP App Server (v13.3)",
       "revision": "163",
       "publication_id": "48522"
     },
     {
       "id": "PhpLbServerTemplate",
+      "resource_type": "server_template",
       "name": "Load Balancer with HAProxy (v13.3)",
       "revision": "145",
       "publication_id": "48520"
     },
     {
       "id": "PhpMysqlServerTemplate",
+      "resource_type": "server_template",
       "name": "Database Manager for MySQL 5.5 (v13.3)",
       "revision": "111",
       "publication_id": "48528"
-    }
-  ],
-  "rsss_inputs": [
-    {
-      "id": "deployment_name",
-      "type": "text",
-      "default_value": "PHP 3-Tier",
-      "input_name": "deployment_name",
-      "display_name": "Deployment Name",
-      "description": "The deployment name"
-    },
-    {
-      "id": "cloud",
-      "type": "cloud",
-      "default_value": "/api/clouds/1",
-      "input_name": "cloud",
-      "display_name": "Cloud",
-      "description": "The cloud where the 3-Tier will be provisioned"
-    },
-    {
-      "id": "repo_repository",
-      "type": "input",
-      "default_value": "text:git:\/\/github.com\/rightscale\/examples.git",
-      "input_name": "repo_repository",
-      "display_name": "Repository URL",
-      "description": "Repository URL"
-    },
-    {
-      "id": "repo_revision",
-      "type": "input",
-      "default_value": "text:unified_php",
-      "input_name": "repo_revision",
-      "display_name": "Repository Revision",
-      "description": "Repository Revision"
     }
   ]
 }
