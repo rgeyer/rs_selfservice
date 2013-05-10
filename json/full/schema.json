@@ -244,15 +244,17 @@
         "id": { "type": "string" },
         "resource_type": { "enum": ["instance"] },
         "cloud_href": {
-          "description": "TODO: Should it be possible to specify a static value here?  I suppose it should be a different resource, maybe a generic cloud resource that has only a type and href as properties?",
-          "anyOf": [
-            "string",
+          "type": "object",
+          "oneOf": [
             { "$ref": "#/definitions/cloud_rsss_input_relationship" }
           ]
         },
         "datacenter_href": {
-          "type": "string",
-          "description": "TODO: This should actually be a hash where the key is the cloud href, and the value is an array of datacenter hrefs."
+          "description": "When set to a datacenter_rsss_input with more than one datacenter href, as a child of a server_array, the server_array datacenter_policy will be set to be evenly weighted across the specified datacenter_hrefs",
+          "type": "object",
+          "oneOf": [
+            { "$ref": "#/definitions/datacenter_rsss_input_relationship" }
+          ]
         },
         "inputs": {
           "type": "array",
@@ -264,7 +266,7 @@
           }
         },
         "instance_type_href": {
-          "description": "TODO: This should allow use of either an instance_type_rsss_input relationship, or a hash where the key is the cloud href, and the value is an instance type href.",
+          "type": "object",
           "oneOf": [
             { "$ref": "#/definitions/instance_type_rsss_input_relationship" }
           ]
@@ -307,8 +309,8 @@
         "id": { "type":"string" },
         "resource_type": { "enum": ["security_group"] },
         "cloud_href": {
-          "anyOf": [
-            "string",
+          "type": "object",
+          "oneOf": [
             { "$ref": "#/definitions/cloud_rsss_input_relationship" }
           ]
         },
@@ -358,7 +360,8 @@
         "default_value": { "type":"string" },
         "input_name": { "type":"string" },
         "display_name": { "type":"string" },
-        "description": { "type":"string" }
+        "description": { "type":"string" },
+        "display": { "type": "boolean", "default": true }
       }
     },
     "cloud_rsss_input" : {
@@ -371,7 +374,8 @@
         "default_value": { "type":"string" },
         "input_name": { "type":"string" },
         "display_name": { "type":"string" },
-        "description": { "type":"string" }
+        "description": { "type":"string" },
+        "display": { "type": "boolean", "default": true }
       }
     },
     "instance_type_rsss_input" : {
@@ -382,10 +386,57 @@
         "resource_type": { "enum": "instance_type_rsss_input" },
         "type": { "enum": ["instance_type"] },
         "cloud_rsss_input": { "$ref": "#/definitions/cloud_rsss_input_relationship" },
-        "default_value": { "type":"string" },
+        "default_value": {
+          "type":"array",
+          "items": {
+            "type":"object",
+            "oneOf": [
+              { "$ref": "#/definitions/cloud_to_resource_href_hash" }
+            ]
+          }
+        },
         "input_name": { "type":"string" },
         "display_name": { "type":"string" },
-        "description": { "type":"string" }
+        "description": { "type":"string" },
+        "display": { "type": "boolean", "default": true }
+      }
+    },
+    "datacenter_rsss_input" : {
+      "type":"object",
+      "required":["id","resource_type","type","cloud_rsss_input","default_value","input_name","display_name"],
+      "properties":{
+        "id": { "type":"string" },
+        "resource_type": { "enum": "datacenter_rsss_input" },
+        "type": { "enum": ["datacenter"] },
+        "cloud_rsss_input": { "$ref": "#/definitions/cloud_rsss_input_relationship" },
+        "default_value": {
+          "type":"array",
+          "items": {
+            "type":"object",
+            "oneOf": [
+              { "$ref": "#/definitions/cloud_to_resource_href_hash" }
+            ]
+          }
+        },
+        "input_name": { "type":"string" },
+        "display_name": { "type":"string" },
+        "description": { "type":"string" },
+        "display": { "type": "boolean", "default": true }
+      }
+    },
+    "cloud_to_resource_href_hash": {
+      "type": "object",
+      "required": ["cloud_href","resource_hrefs"],
+      "properties": {
+        "cloud_href": { "type": "string" },
+        "resource_hrefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^\\/api[a-zA-Z_0-9\\/]+$"
+          }
+        }
       }
     },
     "input_relationship": {
@@ -450,6 +501,14 @@
       "properties":{
         "id": { "type":"string" },
         "ref": { "enum": ["instance_type_rsss_input"] }
+      }
+    },
+    "datacenter_rsss_input_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["datacenter_rsss_input"] }
       }
     },
     "text_rsss_input_relationship": {
