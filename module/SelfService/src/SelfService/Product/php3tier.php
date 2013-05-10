@@ -730,6 +730,264 @@ class php3tier {
 EOF;
   }
 
+    public static function newJson() {
+    return <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "Deployment",
+      "type": "deployment",
+      "name": { "rel": "rsss_inputs", "id": "deployment_name" },
+      "inputs": [
+        {
+          "type": "input",
+          "name": "web_apache\/ssl_enable",
+          "value": "text:false"
+        },
+        {
+          "type": "input",
+          "name": "db\/dns\/master\/fqdn",
+          "value": "text:localhost"
+        },
+        {
+          "type": "input",
+          "name": "db\/backup\/lineage",
+          "value": "text:changeme"
+        },
+        {
+          "type": "input",
+          "name": "db\/provider_type",
+          "value": "text:db_mysql_5.5"
+        },
+        {
+          "type": "input",
+          "name": "repo\/default\/repository",
+          "value": { "ref": "rsss_inputs", "id": "repo_repository" }
+        },
+        {
+          "type": "input",
+          "name": "repo\/default\/revision",
+          "value": { "ref": "rsss_inputs", "id": "repo_revision" }
+        },
+        {
+          "type": "input",
+          "name": "sys_dns\/choice",
+          "value": "text:DNSMadeEasy"
+        },
+        {
+          "type": "input",
+          "name": "sys_dns\/password",
+          "value": "text:password"
+        },
+        {
+          "type": "input",
+          "name": "sys_dns\/user",
+          "value": "text:user"
+        }
+      ],
+      "servers": [
+        { "rel": "resources", "id": "ApplicationServer" },
+        {
+          "type": "server",
+          "name": "LB",
+          "description": "Apache/HAProxy Load Balancer",
+          "optimized": false,
+          "count": "2",
+          "instance": {
+            "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+            "security_groups": [
+              { "ref": "resources", "id": "PhpDefaultSecurityGroup" },
+              { "ref": "resources", "id": "PhpLbSecurityGroup" }
+            ],
+            "server_template": { "ref": "resources", "id": "PhpLbServerTemplate" }
+          }
+        },
+        {
+          "type": "server",
+          "name": "DB",
+          "description": "MySQL 5.5 Database Server",
+          "optimized": false,
+          "count": "2",
+          "instance": {
+            "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+            "security_groups": [
+              { "ref": "resources", "id": "PhpDefaultSecurityGroup" },
+              { "ref": "resources", "id": "PhpMysqlSecurityGroup" }
+            ],
+            "server_template": { "ref": "resources", "id": "PhpMysqlServerTemplate" }
+          }
+        }
+      ]
+    },
+    {
+      "id": "AppDbNameInput",
+      "type": "input",
+      "name": "app\/database_name",
+      "value": "text:dbschema"
+    },
+    {
+      "id": "PhpDefaultSecurityGroup",
+      "type": "security_group",
+      "name": "php-default",
+      "description": "PHP 3-Tier",
+      "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "protocol": "tcp",
+          "cidr_ips": "0.0.0.0\/0",
+          "source_type": "cidr_ips",
+          "protocol_details": {
+            "end_port": "22",
+            "start_port": "22"
+          }
+        }
+      ]
+    },
+    {
+      "id": "PhpDefaultSecurityGroup",
+      "type": "security_group",
+      "name": "php-app",
+      "description": "PHP 3-Tier",
+      "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "protocol": "tcp",
+          "ingress_group": { "ref": "resources", "id": "PhpLbSecurityGroup" },
+          "source_type": "group",
+          "protocol_details": {
+            "end_port": "8000",
+            "start_port": "8000"
+          }
+        }
+      ]
+    },
+    {
+      "id": "PhpLbSecurityGroup",
+      "type": "security_group",
+      "name": "php-lb",
+      "description": "PHP 3-Tier",
+      "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "protocol": "tcp",
+          "cidr_ips": "0.0.0.0\/0",
+          "source_type": "cidr_ips",
+          "protocol_details": {
+            "end_port": "80",
+            "start_port": "80"
+          }
+        }
+      ]
+    },
+    {
+      "id": "PhpMysqlSecurityGroup",
+      "type": "security_group",
+      "name": "php-mysql",
+      "description": "PHP 3-Tier",
+      "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "protocol": "tcp",
+          "ingress_group": { "ref": "resources", "id": "PhpAppSecurityGroup" },
+          "source_type": "group",
+          "protocol_details": {
+            "end_port": "3306",
+            "start_port": "3306"
+          }
+        },
+        {
+          "protocol": "tcp",
+          "ingress_group": { "ref": "resources", "id": "PhpMysqlSecurityGroup" },
+          "source_type": "group",
+          "protocol_details": {
+            "end_port": "3306",
+            "start_port": "3306"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ApplicationServer",
+      "type": "server",
+      "name": "App",
+      "description": "PHP Application Server",
+      "optimized": false,
+      "count": "1",
+      "instance": {
+        "cloud_href": { "ref": "rsss_inputs", "id": "cloud" },
+        "inputs": [
+          { "ref": "resources", "id": "AppDbNameInput" },
+          { "type": "input", "name": "web_apache\/application_name", "value": "text:rsss" }
+        ],
+        "security_groups": [
+          { "ref": "resources", "id": "PhpDefaultSecurityGroup" },
+          { "ref": "resources", "id": "PhpAppSecurityGroup" }
+        ],
+        "server_template": { "ref": "resources", "id": "PhpAppServerTemplate" }
+      }
+    },
+    {
+      "id": "PhpAppServerTemplate",
+      "name": "PHP App Server (v13.3)",
+      "revision": "163",
+      "publication_id": "48522"
+    },
+    {
+      "id": "PhpLbServerTemplate",
+      "name": "Load Balancer with HAProxy (v13.3)",
+      "revision": "145",
+      "publication_id": "48520"
+    },
+    {
+      "id": "PhpMysqlServerTemplate",
+      "name": "Database Manager for MySQL 5.5 (v13.3)",
+      "revision": "111",
+      "publication_id": "48528"
+    }
+  ],
+  "rsss_inputs": [
+    {
+      "id": "deployment_name",
+      "type": "text",
+      "default_value": "PHP 3-Tier",
+      "input_name": "deployment_name",
+      "display_name": "Deployment Name",
+      "description": "The deployment name"
+    },
+    {
+      "id": "cloud",
+      "type": "cloud",
+      "default_value": "/api/clouds/1",
+      "input_name": "cloud",
+      "display_name": "Cloud",
+      "description": "The cloud where the 3-Tier will be provisioned"
+    },
+    {
+      "id": "repo_repository",
+      "type": "input",
+      "default_value": "text:git:\/\/github.com\/rightscale\/examples.git",
+      "input_name": "repo_repository",
+      "display_name": "Repository URL",
+      "description": "Repository URL"
+    },
+    {
+      "id": "repo_revision",
+      "type": "input",
+      "default_value": "text:unified_php",
+      "input_name": "repo_revision",
+      "display_name": "Repository Revision",
+      "description": "Repository Revision"
+    }
+  ]
+}
+EOF;
+  }
+
   public static function staticJson() {
     return <<<EOF
 {

@@ -37,14 +37,14 @@ return array(
     'driver' => array(
       'odm_default' => array(
         'drivers' => array(
-          'SelfService\Entity' => 'annotation_driver'
+          'SelfService\Document' => 'annotation_driver'
         )
       ),
       'annotation_driver' => array(
         'class' => 'Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver',
         'cache' => 'array',
         'paths' => array(
-          __DIR__ . '/../../module/SelfService/src/SelfService/Entity'
+          __DIR__ . '/../../module/SelfService/src/SelfService/Document'
         )
       )
     ),

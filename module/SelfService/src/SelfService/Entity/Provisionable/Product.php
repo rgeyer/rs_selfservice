@@ -25,21 +25,31 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Entity\Provisionable;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @ORM\Entity @ORM\Table(name="products")
+ *
+ * @ODM\Document
+ *
  * @author Ryan J. Geyer <me@ryangeyer.com>
  *
  */
 class Product {
 	/**
 	 * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+   *
+   * @ODM\Id
+   *
 	 * @var integer
 	 */
 	public $id;
 	
 	/**
 	 * @ORM\Column(type="string")
+   *
+   * @ODM\Field(type="string")
+   *
 	 * @var string
 	 */
 	public $name;
@@ -47,12 +57,15 @@ class Product {
 	/**
 	 * The filename of the icon found in APPLICATION_PATH/images/icons
 	 * @ORM\Column(type="string", nullable=true)
+   *
+   * @ODM\Field(type="string")
+   *
 	 * @var string
 	 */
 	public $icon_filename;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="SecurityGroup", fetch="EAGER", cascade={"persist"})
+	 * @ORM\ManyToMany(targetEntity="SecurityGroup", fetch="EAGER", cascade={"persist"})   *
 	 * @var SecurityGroup[]
 	 */
 	public $security_groups = array();
@@ -83,6 +96,9 @@ class Product {
 	
 	/**
 	 * @ORM\Column(type="boolean")
+   *
+   * @ODM\Field(type="boolean")
+   *
 	 * @var bool
 	 */
 	public $launch_servers;

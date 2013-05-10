@@ -1,0 +1,480 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "RightScale Self Service Vending Machine Product",
+  "type":"object",
+  "required": ["name", "resources"],
+  "properties":{
+    "id": {
+      "type":"string",
+      "description": "An optional unique ID of the product.  Ignored for create operations and present in the schema as a placeholder for the peristence mechanism I.E. MongoDB object id"
+    },
+    "name": { "type":"string" },
+    "icon_filename": {
+      "type":"string",
+      "description": "The filename of an icon in the icon directory of the Vending Machine application"
+    },
+    "launch_servers": { "type":"boolean" },
+    "version": {
+      "type":"string",
+      "pattern":"^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "An optional DB schema version.  This is a semantic version number and it identifies the version of the object schema as stored in a NoSQL database."
+    },
+    "resources": {
+      "type":"array",
+      "items":
+      {
+        "type": "object",
+        "anyOf": [
+          { "$ref": "#/definitions/deployment" },
+          { "$ref": "#/definitions/input" },
+          { "$ref": "#/definitions/instance" },
+          { "$ref": "#/definitions/security_group" },
+          { "$ref": "#/definitions/server" },
+          { "$ref": "#/definitions/server_array" },
+          { "$ref": "#/definitions/elasticity_params" },
+          { "$ref": "#/definitions/server_template" },
+          { "$ref": "#/definitions/text_rsss_input" },
+          { "$ref": "#/definitions/cloud_rsss_input" },
+          { "$ref": "#/definitions/instance_type_rsss_input" },
+          { "$ref": "#/definitions/alert_spec" }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "deployment": {
+      "type":"object",
+      "required": ["id", "resource_type", "name", "servers"],
+      "properties":{
+        "id": { "type":"string" },
+        "resource_type": { "enum": ["deployment"] },
+        "name": { "type": "string" },
+        "server_tag_scope": { "enum": ["deployment","account"] },
+        "inputs": {
+          "type":"array",
+          "items":
+          {
+            "type":"object",
+            "oneOf": [
+              { "$ref": "#/definitions/input" },
+              { "$ref": "#/definitions/input_relationship" }
+            ]
+          }
+        },
+        "servers": {
+          "type":"array",
+          "items":
+          {
+            "type":"object",
+            "anyOf": [
+              { "$ref": "#/definitions/server" },
+              { "$ref": "#/definitions/server_relationship" }
+            ]
+          }
+        },
+        "server_arrays": {
+          "type": "array",
+          "items": {
+            "type":"object",
+            "anyOf": [
+              { "$ref": "#/definitions/server_array" },
+              { "$ref": "#/definitions/server_array_relationship" }
+            ]
+          }
+        }
+      }
+    },
+    "alert_spec": {
+      "type": "object",
+      "required": ["id", "resource_type", "name", "condition", "duration", "file", "name", "threshold", "variable"],
+      "properties": {
+        "id": { "type":"string" },
+        "resource_type": { "enum": ["alert_spec"] },
+        "name": { "type": "string" },
+        "condition": {
+          "enum": [">",">=","<","<=","==","!="]
+        },
+        "description": { "type": "string" },
+        "duration": { "type": "string" },
+        "escalation_name": { "type": "string" },
+        "file": { "type": "string" },
+        "threshold": { "type": "string" },
+        "variable": { "type": "string" },
+        "vote_tag": { "type": "string" },
+        "vote_type": { "enum": ["grow","shrink"] }
+      }
+    },
+    "server_array": {
+      "type": "object",
+      "required": [
+        "id",
+        "resource_type",
+        "array_type",
+        "elasticity_params",
+        "instance",
+        "name"
+      ],
+      "properties":{
+        "id": { "type":"string" },
+        "resource_type": { "enum": ["server_array"] },
+        "array_type": { "enum": ["alert","queue"] },
+        "description": { "type": "string" },
+        "elasticity_params": {
+          "type": "object",
+          "anyOf": [
+            { "$ref": "#/definitions/elasticity_params" },
+            { "$ref": "#/definitions/elasticity_params_relationship" }
+          ]
+        },
+        "instance": {
+          "type": "object",
+          "anyOf": [
+            { "$ref": "#/definitions/instance" },
+            { "$ref": "#/definitions/instance_relationship" }
+          ]
+        },
+        "name": { "type": "string" },
+        "optimized": { "type": "boolean" },
+        "state": { "enum": ["enabled","disabled"], "default": "disabled" },
+        "alert_specs": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/alert_spec" },
+              { "$ref": "#/definitions/alert_spec_relationship" }
+            ]
+          }
+        }
+      }
+    },
+    "elasticity_params": {
+      "type": "object",
+      "required": ["id","resource_type","bounds","pacing"],
+      "properties": {
+        "id": { "type": "string" },
+        "resource_type": { "enum": ["elasticity_params"] },
+        "bounds": {
+          "type": "object",
+          "required": ["min_count","max_count"],
+          "properties": {
+            "max_count": { "type": "string" },
+            "min_count": { "type": "string" }
+          }
+        },
+        "pacing": {
+          "type": "object",
+          "required": ["resize_calm_time","resize_down_by","resize_up_by"],
+          "properties": {
+            "resize_calm_time": { "type": "string" },
+            "resize_down_by": { "type": "string" },
+            "resize_up_by": { "type": "string" }
+          }
+        },
+        "alert_specific_params": {
+          "type": "object",
+          "properties": {
+            "decision_threshold": { "type": "string" },
+            "voters_tag_predicate": { "type": "string" }
+          }
+        },
+        "queue_specific_params": {
+          "type": "object",
+          "properties": {
+            "collect_audit_entries": { "type": "string" },
+            "item_age": {
+              "type": "object",
+              "properties": {
+                "algorithm": { "enum": ["max_10","avg_10"] },
+                "max_age": { "type": "string" },
+                "regexp": { "type": "string" }
+              }
+            },
+            "queue_size": {
+              "type": "object",
+              "properties": {
+                "items_per_instance": { "type": "string" }
+              }
+            }
+          }
+        },
+        "schedule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["day","max_count","min_count","time"],
+            "properties": {
+              "day": { "enum": ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"] },
+              "max_count": { "type": "string" },
+              "min_count": { "type": "string" },
+              "time": { "type": "string", "pattern": "^\\d\\d:\\d\\d$" }
+            }
+          }
+        }
+      }
+    },
+    "server": {
+      "type": "object",
+      "required": ["id","resource_type","name","instance"],
+      "properties": {
+        "id": { "type": "string" },
+        "resource_type": { "enum": ["server"] },
+        "name": { "type":"string" },
+        "instance": {
+          "type": "object",
+          "anyOf": [
+            { "$ref": "#/definitions/instance" },
+            { "$ref": "#/definitions/instance_relationship" }
+          ]
+        },
+        "alert_specs": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/alert_spec" },
+              { "$ref": "#/definitions/alert_spec_relationship" }
+            ]
+          }
+        }
+      }
+    },
+    "instance": {
+      "type": "object",
+      "required": ["id","resource_type","cloud_href","server_template"],
+      "properties": {
+        "id": { "type": "string" },
+        "resource_type": { "enum": ["instance"] },
+        "cloud_href": {
+          "description": "TODO: Should it be possible to specify a static value here?  I suppose it should be a different resource, maybe a generic cloud resource that has only a type and href as properties?",
+          "anyOf": [
+            "string",
+            { "$ref": "#/definitions/cloud_rsss_input_relationship" }
+          ]
+        },
+        "datacenter_href": {
+          "type": "string",
+          "description": "TODO: This should actually be a hash where the key is the cloud href, and the value is an array of datacenter hrefs."
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/input" },
+              { "$ref": "#/definitions/input_relationship" }
+            ]
+          }
+        },
+        "instance_type_href": {
+          "description": "TODO: This should allow use of either an instance_type_rsss_input relationship, or a hash where the key is the cloud href, and the value is an instance type href.",
+          "oneOf": [
+            { "$ref": "#/definitions/instance_type_rsss_input_relationship" }
+          ]
+        },
+        "security_groups": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/security_group" },
+              { "$ref": "#/definitions/security_group_relationship" }
+            ]
+          }
+        },
+        "server_template": {
+          "type": "object",
+          "anyOf": [
+            { "$ref": "#/definitions/security_group" },
+            { "$ref": "#/definitions/security_group_relationship" }
+          ]
+        }
+      }
+    },
+    "input": {
+      "type":"object",
+      "required": ["id","resource_type","name","value"],
+      "properties": {
+        "id": { "type": "string" },
+        "resource_type": { "enum": ["input"] },
+        "name": { "type":"string" },
+        "value": {
+          "type":"string",
+          "pattern":"^(text|key|cred|array|env):.*"
+        }
+      }
+    },
+    "security_group": {
+      "type":"object",
+      "required": ["id","resource_type","cloud_href","name"],
+      "properties":{
+        "id": { "type":"string" },
+        "resource_type": { "enum": ["security_group"] },
+        "cloud_href": {
+          "anyOf": [
+            "string",
+            { "$ref": "#/definitions/cloud_rsss_input_relationship" }
+          ]
+        },
+        "description": { "type":"string" },
+        "name": { "type":"string" },
+        "security_group_rules": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/security_group_rule" },
+              { "$ref": "#/definitions/security_group_rule_relationship" }
+            ]
+          }
+        }
+      }
+    },
+    "security_group_rule": {
+      "type": "object",
+      "required": ["id","resource_type","protocol","protocol_details","source_type"],
+      "properties": {
+        "id": { "type": "string" },
+        "resource_type": { "enum": ["security_group_rule"] },
+        "cidr_ips": { "type": "string" },
+        "ingress_group": { "$ref": "#/definitions/security_group_relationship" },
+        "protocol": { "enum": ["tcp","udp","icmp"] },
+        "protocol_details": {
+          "type": "object",
+          "properties": {
+            "end_port": { "type": "string" },
+            "icmp_code": { "type": "string" },
+            "icmp_type": { "type": "string" },
+            "start_port": { "type": "string" }
+          }
+        },
+        "source_type": {
+          "emum": ["cidr_ips","group"]
+        }
+      }
+    },
+    "text_rsss_input" : {
+      "type":"object",
+      "required":["id","resource_type","type","default_value","input_name","display_name"],
+      "properties":{
+        "id": { "type":"string" },
+        "resource_type": { "enum": "text_rsss_input" },
+        "type": { "enum": ["text"] },
+        "default_value": { "type":"string" },
+        "input_name": { "type":"string" },
+        "display_name": { "type":"string" },
+        "description": { "type":"string" }
+      }
+    },
+    "cloud_rsss_input" : {
+      "type":"object",
+      "required":["id","resource_type","type","default_value","input_name","display_name"],
+      "properties":{
+        "id": { "type":"string" },
+        "resource_type": { "enum": "cloud_rsss_input" },
+        "type": { "enum": ["cloud"] },
+        "default_value": { "type":"string" },
+        "input_name": { "type":"string" },
+        "display_name": { "type":"string" },
+        "description": { "type":"string" }
+      }
+    },
+    "instance_type_rsss_input" : {
+      "type":"object",
+      "required":["id","resource_type","type","cloud_rsss_input","default_value","input_name","display_name"],
+      "properties":{
+        "id": { "type":"string" },
+        "resource_type": { "enum": "instance_type_rsss_input" },
+        "type": { "enum": ["instance_type"] },
+        "cloud_rsss_input": { "$ref": "#/definitions/cloud_rsss_input_relationship" },
+        "default_value": { "type":"string" },
+        "input_name": { "type":"string" },
+        "display_name": { "type":"string" },
+        "description": { "type":"string" }
+      }
+    },
+    "input_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["input"] }
+      }
+    },
+    "server_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["server"] }
+      }
+    },
+    "server_array_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["server_array"] }
+      }
+    },
+    "elasticity_params_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["elasticity_params"] }
+      }
+    },
+    "instance_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["instance"] }
+      }
+    },
+    "alert_spec_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["alert_spec"] }
+      }
+    },
+    "cloud_rsss_input_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["cloud_rsss_input"] }
+      }
+    },
+    "instance_type_rsss_input_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["instance_type_rsss_input"] }
+      }
+    },
+    "text_rsss_input_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["text_rsss_input"] }
+      }
+    },
+    "security_group_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["security_group"] }
+      }
+    },
+    "security_group_rule_relationship": {
+      "type":"object",
+      "required": ["id", "ref"],
+      "properties":{
+        "id": { "type":"string" },
+        "ref": { "enum": ["security_group_rule"] }
+      }
+    }
+  }
+}

@@ -25,7 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Service\Entity;
 
 use Doctrine\ODM\MongoDB\LockMode;
-use SelfService\Entity\User;
+use SelfService\Document\User;
 use Doctrine\ORM\EntityManager;
 
 class UserService extends BaseEntityService {
@@ -33,10 +33,10 @@ class UserService extends BaseEntityService {
   /**
    * @var string The name of the entity class for this service
    */
-  protected $entityClass = 'SelfService\Entity\User';
+  protected $entityClass = 'SelfService\Document\User';
 
   /**
-   * @return \SelfService\Entity\User[] An array of all User entities
+   * @return \SelfService\Document\User[] An array of all User entities
    */
   public function findAll() {
     return parent::findAll();
@@ -46,7 +46,7 @@ class UserService extends BaseEntityService {
    * @param $id
    * @param $lockMode
    * @param null $lockVersion
-   * @return \SelfService\Entity\User
+   * @return \SelfService\Document\User
    */
   public function find($id, $lockMode = LockMode::NONE, $lockVersion = null) {
     return parent::find($id, $lockMode, $lockVersion);
@@ -54,7 +54,7 @@ class UserService extends BaseEntityService {
 
   /**
    * @param $email Email address of the user to find
-   * @return \SelfService\Entity\User|null
+   * @return \SelfService\Document\User|null
    */
   public function findByEmail($email) {
     $dm = $this->getDocumentManager();
