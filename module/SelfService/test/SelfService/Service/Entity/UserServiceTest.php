@@ -2,7 +2,7 @@
 
 namespace SelfServiceTest\Service;
 
-use SelfService\Entity\User;
+use SelfService\Document\User;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
 class UserServiceTest extends AbstractHttpControllerTestCase {
