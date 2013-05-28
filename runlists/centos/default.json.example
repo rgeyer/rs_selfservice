@@ -38,7 +38,7 @@
     }
   },
   "app_php": {
-    "modules_list": ["php53-pdo","php53u-mysql","php53u-pecl-memcached","php53u-pecl-mongo","php53u-xml"]
+    "modules_list": ["php53-pdo","php53u-mysql","php53u-pecl-memcached","php-pecl-mongo","php53u-xml"]
   },
   "web_apache": {
     "application_name": "rsss"
