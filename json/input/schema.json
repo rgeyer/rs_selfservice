@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema",
-  "title": "RightScale Self Service Vending Machine Product",
+  "title": "RightScale Self Service Vending Machine Product v1.0.0",
   "type":"object",
   "required": ["name", "resources"],
   "properties":{

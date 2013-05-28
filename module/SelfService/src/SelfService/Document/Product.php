@@ -70,17 +70,27 @@ class Product {
 
   /**
    * @ODM\EmbedMany(
-   *  discriminatorField="type",
+   *  discriminatorField="resource_type",
    *  discriminatorMap={
-   *    "alert_spec"="AlertSpec",
-   *    "security_group"="SecurityGroup"
+   *    "deployment"="Deployment",
+   *    "input"="Input",
+   *    "security_group"="SecurityGroup",
+   *    "server"="Server",
+   *    "alert_spec"="AlertSpec"
    *  }
    * )
-   * @var (AlertSpec)[]
+   *
+   *
+   *    "instance"="Instance",
+   *    "server_array"="ServerArray",
+   *    "elasticity_params"="ElasticityParams",
+   *    "server_template"="ServerTemplate",
+   *    "text_product_input"="TextProductInput",
+   *    "select_product_input"="SelectProductInput",
+   *    "cloud_product_input"="CloudProductInput",
+   *    "instance_type_product_input"="InstanceTypeProductInput",
+   *    "datacenter_product_input"=DatacenterProductInput",
+   * @var (Deployment|Input|Instance|SecurityGroup|Server|ServerArray|ElasticityParams|ServerTemplate|TextProductInput|SelectProductInput|CloudProductInput|InstanceTypeProductInput|DatacenterProductInput|AlertSpec)[]
    */
   public $resources;
-
-  public $rsss_inputs;
-
-  public $rs_inputs;
 }

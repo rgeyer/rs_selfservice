@@ -64,7 +64,7 @@ class Server {
   public $count;
 
   /**
-   * @ODM\ServerInstance
+   * @ODM\EmbedOne(targetDocument="ServerInstance")
    * @var \SelfService\Document\ServerInstance
    */
   public $instance;

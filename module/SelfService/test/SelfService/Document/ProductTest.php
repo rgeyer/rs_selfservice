@@ -28,15 +28,16 @@ class ProductTest extends AbstractHttpControllerTestCase {
   public function testFoo() {
     $dm = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
     $product = new \SelfService\Document\Product();
-    $alertspec = new \SelfService\Document\AlertSpec();
 
-    $alertspec->id = "ScaleUpAlertSpec";
-    $alertspec->condition = "cond";
+    $deployment = new \SelfService\Document\Deployment();
+    $deployment->id = "FooDepl";
+    $deployment->name = array("rel" => "text_product_input", "id" => "foobarbaz");
+    $deployment->server_tag_scope = "deployment";
 
     $product->icon_filename = "foo.png";
     $product->launch_servers = true;
     $product->name = "Foo";
-    $product->resources = array($alertspec);
+    $product->resources = array($deployment);
 
     $dm->persist($product);
     $dm->flush();

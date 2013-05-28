@@ -27,41 +27,13 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @ODM\EmbeddedDocument
+ * @ODM\MappedSuperclass
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class Deployment extends AbstractResource {
-
-  public $resource_type = "deployment";
-
-  /**
-   * This is the model for doing string or reference...
-   * @ODM\Hash
-   * @var array
-   */
-  public $name;
-
+abstract class AbstractResource {
   /**
    * @ODM\String
    * @var string
    */
-  public $server_tag_scope;
-
-  /**
-   * @ODM\EmbedMany(targetDocument="Input")
-   * @var \SelfService\Document\Input[]
-   */
-  public $inputs;
-
-  /**
-   * @ODM\EmbedMany(targetDocument="Server")
-   * @var \SelfService\Document\Server[]
-   */
-  public $servers;
-
-  /**
-   * EmbedMany(targetDocument="ServerArray")
-   * @var \SelfService\Document\ServerArray[]
-   */
-  public $server_arrays;
+  public $id;
 }
