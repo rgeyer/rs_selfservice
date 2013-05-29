@@ -30,6 +30,7 @@
           { "$ref": "#/definitions/input" },
           { "$ref": "#/definitions/instance" },
           { "$ref": "#/definitions/security_group" },
+          { "$ref": "#/definitions/security_group_rule" },
           { "$ref": "#/definitions/server" },
           { "$ref": "#/definitions/server_array" },
           { "$ref": "#/definitions/elasticity_params" },
@@ -534,7 +535,13 @@
             "type": "string"
           }
         },
-        "default_value": { "type":"string" },
+        "default_value": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
         "input_name": { "type":"string" },
         "display_name": { "type":"string" },
         "description": { "type":"string" },
