@@ -86,7 +86,7 @@ class Product {
    *    "select_product_input"="SelectProductInput",
    *    "cloud_product_input"="CloudProductInput",
    *    "instance_type_product_input"="InstanceTypeProductInput",
-   *    "datacenter_product_input"=DatacenterProductInput"
+   *    "datacenter_product_input"="DatacenterProductInput"
    *  }
    * )
    * @var (Deployment|Input|Instance|SecurityGroup|SecurityGroupRule|Server|AlertSpec|ServerArray|ElasticityParams|ServerTemplate|TextProductInput|SelectProductInput|CloudProductInput|InstanceTypeProductInput|DatacenterProductInput)[]
