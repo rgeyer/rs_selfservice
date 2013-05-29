@@ -24,15 +24,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Document;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
+ * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class Relationship {
-  public $rel;
-  public $id;
+class TextProductInput extends AbstractProductInput {
 
-  public function __construct($rel, $id) {
-    $this->rel = $rel;
-    $this->id = $id;
-  }
+  public $resource_type = "text_product_input";
+
+  /**
+   * @ODM\String
+   * @var string
+   */
+  public $default_value;
+
 }

@@ -27,15 +27,18 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class ServerInstance {
-  public $cloud_href;
+class TextProductInput extends AbstractResource {
 
-  public $inputs;
+  public $resource_type = "text_product_input";
 
-  public $security_groups;
+  /**
+   * @ODM\String
+   * @var string
+   */
+  public $default_value;
 
-  public $server_template;
 }

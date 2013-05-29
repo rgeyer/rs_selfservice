@@ -24,25 +24,21 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Document;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
+ * RJG Can Depend
+ * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class RelationshipLinker {
-  public function preLoad() {
-    $fields = get_object_vars($this);
-    foreach($fields as $name => $value) {
-      if(is_a($value, "SelfService\Document\Relationship")) {
-        $this->{$name} = json_encode($value);
-      }
-    }
-  }
+class TextProductInput extends AbstractResource {
 
-  public function postLoad() {
-    $fields = get_object_vars($this);
-    foreach($fields as $name => $value) {
-      if(is_string($value) && preg_match('/^\{.*\}$', $value)) {
-        $this->{$name} = json_decode($value);
-      }
-    }
-  }
+  public $resource_type = "text_product_input";
+
+  /**
+   * @ODM\String
+   * @var string
+   */
+  public $default_value;
+
 }
