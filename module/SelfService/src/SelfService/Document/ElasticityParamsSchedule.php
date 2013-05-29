@@ -27,11 +27,17 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @RJG Can Depend
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class ElasticityParamsBounds {
+class ElasticityParamsSchedule {
+
+  /**
+   * @ODM\String
+   * @var string
+   */
+  public $day;
 
   /**
    * @ODM\Hash
@@ -44,4 +50,10 @@ class ElasticityParamsBounds {
    * @var array|string
    */
   public $min_count;
+
+  /**
+   * @ODM\Hash
+   * @var array|string
+   */
+  public $time;
 }

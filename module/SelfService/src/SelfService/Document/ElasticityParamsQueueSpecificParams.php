@@ -27,21 +27,27 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @RJG Can Depend
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class ElasticityParamsAlertSpecificParams {
+class ElasticityParamsQueueSpecificParams {
 
   /**
    * @ODM\Hash
    * @var array|string
    */
-  public $decision_threshold;
+  public $collect_audit_entries;
 
   /**
-   * @ODM\Hash
-   * @var array|string
+   * @ODM\EmbedOne(targetDocument="ElasticityParamsQueueSpecificParamsItemAge")
+   * @var \SelfService\Document\ElasticityParamsQueueSpecificParamsItemAge
    */
-  public $voters_tag_predicate;
+  public $item_age;
+
+  /**
+   * @ODM\EmbedOne(targetDocument="ElasticityParamsQueueSpecificParamsQueueSize")
+   * @var \SelfService\Document\ElasticityParamsQueueSpecificParamsQueueSize
+   */
+  public $queue_size;
 }

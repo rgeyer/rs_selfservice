@@ -30,13 +30,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class TextProductInput extends AbstractProductInput {
+class InstanceTypeProductInput extends AbstractProductInput {
 
-  public $resource_type = "text_product_input";
+  public $resource_type = "instance_type_product_input";
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array
+   */
+  public $cloud_product_input;
+
+  /**
+   * @ODM\EmbedMany(targetDocument="CloudToResourceHref")
+   * @var \SelfService\Document\CloudToResourceHref[]
    */
   public $default_value;
 

@@ -27,27 +27,23 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class Server {
+class Server extends AbstractResource {
+
+  public $resource_type = "server";
 
   /**
-   * A user defined unique ID
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
-  public $id;
+  public $name_prefix;
 
   /**
-   * @ODM\String
-   * @var string
-   */
-  public $name;
-
-  /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $description;
 
@@ -58,14 +54,20 @@ class Server {
   public $optimized;
 
   /**
-   * @ODM\Int
-   * @var integer
+   * @ODM\Hash
+   * @var array|string
    */
   public $count;
 
   /**
-   * @ODM\EmbedOne(targetDocument="ServerInstance")
-   * @var \SelfService\Document\ServerInstance
+   * @ODM\Hash
+   * @var array|string
    */
   public $instance;
+
+  /**
+   * @ODM\Collection
+   * @var array
+   */
+  public $alert_specs;
 }

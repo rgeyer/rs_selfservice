@@ -26,28 +26,32 @@ namespace SelfService\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @ODM\EmbeddedDocument
+ * @author Ryan J. Geyer <me@ryangeyer.com>
+ */
 class SecurityGroupRuleProtocolDetail {
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $end_port;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $start_port;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $icmp_code;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $icmp_type;
 }

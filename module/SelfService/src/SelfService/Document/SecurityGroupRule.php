@@ -27,20 +27,25 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
+ * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class SecurityGroupRule {
+class SecurityGroupRule extends AbstractResource {
+
+  public $resource_type = "security_group_rule";
+
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $cidr_ips;
 
   /**
    * A reference to a \SelfService\Document\SecurityGroup which should be allowed
    * ingress with the specified protocol_details
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array
    */
   public $ingress_group;
 

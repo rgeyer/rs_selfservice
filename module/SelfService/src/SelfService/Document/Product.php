@@ -74,14 +74,11 @@ class Product {
    *  discriminatorMap={
    *    "deployment"="Deployment",
    *    "input"="Input",
-   *    "security_group"="SecurityGroup",
-   *    "server"="Server",
-   *    "alert_spec"="AlertSpec"
-   *  }
-   * )
-   *
-   *
    *    "instance"="Instance",
+   *    "security_group"="SecurityGroup",
+   *    "security_group_rule"="SecurityGroupRule",
+   *    "server"="Server",
+   *    "alert_spec"="AlertSpec",
    *    "server_array"="ServerArray",
    *    "elasticity_params"="ElasticityParams",
    *    "server_template"="ServerTemplate",
@@ -89,8 +86,10 @@ class Product {
    *    "select_product_input"="SelectProductInput",
    *    "cloud_product_input"="CloudProductInput",
    *    "instance_type_product_input"="InstanceTypeProductInput",
-   *    "datacenter_product_input"=DatacenterProductInput",
-   * @var (Deployment|Input|Instance|SecurityGroup|Server|ServerArray|ElasticityParams|ServerTemplate|TextProductInput|SelectProductInput|CloudProductInput|InstanceTypeProductInput|DatacenterProductInput|AlertSpec)[]
+   *    "datacenter_product_input"=DatacenterProductInput"
+   *  }
+   * )
+   * @var (Deployment|Input|Instance|SecurityGroup|SecurityGroupRule|Server|AlertSpec|ServerArray|ElasticityParams|ServerTemplate|TextProductInput|SelectProductInput|CloudProductInput|InstanceTypeProductInput|DatacenterProductInput)[]
    */
   public $resources;
 }

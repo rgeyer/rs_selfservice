@@ -27,23 +27,44 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @RJG Can Depend
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
+ *
+ * TODO: Should I auto instantiate the embedone documents recursively? Would
+ * make initializing a new one easier methinks.  I.E. $elasticity_params->queue_specific_params->item_age->algorithm
  */
-class Input extends AbstractResource {
+class ElasticityParams extends AbstractResource {
 
-  public $resource_type = "input";
-
-  /**
-   * @ODM\Hash
-   * @var array|string
-   */
-  public $name;
+  public $resource_type = "elasticity_params";
 
   /**
-   * @ODM\Hash
-   * @var array|string
+   * @ODM\EmbedOne(targetDocument="ElasticityParamsBounds")
+   * @var \SelfService\Document\ElasticityParamsBounds
    */
-  public $value;
+  public $bounds;
+
+  /**
+   * @ODM\EmbedOne(targetDocument="ElasticityParamsPacing")
+   * @var \SelfService\Document\ElasticityParamsPacing
+   */
+  public $pacing;
+
+  /**
+   * @ODM\EmbedOne(targetDocument="ElasticityParamsAlertSpecificParams")
+   * @var \SelfService\Document\ElasticityParamsAlertSpecificParams
+   */
+  public $alert_specific_params;
+
+  /**
+   * @ODM\EmbedOne(targetDocument="ElasticityParamsQueueSpecificParams")
+   * @var \SelfService\Document\ElasticityParamsQueueSpecificParams
+   */
+  public $queue_specific_params;
+
+  /**
+   * @ODM\EmbedOne(targetDocument="ElasticityParamsSchedule")
+   * @var \SelfService\Document\ElasticityParamsSchedule
+   */
+  public $schedule;
 }

@@ -27,32 +27,35 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
+ * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class SecurityGroup {
+class SecurityGroup extends AbstractResource {
+
+  public $resource_type = "security_group";
 
   /**
-   * A user defined unique ID
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
-  public $id;
+  public $cloud_href;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $name;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $description;
 
   /**
-   * @ODM\EmbedMany(targetDocument="SecurityGroupRule")
-   * @var \SelfService\Document\SecurityGroupRule[]
+   * @ODM\Collection
+   * @var array
    */
   public $security_group_rules;
 }

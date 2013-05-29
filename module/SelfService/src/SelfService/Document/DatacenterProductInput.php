@@ -30,9 +30,9 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class InstanceTypeProductInput extends AbstractProductInput {
+class DatacenterProductInput extends AbstractProductInput {
 
-  public $resource_type = "instance_type_product_input";
+  public $resource_type = "datacenter_product_input";
 
   /**
    * @ODM\Hash
@@ -45,5 +45,11 @@ class InstanceTypeProductInput extends AbstractProductInput {
    * @var \SelfService\Document\CloudToResourceHref[]
    */
   public $default_value;
+
+  /**
+   * @ODM\Boolean
+   * @var bool
+   */
+  public $multiselect = false;
 
 }

@@ -35,9 +35,8 @@ class Deployment extends AbstractResource {
   public $resource_type = "deployment";
 
   /**
-   * This is the model for doing string or reference...
    * @ODM\Hash
-   * @var array
+   * @var array|string
    */
   public $name;
 
@@ -48,8 +47,8 @@ class Deployment extends AbstractResource {
   public $server_tag_scope;
 
   /**
-   * @ODM\EmbedMany(targetDocument="Input")
-   * @var \SelfService\Document\Input[]
+   * @ODM\Collection
+   * @var array
    */
   public $inputs;
 

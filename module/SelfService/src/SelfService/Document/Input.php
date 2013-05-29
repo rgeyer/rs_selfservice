@@ -27,6 +27,7 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
@@ -35,14 +36,14 @@ class Input extends AbstractResource {
   public $resource_type = "input";
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $name;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $value;
 }

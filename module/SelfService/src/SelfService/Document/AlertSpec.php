@@ -27,80 +27,71 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
+ * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class AlertSpec {
+class AlertSpec extends AbstractResource {
+
+  public $resource_type = "alert_spec";
 
   /**
-   * A user defined unique ID
-   * @ODM\String
-   * @var string
-   */
-  public $id;
-
-  /**
-   * @ODM\String
-   * @var string
-   */
-  public $condition;
-
-  /**
-   * @ODM\String
-   * @var string
-   */
-  public $description;
-
-  /**
-   * @ODM\String
-   * @var string
-   */
-  public $duration;
-
-  /**
-   * @ODM\String
-   * @var string
-   */
-  public $escalation_name;
-
-  /**
-   * @ODM\String
-   * @var string
-   */
-  public $file;
-
-  /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $name;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
-  public $subject_href;
+  public $condition;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
+   */
+  public $description;
+
+  /**
+   * @ODM\Hash
+   * @var array|string
+   */
+  public $duration;
+
+  /**
+   * @ODM\Hash
+   * @var array|string
+   */
+  public $escalation_name;
+
+  /**
+   * @ODM\Hash
+   * @var array|string
+   */
+  public $file;
+
+  /**
+   * @ODM\Hash
+   * @var array|string
    */
   public $threshold;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $variable;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $vote_tag;
 
   /**
-   * @ODM\String
-   * @var string
+   * @ODM\Hash
+   * @var array|string
    */
   public $vote_type;
 }

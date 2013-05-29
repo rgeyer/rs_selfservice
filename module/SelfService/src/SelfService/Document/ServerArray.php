@@ -27,19 +27,25 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @RJG Can Depend
+ * RJG Can Depend
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class Server extends AbstractResource {
+class ServerArray extends AbstractResource {
 
-  public $resource_type = "server";
+  public $resource_type = "server_array";
+
+  /**
+   * @ODM\String
+   * @var string
+   */
+  public $array_type;
 
   /**
    * @ODM\Hash
    * @var array|string
    */
-  public $name_prefix;
+  public $name;
 
   /**
    * @ODM\Hash
@@ -48,22 +54,28 @@ class Server extends AbstractResource {
   public $description;
 
   /**
-   * @ODM\Boolean
-   * @var bool
-   */
-  public $optimized;
-
-  /**
    * @ODM\Hash
-   * @var array|string
+   * @var array
    */
-  public $count;
+  public $elasticity_params;
 
   /**
    * @ODM\Hash
    * @var array|string
    */
   public $instance;
+
+  /**
+   * @ODM\Boolean
+   * @var bool
+   */
+  public $optimized;
+
+  /**
+   * @ODM\String
+   * @var string
+   */
+  public $state = "disabled";
 
   /**
    * @ODM\Collection
