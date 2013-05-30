@@ -53,14 +53,14 @@ class Deployment extends AbstractResource {
   public $inputs;
 
   /**
-   * @ODM\EmbedMany(targetDocument="Server")
-   * @var \SelfService\Document\Server[]
+   * @ODM\Collection
+   * @var array
    */
   public $servers;
 
   /**
-   * EmbedMany(targetDocument="ServerArray")
-   * @var \SelfService\Document\ServerArray[]
+   * @ODM\Collection
+   * @var array
    */
   public $server_arrays;
 }

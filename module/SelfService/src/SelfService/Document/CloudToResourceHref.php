@@ -32,8 +32,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CloudToResourceHref {
 
-  public $resource_type = "cloud_product_input";
-
   /**
    * @ODM\String
    * @var string

@@ -27,7 +27,6 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * RJG Can Depend
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
@@ -57,7 +56,7 @@ class SecurityGroupRule extends AbstractResource {
 
   /**
    * @ODM\EmbedOne(targetDocument="SecurityGroupRuleProtocolDetail")
-   * @var string
+   * @var \SelfService\Document\SecurityGroupRuleProtocolDetail
    */
   public $protocol_details;
 
