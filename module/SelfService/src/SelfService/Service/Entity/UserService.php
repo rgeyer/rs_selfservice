@@ -26,7 +26,6 @@ namespace SelfService\Service\Entity;
 
 use Doctrine\ODM\MongoDB\LockMode;
 use SelfService\Document\User;
-use Doctrine\ORM\EntityManager;
 
 class UserService extends BaseEntityService {
 

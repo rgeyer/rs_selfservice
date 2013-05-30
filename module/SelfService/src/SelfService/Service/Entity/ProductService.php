@@ -24,28 +24,28 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Service\Entity;
 
-use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\EntityManager;
-use SelfService\Entity\Provisionable\Server;
-use SelfService\Entity\Provisionable\Product;
-use SelfService\Entity\Provisionable\SecurityGroup;
-use SelfService\Entity\Provisionable\ServerTemplate;
-use SelfService\Entity\Provisionable\SecurityGroupRule;
-use SelfService\Entity\Provisionable\MetaInputs\TextProductMetaInput;
-use SelfService\Entity\Provisionable\MetaInputs\CloudProductMetaInput;
-use SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput;
-use SelfService\Entity\Provisionable\MetaInputs\NumberProductMetaInput;
-use SelfService\Entity\Provisionable\MetaInputs\InstanceTypeProductMetaInput;
+use Doctrine\ODM\MongoDB\LockMode;
+use SelfService\Document\Server;
+use SelfService\Document\Product;
+use SelfService\Document\Instance;
+use SelfService\Document\Deployment;
+use SelfService\Document\SecurityGroup;
+use SelfService\Document\ServerTemplate;
+use SelfService\Document\SecurityGroupRule;
+use SelfService\Document\SecurityGroupRuleProtocolDetail;
+use SelfService\Document\TextProductInput;
+use SelfService\Document\CloudProductInput;
+use SelfService\Document\InstanceTypeProductInput;
 
 class ProductService extends BaseEntityService {
 
   /**
    * @var string The name of the entity class for this service
    */
-  protected $entityClass = 'SelfService\Entity\Provisionable\Product';
+  protected $entityClass = 'SelfService\Document\Product';
 
   /**
-   * @return \SelfService\Entity\Provisionable\Product[] An array of all Product entities
+   * @return \SelfService\Document\Product[] An array of all Product documents
    */
   public function findAll() {
     return parent::findAll();
@@ -55,101 +55,148 @@ class ProductService extends BaseEntityService {
    * @param $id
    * @param $lockMode
    * @param null $lockVersion
-   * @return \SelfService\Entity\Provisionable\Product
+   * @return \SelfService\Document\Product
    */
   public function find($id, $lockMode = LockMode::NONE, $lockVersion = null) {
     return parent::find($id, $lockMode, $lockVersion);
   }
 
   public function update($id, array $params) {
-    $em = $this->getEntityManager();
+    $dm = $this->getDocumentManager();
     $product = $this->find($id);
     foreach($params as $key => $value) {
       if(property_exists($product, $key)) {
         $product->{$key} = $value;
       }
     }
-    $em->persist($product);
-    $em->flush();
+    $dm->persist($product);
+    $dm->flush();
   }
 
   public function createFromRideJson($jsonstr) {
-    $em = $this->getEntityManager();
+    $dm = $this->getDocumentManager();
     $json = json_decode($jsonstr);
 
     $inputs = array();
 
     $product = new Product();
-    $product->servers = array();
-    $product->meta_inputs = array();
     $product->launch_servers = false;
     $product->icon_filename = "zoidberg.png";
     $product->name = sprintf("RIDE-%s", time());
+    $product->resources = array();
+
+    $deployment = new Deployment();
+    $deployment->id = "deployment";
+    $deployment->name = $product->name;
+    $deployment->inputs = array();
+    $deployment->servers = array();
+    $product->resources[] = $deployment;
 
     // Standard Inputs
-    $cloud_meta = new CloudProductMetaInput();
-    $cloud_meta->default_value = 1;
+    $cloud_meta = new CloudProductInput();
+    $cloud_meta->id = "cloud_product_input";
+    $cloud_meta->default_value = "/api/clouds/1";
     $cloud_meta->description = "The target cloud for servers";
     $cloud_meta->input_name = "cloud";
     $cloud_meta->display_name = "Cloud";
-    $em->persist($cloud_meta);
-    $product->meta_inputs[] = $cloud_meta;
+    $product->resources[] = $cloud_meta;
 
-    $instance_meta = new InstanceTypeProductMetaInput();
-    $instance_meta->default_value = "default";
+    $instance_meta = new InstanceTypeProductInput();
     $instance_meta->input_name = "instance_type";
     $instance_meta->display_name = "Instance Type";
     $instance_meta->description = "The instance type for all servers";
-    $instance_meta->cloud = $cloud_meta;
-    $em->persist($instance_meta);
-    $product->meta_inputs[] = $instance_meta;
+    $instance_meta->cloud_product_input = array(
+      "ref" => "cloud_product_input",
+      "id" => "cloud_product_input"
+    );
+    $product->resources[] = $instance_meta;
 
     $secgrp = new SecurityGroup();
-    $secgrp->description = new TextProductMetaInput(sprintf("Provisioned by rsss for %s", $product->name));
-    $secgrp->cloud_id = $cloud_meta;
-    $secgrp->name = new TextProductMetaInput(sprintf("%s-default", $product->name));
-    $em->persist($secgrp);
-    $em->flush();
+    $secgrp->id = "all_in_security_group";
+    $secgrp->description = sprintf("Provisioned by rsss for %s", $product->name);
+    $secgrp->cloud_href = array(
+      "ref" => "cloud_product_input",
+      "id" => "cloud_product_input"
+    );
+    $secgrp->name = sprintf("%s-default", $product->name);
+    $secgrp->security_group_rules = array();
+    $product->resources[] = $secgrp;
 
     $tcprule = new SecurityGroupRule();
-    $tcprule->ingress_from_port = new NumberProductMetaInput(0);
-    $tcprule->ingress_to_port = new NumberProductMetaInput(65535);
-    $tcprule->ingress_protocol = new TextProductMetaInput("tcp");
-    $tcprule->ingress_group = $secgrp;
-    $secgrp->rules[] = $tcprule;
-    $em->persist($secgrp);
+    $tcprule->id = "all_in_security_group_tcp_rule";
+    $tcprule->source_type = "group";
+    $tcprule->protocol_details = new SecurityGroupRuleProtocolDetail();
+    $tcprule->protocol_details->start_port = 0;
+    $tcprule->protocol_details->end_port = 65535;
+    $tcprule->protocol = "tcp";
+    $tcprule->ingress_group = array(
+      "ref" => "security_group",
+      "id" => "all_in_security_group"
+    );
+    $secgrp->security_group_rules[] = array(
+      "ref" => "security_group_rule",
+      "id" => "all_in_security_group_tcp_rule",
+      "nested" => true
+    );
+    $product->resources[] = $tcprule;
 
     $udprule = new SecurityGroupRule();
-    $udprule->ingress_from_port = new NumberProductMetaInput(0);
-    $udprule->ingress_to_port = new NumberProductMetaInput(65535);
-    $udprule->ingress_protocol = new TextProductMetaInput("udp");
-    $udprule->ingress_group = $secgrp;
-    $secgrp->rules[] = $udprule;
-    $em->persist($secgrp);
-
-    $product->security_groups[] = $secgrp;
+    $udprule->id = "all_in_security_group_udp_rule";
+    $udprule->source_type = "group";
+    $udprule->protocol_details = new SecurityGroupRuleProtocolDetail();
+    $udprule->protocol_details->start_port = 0;
+    $udprule->protocol_details->end_port = 65535;
+    $udprule->protocol = "udp";
+    $udprule->ingress_group = array(
+      "ref" => "security_group",
+      "id" => "all_in_security_group"
+    );
+    $secgrp->security_group_rules[] = array(
+      "ref" => "security_group_rule",
+      "id" => "all_in_security_group_udp_rule",
+      "nested" => true
+    );
+    $product->resources[] = $udprule;
 
     foreach($json as $server_or_array) {
       switch(strtolower($server_or_array->type)) {
         case "deployment":
           $product->name = $server_or_array->nickname;
+          $deployment->name = $product->name;
           break;
         case "server":
           $template = new ServerTemplate();
-          $template->nickname = new TextProductMetaInput($server_or_array->st_name);
-          $template->version = new NumberProductMetaInput($server_or_array->revision);
-          $template->publication_id = new TextProductMetaInput($server_or_array->publication_id);
-          $em->persist($template);
+          $template->id = sprintf("%s_template", $server_or_array->info->nickname);
+          $template->name = $server_or_array->st_name;
+          $template->revision = $server_or_array->revision;
+          $template->publication_id = $server_or_array->publication_id;
+          $product->resources[] = $template;
 
           $server = new Server();
-          $server->server_template = $template;
-          $server->cloud_id = $cloud_meta;
-          $server->count = new NumberProductMetaInput(1);
-          $server->nickname = new TextProductMetaInput($server_or_array->info->nickname);
-          $server->security_groups[] = $secgrp;
-          $em->persist($server);
-
-          $product->servers[] = $server;
+          $server->id = $server_or_array->info->nickname;
+          $server->count = 1;
+          $server_instance = new Instance();
+          $server_instance->cloud_href = array(
+            "ref" => "cloud_product_input",
+            "id" => "cloud_product_input"
+          );
+          $server_instance->security_groups = array(
+            "ref" => "security_group",
+            "id" => "all_in_security_group"
+          );
+          $server_instance->server_template = array(
+            "ref" => "server_template",
+            "id" => $template->id,
+            "nested" => true
+          );
+          $server->instance = $server_instance;
+          $server->name_prefix = $server_or_array->info->nickname;
+          $product->resources[] = $server;
+          $deployment->servers[] = array(
+            "ref" => "server",
+            "id" => $server->id,
+            "nested" => true
+          );
 
           foreach($server_or_array->inputs as $key=>$input) {
             $inputs[$key] = array(
@@ -163,52 +210,23 @@ class ProductService extends BaseEntityService {
     }
 
     foreach($inputs as $key=>$value) {
-      $metainput = new InputProductMetaInput($key,$value['value']);
+      $metainput = new TextProductInput(); #  new InputProductMetaInput($key,$value['value']);
+      $metainput->id = $key;
       $metainput->description = "Deployment level override for the input value ".$key;
       $metainput->display_name = $key;
       $metainput->input_name = $key;
-      $product->parameters[] = $metainput;
-      if($value['override']) {
-        $product->meta_inputs[] = $metainput;
-      }
+      $metainput->default_value = $value['value'];
+      $metainput->display = !$value['override'];
+      $product->resources[] = $metainput;
+      $deployment->inputs[] = array(
+        "ref" => "text_product_input",
+        "id" => $metainput->id,
+        "nested" => true
+      );
     }
 
-    $em->persist($product);
-    $em->flush();
-  }
-
-  public function remove($id) {
-    $em = $this->getEntityManager();
-    $product = $this->find($id);
-    $metainputs = array();
-    $security_groups = array();
-    foreach($product->alerts as $alert) {
-      $em->remove($alert);
-    }
-    foreach($product->parameters as $param) {
-      $em->remove($param);
-    }
-    foreach($product->security_groups as $group) {
-      foreach($group->rules as $rule) {
-        $em->remove($rule);
-      }
-    }
-    foreach($product->security_groups as $group) {
-      $em->remove($group);
-    }
-    foreach($product->servers as $server) {
-      $em->remove($server);
-    }
-    foreach($product->arrays as $array) {
-      $em->remove($array);
-    }
-    foreach($product->meta_inputs as $input) {
-      $em->remove($input);
-    }
-    # TODO: This leaves a lot of abandoned things which need to be cleaned up
-    $em->remove($product);
-    $em->flush();
-    # delete from servers where id not in (select server_id from product_server);
+    $dm->persist($product);
+    $dm->flush();
   }
 
   /**
