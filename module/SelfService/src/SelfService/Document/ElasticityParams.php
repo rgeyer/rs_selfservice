@@ -62,7 +62,7 @@ class ElasticityParams extends AbstractResource {
   public $queue_specific_params;
 
   /**
-   * @ODM\EmbedOne(targetDocument="ElasticityParamsSchedule")
+   * @ODM\EmbedMany(targetDocument="ElasticityParamsSchedule")
    * @var \SelfService\Document\ElasticityParamsSchedule
    */
   public $schedule;

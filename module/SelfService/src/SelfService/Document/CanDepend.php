@@ -33,8 +33,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 abstract class CanDepend {
 
   /**
-   * @ODM\EmbedOne(targetDocument="Depend")
-   * @var \SelfService\Document\Depend
+   * @ODM\Hash
+   * @var array
    */
   public $depends;
 }

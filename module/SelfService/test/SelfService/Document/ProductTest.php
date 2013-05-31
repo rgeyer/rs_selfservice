@@ -31,15 +31,30 @@ class ProductTest extends AbstractHttpControllerTestCase {
 
     $deployment = new \SelfService\Document\Deployment();
     $deployment->id = "FooDepl";
-    $deployment->name = array("rel" => "text_product_input", "id" => "foobarbaz");
+    $deployment->name = "foo"; # array("rel" => "text_product_input", "id" => "foobarbaz");
     $deployment->server_tag_scope = "deployment";
+    $deployment->depends = new \SelfService\Document\Depend();
+    $deployment->depends->value = array('foo');
+    $deployment->depends->id = "some_input";
+    $deployment->depends->match = "any";
+    $deployment->depends->ref = "text_product_input";
 
     $product->icon_filename = "foo.png";
     $product->launch_servers = true;
     $product->name = "Foo";
     $product->resources = array($deployment);
 
+    $instance_type_input = new \SelfService\Document\InstanceTypeProductInput();
+
     $dm->persist($product);
     $dm->flush();
+
+    $prods = $dm->getRepository("SelfService\Document\Product")->findAll();
+    foreach($prods as $prod) {
+      foreach($prod->resources as $doc) {
+        print json_encode($doc);
+        $this->assertTrue(is_string($doc->name));
+      }
+    }
   }
 }

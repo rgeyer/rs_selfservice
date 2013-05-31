@@ -25,17 +25,30 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Service\Entity;
 
 use Doctrine\ODM\MongoDB\LockMode;
+use SelfService\Document\Input;
 use SelfService\Document\Server;
 use SelfService\Document\Product;
 use SelfService\Document\Instance;
+use SelfService\Document\AlertSpec;
 use SelfService\Document\Deployment;
+use SelfService\Document\ServerArray;
 use SelfService\Document\SecurityGroup;
 use SelfService\Document\ServerTemplate;
-use SelfService\Document\SecurityGroupRule;
-use SelfService\Document\SecurityGroupRuleProtocolDetail;
+use SelfService\Document\ElasticityParams;
 use SelfService\Document\TextProductInput;
+use SelfService\Document\SecurityGroupRule;
 use SelfService\Document\CloudProductInput;
+use SelfService\Document\SelectProductInput;
+use SelfService\Document\DatacenterProductInput;
+use SelfService\Document\ElasticityParamsBounds;
+use SelfService\Document\ElasticityParamsPacing;
+use SelfService\Document\ElasticityParamsSchedule;
 use SelfService\Document\InstanceTypeProductInput;
+use SelfService\Document\SecurityGroupRuleProtocolDetail;
+use SelfService\Document\ElasticityParamsAlertSpecificParams;
+use SelfService\Document\ElasticityParamsQueueSpecificParams;
+use SelfService\Document\ElasticityParamsQueueSpecificParamsItemAge;
+use SelfService\Document\ElasticityParamsQueueSpecificParamsQueueSize;
 
 class ProductService extends BaseEntityService {
 
@@ -73,6 +86,47 @@ class ProductService extends BaseEntityService {
     $dm->flush();
   }
 
+  /**
+   * Not implemented, please use createFromRideJson or createFromJson instead
+   * @param array $params
+   * @return void
+   * @throws \BadMethodCallException always, please use createFromRideJson or createFromJson instead
+   */
+  public function create(array $params) {
+    throw new \BadMethodCallException("Create is not implemented for the ProductService, please use createFromJson or createFromRideJson");
+  }
+
+  public function createFromJson($jsonStrOrObject) {
+    # TODO: Do a validation against the schema?
+    $jsonObj = $jsonStrOrObject;
+    if(is_string($jsonStrOrObject)) {
+      $jsonObj = json_decode($jsonStrOrObject);
+    }
+    $product = new Product();
+    $product->resources = array();
+    $dontSetProductVars = array('id','version','resources');
+    foreach(get_object_vars($jsonObj) as $key => $val) {
+      if(!in_array($key, $dontSetProductVars)) {
+        $product->{$key} = $val;
+      }
+    }
+
+    foreach($jsonObj->resources as $resource) {
+      $this->stdClassToOdm($product, $resource);
+    }
+
+    $dm = $this->getDocumentManager();
+    $dm->persist($product);
+    $dm->flush();
+
+    return $product;
+  }
+
+  /**
+   * Takes the RIDE formatted JSON input and creates and persists a new ODM document for that product
+   * @param $jsonstr The JSON payload from RIDE
+   * @return \SelfService\Document\Product
+   */
   public function createFromRideJson($jsonstr) {
     $dm = $this->getDocumentManager();
     $json = json_decode($jsonstr);
@@ -227,6 +281,150 @@ class ProductService extends BaseEntityService {
 
     $dm->persist($product);
     $dm->flush();
+
+    return $product;
+  }
+
+  protected function stdClassToOdm(&$odmProduct, $stdClass) {
+    // Three cases
+    // 1 - The property is a scalar, copy it directly
+    // 2 - The property is a ref, copy it directly
+    // 3 - The property is a nested (schema) resource_type with a
+    //  corresponding (odm) schema type. Needs to be mapped to an
+    //  appropriate odm object
+    // 4 - The property is a nested (schema) type with an embedded (odm)
+    //  type.  The new ODM object must be instantiated and properties copied
+    $odmObject = null;
+    switch ($stdClass->resource_type) {
+      case "deployment":
+        $odmObject = new Deployment();
+        break;
+      case "input":
+        $odmObject = new Input();
+        break;
+      case "instance":
+        $odmObject = new Instance();
+        break;
+      case "security_group":
+        $odmObject = new SecurityGroup();
+        break;
+      case "security_group_rule":
+        $odmObject = new SecurityGroupRule();
+        if(property_exists($stdClass, 'protocol_details') && $stdClass->protocol_details) {
+          $odmObject->protocol_details = new SecurityGroupRuleProtocolDetail();
+          $objectvars = get_object_vars($stdClass->protocol_details);
+          foreach($objectvars as $key => $val) {
+            $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject->protocol_details, $key, $val);
+          }
+        }
+        break;
+      case "server":
+        $odmObject = new Server();
+        break;
+      case "server_array":
+        $odmObject = new ServerArray();
+        break;
+      case "elasticity_params":
+        $odmObject = new ElasticityParams();
+        $odmObject->bounds = new ElasticityParamsBounds();
+        $objectvars = get_object_vars($stdClass->bounds);
+        foreach($objectvars as $key => $val) {
+          $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject->bounds, $key, $val);
+        }
+        $odmObject->pacing = new ElasticityParamsPacing();
+        $objectvars = get_object_vars($stdClass->pacing);
+        foreach($objectvars as $key => $val) {
+          $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject->pacing, $key, $val);
+        }
+        if(property_exists($stdClass, 'alert_specific_params') && $stdClass->alert_specific_params) {
+          $odmObject->alert_specific_params = new ElasticityParamsAlertSpecificParams();
+          $objectvars = get_object_vars($stdClass->alert_specific_params);
+          foreach($objectvars as $key => $val) {
+            $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject->alert_specific_params, $key, $val);
+          }
+        }
+        if(property_exists($stdClass, 'queue_specific_params') && $stdClass->queue_specific_params) {
+          $odmObject->queue_specific_params = new ElasticityParamsQueueSpecificParams();
+          $objectvars = get_object_vars($stdClass->queue_specific_params);
+          foreach($objectvars as $key => $val) {
+            $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject->queue_specific_params, $key, $val);
+          }
+          if(property_exists($stdClass->queue_specific_params, 'item_age') && $stdClass->queue_specific_params->item_age) {
+            $odmObject->queue_specific_params->item_age = new ElasticityParamsQueueSpecificParamsItemAge();
+            $objectvars = get_object_vars($stdClass->queue_specific_params->item_age);
+            foreach($objectvars as $key => $val) {
+              $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject->queue_specific_params->item_age, $key, $val);
+            }
+          }
+          if(property_exists($stdClass->queue_specific_params, 'queue_size') && $stdClass->queue_specific_params->queue_size) {
+            $odmObject->queue_specific_params->queue_size = new ElasticityParamsQueueSpecificParamsQueueSize();
+            $objectvars = get_object_vars($stdClass->queue_specific_params->queue_size);
+            foreach($objectvars as $key => $val) {
+              $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject->queue_specific_params->queue_size, $key, $val);
+            }
+          }
+        }
+        if(property_exists($stdClass, 'schedule') && is_array($stdClass->schedule)) {
+          $odmObject->schedule = array();
+          foreach($stdClass->schedule as $schedule) {
+            $odmSchedule = new ElasticityParamsSchedule();
+            $objectvars = get_object_vars($schedule);
+            foreach($objectvars as $key => $val) {
+              $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmSchedule, $key, $val);
+            }
+            $odmObject->schedule[] = $odmSchedule;
+          }
+        }
+        break;
+      case "server_template":
+        $odmObject = new ServerTemplate();
+        break;
+      case "text_product_input":
+        $odmObject = new TextProductInput();
+        break;
+      case "select_product_input":
+        $odmObject = new SelectProductInput();
+        break;
+      case "cloud_product_input":
+        $odmObject = new CloudProductInput();
+        break;
+      case "instance_type_product_input":
+        $odmObject = new InstanceTypeProductInput();
+        break;
+      case "datacenter_product_input":
+        $odmObject = new DatacenterProductInput();
+        break;
+      case "alert_spec":
+        $odmObject = new AlertSpec();
+        break;
+    }
+    $objectvars = get_object_vars($stdClass);
+    foreach($objectvars as $key => $val) {
+      $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject, $key, $val);
+    }
+    $odmProduct->resources[] = $odmObject;
+  }
+
+  protected function doNeedfulToObjectVarOfStdClass(&$odmProduct, &$odmObject, $key, $val) {
+    if(is_object($val)) {
+      if(property_exists($val, "resource_type")) {
+        // It's an embedded resource with an ODM type
+        $this->stdClassToOdm($odmProduct, $val);
+        $odmObject->{$key} = array(
+          "ref" => $val->resource_type,
+          "id" => $val->id,
+          "nested" => true
+        );
+      } else if(property_exists($val, "ref")) {
+        $odmObject->{$key} = $val;
+      }
+    } else if (is_array($val)) {
+      foreach($val as $subval) {
+        $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject, $key, $subval);
+      }
+    } else {
+      $odmObject->{$key} = $val;
+    }
   }
 
   /**
