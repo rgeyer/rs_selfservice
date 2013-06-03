@@ -5,6 +5,10 @@ namespace SelfServiceTest\Service;
 use SelfService\Entity\Provisionable\Product;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
+/**
+ * TODO: Tests for conversion of each of the resource types to ensure
+ * embedded ODM docs are handled properly.
+ */
 class ProductServiceTest extends AbstractHttpControllerTestCase {
 
   public function setUp() {
@@ -27,6 +31,13 @@ class ProductServiceTest extends AbstractHttpControllerTestCase {
     );
   }
 
+  /**
+   * @return \SelfService\Service\Entity\ProductService
+   */
+  protected function getProductService() {
+    return $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+  }
+
   protected function assertIsReference($jsonObj, $ref) {
     $this->assertInstanceOf('stdClass', $ref);
     $this->assertTrue(property_exists($ref, 'rel'),
@@ -35,6 +46,14 @@ class ProductServiceTest extends AbstractHttpControllerTestCase {
       "reference did not have an id property");
     $this->assertTrue(property_exists($jsonObj->{$ref->rel}, $ref->id),
       "reference links to a $ref->rel with id $ref->id which does not exist");
+  }
+
+  /**
+   * @expectedException BadMethodCallException
+   */
+  public function testCreateIsBadMethodCall() {
+    $productService = $this->getProductService();
+    $productService->create(array());
   }
 
   public function testCanCreateProductFromRideJson() {
@@ -48,7 +67,7 @@ EOF;
       "cloud_product_input"
     );
 
-    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+    $productService = $this->getProductService();
 
     $productService->createFromRideJson($ridepayload);
 
@@ -67,193 +86,662 @@ EOF;
     }
   }
 
+  public function testCanCreateProductFromKitchenSinkJsonObject() {
+    $str = file_get_contents(__DIR__ . '/../../../../../../json/input/kitchensink.json');
+    $kitchenSinkJson = json_decode($str);
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($kitchenSinkJson);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      $this->assertEquals('PHP 3-Tier', $product->name);
+      $inputcount = 0;
+      foreach($product->resources as $resource) {
+        // Not sure how thoroughly I want to test here.
+      }
+    }
+  }
+
+  public function testCanCreateProductFromKitchenSinkJsonString() {
+    $str = file_get_contents(__DIR__ . '/../../../../../../json/input/kitchensink.json');
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      $this->assertEquals('PHP 3-Tier', $product->name);
+      $inputcount = 0;
+      foreach($product->resources as $resource) {
+        // Not sure how thoroughly I want to test here.
+      }
+    }
+  }
+
+  /**
+   * @group json_to_odm
+   */
+  public function testCreateProductFromJsonConvertsScalarProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "Deployment",
+      "resource_type": "deployment",
+      "name": "name",
+      "inputs": [ ],
+      "servers": [ ],
+      "server_arrays": [ ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      foreach($product->resources as $resource) {
+        $this->assertEquals("deployment", $resource->resource_type);
+        $this->assertEquals("name", $resource->name);
+      }
+    }
+  }
+
+  /**
+   * @group json_to_odm
+   */
+  public function testCreateProductFromJsonConvertsArrayOfScalarProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "ssl_enable_product_input",
+      "resource_type": "select_product_input",
+      "options": ["true", "false"],
+      "default_value": ["false"],
+      "input_name": "ssl_enable",
+      "display_name": "Enable SSL",
+      "description": "Enable SSL for application servers?",
+      "advanced": true
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      foreach($product->resources as $resource) {
+        $this->assertEquals("select_product_input", $resource->resource_type);
+        $this->assertEquals(array("true","false"), $resource->options);
+        $this->assertEquals(array("false"), $resource->default_value);
+      }
+    }
+  }
+
+  /**
+   * @group json_to_odm
+   * @group resource
+   */
+  public function testCreateProductFromJsonConvertsCloudToResourceHrefProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "datacenter",
+      "resource_type": "datacenter_product_input",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
+      "default_value": [
+        {
+          "cloud_href": "/api/clouds/1",
+          "resource_hrefs": [
+            "/api/clouds/1/datacenters/36F8AT46B08LN",
+            "/api/clouds/1/datacenters/6BFHL6M8K8FHH"
+          ]
+        },
+        {
+          "cloud_href": "/api/clouds/2",
+          "resource_hrefs": [
+            "/api/clouds/2/datacenters/2T6TBBRK2E94D",
+            "/api/clouds/2/datacenters/83CG48S3I2H31"
+          ]
+        }
+      ],
+      "input_name": "datacenter",
+      "display_name": "Doesn't Matter",
+      "display": false
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      foreach($product->resources as $resource) {
+        $this->assertEquals("datacenter_product_input", $resource->resource_type);
+        $this->assertEquals(2, count($resource->default_value));
+        foreach($resource->default_value as $default_value) {
+          $this->assertEquals("SelfService\Document\CloudToResourceHref", get_class($default_value));
+          $this->assertEquals(2, count($default_value->resource_hrefs));
+        }
+      }
+    }
+  }
+
+  /**
+   * @group json_to_odm
+   */
+  public function testCreateProductFromJsonConvertsSingleReferenceProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "Deployment",
+      "resource_type": "deployment",
+      "name": { "ref": "text_product_input", "id": "deployment_name" },
+      "inputs": [ ],
+      "servers": [ ],
+      "server_arrays": [ ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      foreach($product->resources as $resource) {
+        $this->assertEquals("deployment", $resource->resource_type);
+        $this->assertEquals("stdClass", get_class($resource->name));
+        $this->assertObjectHasAttribute("ref", $resource->name);
+        $this->assertObjectHasAttribute("id", $resource->name);
+        $objectvars = get_object_vars($resource->name);
+        $this->assertEquals(2, count($objectvars), "Reference has more than two properties.  Only [ref,id] was expected but got ".join(',',array_keys($objectvars)));
+      }
+    }
+  }
+
+  /**
+   * @group json_to_odm
+   */
+  public function testCreateProductFromJsonConvertsArrayWithSingleNestedResourceProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "Deployment",
+      "resource_type": "deployment",
+      "name": "name",
+      "inputs": [
+        {
+          "id": "SslEnableInput",
+          "resource_type": "input",
+          "name": "web_apache\/ssl_enable",
+          "value": "text:false"
+        }
+      ],
+      "servers": [ ],
+      "server_arrays": [ ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      $resource_count = 0;
+      foreach($product->resources as $resource) {
+        $resource_count++;
+        if($resource->id == "Deployment") {
+          $this->assertTrue(is_array($resource->inputs), "Inputs was not an array");
+          $input_ref = $resource->inputs[0];
+          $this->assertEquals("stdClass", get_class($input_ref));
+          $this->assertObjectHasAttribute("ref", $input_ref);
+          $this->assertObjectHasAttribute("id", $input_ref);
+          $this->assertObjectHasAttribute("nested", $input_ref);
+          $objectvars = get_object_vars($input_ref);
+          $this->assertEquals(3, count($objectvars), "Reference has more than two properties.  Only [ref,id,nested] was expected but got ".join(',',array_keys($objectvars)));
+        } else if ($resource->id == "SslEnableInput") {
+          $this->assertEquals("SelfService\Document\Input", get_class($resource));
+          $objectvars = get_object_vars($resource);
+          $this->assertEquals(5, count($objectvars), "Reference has more than two properties.  Only [id,resource_type,name,value,depends] was expected but got ".join(',',array_keys($objectvars)));
+        }
+      }
+      $this->assertEquals(2, $resource_count);
+    }
+  }
+
+  /**
+   * @group json_to_odm
+   */
+  public function testCreateProductFromJsonConvertsArrayWithManyNestedResourcesProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "Deployment",
+      "resource_type": "deployment",
+      "name": "name",
+      "inputs": [
+        {
+          "id": "SslEnableInput",
+          "resource_type": "input",
+          "name": "web_apache\/ssl_enable",
+          "value": "text:false"
+        },
+        {
+          "id": "DbFqdnInput",
+          "resource_type": "input",
+          "name": "db\/dns\/master\/fqdn",
+          "value": "text:localhost"
+        }
+      ],
+      "servers": [ ],
+      "server_arrays": [ ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      $resource_count = 0;
+      foreach($product->resources as $resource) {
+        $resource_count++;
+        if($resource->id == "Deployment") {
+          $this->assertTrue(is_array($resource->inputs), "Inputs was not an array");
+          foreach($resource->inputs as $input_ref) {
+            $this->assertEquals("stdClass", get_class($input_ref));
+            $this->assertObjectHasAttribute("ref", $input_ref);
+            $this->assertObjectHasAttribute("id", $input_ref);
+            $this->assertObjectHasAttribute("nested", $input_ref);
+            $objectvars = get_object_vars($input_ref);
+            $this->assertEquals(3, count($objectvars), "Reference has more than two properties.  Only [ref,id,nested] was expected but got ".join(',',array_keys($objectvars)));
+          }
+        } else if ($resource->id == "SslEnableInput") {
+          $this->assertEquals("SelfService\Document\Input", get_class($resource));
+        } else if ($resource->id == "DbFqdnInput") {
+          $this->assertEquals("SelfService\Document\Input", get_class($resource));
+        }
+      }
+      $this->assertEquals(3, $resource_count);
+    }
+  }
+
+  /**
+   * @group json_to_odm
+   */
+  public function testCreateProductFromJsonConvertsArrayWithMixOfNestedResourceAndReferenceProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "DbFqdnInput",
+      "resource_type": "input",
+      "name": "db\/dns\/master\/fqdn",
+      "value": "text:localhost"
+    },
+    {
+      "id": "Deployment",
+      "resource_type": "deployment",
+      "name": "name",
+      "inputs": [
+        {
+          "id": "SslEnableInput",
+          "resource_type": "input",
+          "name": "web_apache\/ssl_enable",
+          "value": "text:false"
+        },
+        { "ref": "input", "id": "DbFqdnInput" }
+      ],
+      "servers": [ ],
+      "server_arrays": [ ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    foreach($products as $product) {
+      $resource_count = 0;
+      foreach($product->resources as $resource) {
+        $resource_count++;
+        if($resource->id == "Deployment") {
+          $this->assertTrue(is_array($resource->inputs), "Inputs was not an array");
+          $input_ref = $resource->inputs[0];
+          $this->assertEquals("stdClass", get_class($input_ref));
+          $this->assertObjectHasAttribute("ref", $input_ref);
+          $this->assertObjectHasAttribute("id", $input_ref);
+          $this->assertObjectHasAttribute("nested", $input_ref);
+          $objectvars = get_object_vars($input_ref);
+          $this->assertEquals(3, count($objectvars), "Reference has more than two properties.  Only [ref,id,nested] was expected but got ".join(',',array_keys($objectvars)));
+          $input_ref = $resource->inputs[1];
+          $this->assertEquals("stdClass", get_class($input_ref));
+          $this->assertObjectHasAttribute("ref", $input_ref);
+          $this->assertObjectHasAttribute("id", $input_ref);
+          $objectvars = get_object_vars($input_ref);
+          $this->assertEquals(2, count($objectvars), "Reference has more than two properties.  Only [ref,id] was expected but got ".join(',',array_keys($objectvars)));
+        } else if ($resource->id == "SslEnableInput") {
+          $this->assertEquals("SelfService\Document\Input", get_class($resource));
+          $objectvars = get_object_vars($resource);
+          $this->assertEquals(5, count($objectvars), "Reference has more than two properties.  Only [id,resource_type,name,value,depends] was expected but got ".join(',',array_keys($objectvars)));
+        }
+      }
+      $this->assertEquals(3, $resource_count);
+    }
+  }
+
   public function testCanDeleteProductIncludingAllSubordinates() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $str = file_get_contents(__DIR__ . '/../../../../../../json/input/kitchensink.json');
 
-    \SelfService\Product\php3tier::add($em);
+    $productService = $this->getProductService();
 
-    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
+    $productService->createFromJson($str);
 
-    $productService->remove(1);
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
 
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\AlertSpec')->findAll()));
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\AlertSubjectBase')->findAll()));
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\Product')->findAll()));
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\SecurityGroup')->findAll()));
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\SecurityGroupRule')->findAll()));
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\Server')->findAll()));
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\ServerArray')->findAll()));
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\ServerTemplate')->findAll()));
-    $this->assertEquals(0, count($em->getRepository('SelfService\Entity\Provisionable\MetaInputs\ProductMetaInputBase')->findAll()));
+    $product = null;
+    foreach($products as $prod) {
+      $product = $prod;
+    }
+
+    $productService->remove($product->id);
+
+    $products = $productService->findAll();
+    $this->assertEquals(0, $products->count());
   }
 
   public function testCanUpdateName() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $str = file_get_contents(__DIR__ . '/../../../../../../json/input/kitchensink.json');
 
-    \SelfService\Product\php3tier::add($em);
+    $productService = $this->getProductService();
 
-    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
-    $productService->update(1, array('name' => 'foobar'));
+    $productService->createFromJson($str);
 
-    $product = $productService->find(1);
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+
+    $product = null;
+    foreach($products as $prod) {
+      $product = $prod;
+    }
+
+    $productService->update($product->id, array('name' => 'foobar'));
+
+    $product = $productService->find($product->id);
     $this->assertEquals('foobar', $product->name);
   }
 
   public function testCanUpdateIcon() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $str = file_get_contents(__DIR__ . '/../../../../../../json/input/kitchensink.json');
 
-    \SelfService\Product\php3tier::add($em);
+    $productService = $this->getProductService();
 
-    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
-    $productService->update(1, array('icon_filename' => 'foobar.png'));
+    $productService->createFromJson($str);
 
-    $product = $productService->find(1);
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+
+    $product = null;
+    foreach($products as $prod) {
+      $product = $prod;
+    }
+
+    $productService->update($product->id, array('icon_filename' => 'foobar.png'));
+
+    $product = $productService->find($product->id);
     $this->assertEquals('foobar.png', $product->icon_filename);
   }
 
   public function testCanUpdateLaunchServers() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $str = file_get_contents(__DIR__ . '/../../../../../../json/input/kitchensink.json');
 
-    \SelfService\Product\php3tier::add($em);
+    $productService = $this->getProductService();
 
-    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
-    $productService->update(1, array('launch_servers' => true));
+    $productService->createFromJson($str);
 
-    $product = $productService->find(1);
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+
+    $product = null;
+    foreach($products as $prod) {
+      $product = $prod;
+    }
+
+    $productService->update($product->id, array('launch_servers' => true));
+
+    $product = $productService->find($product->id);
     $this->assertTrue($product->launch_servers);
   }
 
-  public function testCanConvertToJson() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+  /**
+   * @group odm_to_json
+   */
+  public function testToInputJsonConvertsScalarProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "Deployment",
+      "resource_type": "deployment",
+      "name": "name",
+      "inputs": [ ],
+      "servers": [ ],
+      "server_arrays": [ ]
+    }
+  ]
+}
+EOF;
 
-    \SelfService\Product\php3tier::add($em);
+    $productService = $this->getProductService();
 
-    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
-    $jsonStr = $productService->toJson(1);
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    $product = null;
+    foreach($products as $prod) {
+      $product = $prod;
+    }
+    $jsonStr = $productService->toInputJson($product->id);
     $jsonObj = json_decode($jsonStr);
-    $this->assertTrue(property_exists($jsonObj, 'name'), "Product JSON did not include product name");
-    $this->assertTrue(property_exists($jsonObj, 'icon_filename'), "Product JSON did not include product icon_filename");
-    $this->assertTrue(property_exists($jsonObj, 'security_groups'), "Product JSON did not include security_groups");
-    $securityGroups = get_object_vars($jsonObj->security_groups);
-    $this->assertGreaterThan(0, count($securityGroups));
-    foreach($securityGroups as $propname => $propval) {
-      $this->assertRegExp(',[0-9]*,',strval($propname));
-      $this->assertTrue(property_exists($propval, 'name'), "Security Group JSON did not include name");
-      $this->assertTrue(property_exists($propval, 'rules'), "Security Group JSON did not include rules");
-      $this->assertGreaterThan(0, count($propval->rules), "Security Group $propname has no rules");
-      foreach($propval->rules as $rule_idx => $rule) {
-        $this->assertTrue(property_exists($rule, 'ingress_protocol'), "Security Group Rule $rule_idx for Security Group $propname did not include ingress_protocol");
-        $this->assertTrue(property_exists($rule, 'ingress_from_port'), "Security Group Rule $rule_idx for Security Group $propname did not include ingress_from_port");
-        $this->assertTrue(property_exists($rule, 'ingress_to_port'), "Security Group Rule $rule_idx for Security Group $propname did not include ingress_to_port");
-        $group_or_cidr = property_exists($rule, 'ingress_group') | property_exists($rule, 'ingress_cidr_ips');
-        $this->assertGreaterThan(
-          0,
-          count($group_or_cidr),
-          "Security Group Rule $rule_idx for Security Group $propname did not include an ingress group or cidr"
-        );
-        if(property_exists($rule, 'ingress_group')) {
-          $this->assertIsReference($jsonObj, $rule->ingress_group);
-          # TODO: This assumes all clouds require owners, which is not always the case. I.E. Google
-          $this->assertTrue(property_exists($rule, 'ingress_owner'), "Security Group Rule $rule_idx for Security Group $propname specified an ingress_group, but no ingress_owner");
-        }
-      }
-      $this->assertTrue(property_exists($propval, 'cloud_id'), "Security Group JSON did not include cloud_id");
-    }
-    $this->assertTrue(property_exists($jsonObj, 'servers'), "Product JSON did not include servers");
-    $servers = get_object_vars($jsonObj->servers);
-    $this->assertGreaterThan(0, count($servers));
-    foreach($servers as $propname => $propval) {
-      $this->assertTrue(property_exists($propval, 'nickname'), "Server did not include nickname");
-      $this->assertTrue(property_exists($propval, 'server_template'), "Server did not include server_template");
-      $this->assertIsReference($jsonObj, $propval->server_template);
-      $this->assertTrue(property_exists($propval, 'count'), "Server did not include count");
-      $this->assertTrue(property_exists($propval, 'cloud_id'), "Server did not include cloud_id");
-      $this->assertIsReference($jsonObj, $propval->cloud_id);
-      $this->assertTrue(property_exists($propval, 'security_groups'), "Server did not include security_groups");
-      foreach($propval->security_groups as $secgrpref) {
-        $this->assertIsReference($jsonObj, $secgrpref);
-      }
-    }
-    $this->assertTrue(property_exists($jsonObj, 'arrays'), "Product JSON did not include arrays");
-    $arrays = get_object_vars($jsonObj->arrays);
-    $this->assertGreaterThan(0, count($arrays));
-    foreach($arrays as $propname => $propval) {
-      $this->assertTrue(property_exists($propval, 'nickname'), "Array did not include nickname");
-      $this->assertTrue(property_exists($propval, 'server_template'), "Array did not include server_template");
-      $this->assertIsReference($jsonObj, $propval->server_template);
-      $this->assertTrue(property_exists($propval, 'min_count'), "Array did not include count");
-      $this->assertTrue(property_exists($propval, 'max_count'), "Array did not include count");
-      $this->assertTrue(property_exists($propval, 'cloud_id'), "Array did not include cloud_id");
-      $this->assertIsReference($jsonObj, $propval->cloud_id);
-      $this->assertTrue(property_exists($propval, 'security_groups'), "Array did not include security_groups");
-      foreach($propval->security_groups as $secgrpref) {
-        $this->assertIsReference($jsonObj, $secgrpref);
-      }
-      $this->assertTrue(property_exists($propval, 'type'), "Array did not include type");
-      $this->assertTrue(property_exists($propval, 'tag'), "Array did not include tag");
-    }
-    $this->assertTrue(property_exists($jsonObj, 'alerts'), "Product JSON did not include alerts");
-    $alerts = get_object_vars($jsonObj->alerts);
-    $this->assertGreaterThan(0, count($alerts));
-    foreach($alerts as $propname => $propval) {
-      $this->assertTrue(property_exists($propval, 'name'), "Alert did not include name property");
-      $this->assertTrue(property_exists($propval, 'file'), "Alert did not include file property");
-      $this->assertTrue(property_exists($propval, 'variable'), "Alert did not include variable property");
-      $this->assertTrue(property_exists($propval, 'cond'), "Alert did not include cond property");
-      $this->assertTrue(property_exists($propval, 'threshold'), "Alert did not include threshold property");
-      $this->assertTrue(property_exists($propval, 'duration'), "Alert did not include duration property");
-      $this->assertTrue(property_exists($propval, 'action'), "Alert did not include action property");
-      $this->assertTrue(property_exists($propval, 'vote_tag'), "Alert did not include vote_tag property");
-      $this->assertTrue(property_exists($propval, 'vote_type'), "Alert did not include vote_type property");
-      $this->assertTrue(property_exists($propval, 'subjects'), "Alert did not include subjects property");
-      foreach($propval->subjects as $subject) {
-        $this->assertIsReference($jsonObj, $subject);
-      }
-    }
-    $this->assertTrue(property_exists($jsonObj, 'meta_inputs'), "Product JSON did not include meta_inputs");
-    $meta_inputs = get_object_vars($jsonObj->meta_inputs);
-    $this->assertGreaterThan(0, count($meta_inputs));
-    foreach($meta_inputs as $propname => $propval) {
-      $this->assertTrue(property_exists($propval, 'type'), "Meta Input JSON did not include type property");
-      $this->assertTrue(property_exists($propval, 'value'), "Meta Input JSON did not include value property");
-      $this->assertTrue(property_exists($propval, 'extra'), "Meta Input JSON did not include extra property");
-      $this->assertTrue(property_exists($propval->extra, 'input_name'), "Meta Input (Extra) JSON did not include input_name property");
-      $this->assertTrue(property_exists($propval->extra, 'display_name'), "Meta Input (Extra) JSON did not include display_name property");
-      $this->assertTrue(property_exists($propval->extra, 'description'), "Meta Input (Extra) JSON did not include description property");
-      $this->assertTrue(property_exists($propval->extra, 'default_value'), "Meta Input (Extra) JSON did not include default_value property");
-    }
-    $this->assertTrue(property_exists($jsonObj, 'launch_servers'), "Product JSON did not include launch_servers");
-    $this->assertTrue(property_exists($jsonObj, 'parameters'), "Product JSON did not include parameters");
-    $this->assertGreaterThan(0, count($jsonObj->parameters));
-    foreach($jsonObj->parameters as $propname => $propval) {
-      $this->assertTrue(property_exists($propval, 'name'), "Parameter JSON did not include name property");
-      $this->assertTrue(property_exists($propval, 'value'), "Parameter JSON did not include value property");
-      $this->assertTrue(property_exists($propval, 'extra'), "Parameter JSON did not include extra property");
-      $this->assertTrue(property_exists($propval->extra, 'input_name'), "Parameter (Extra) JSON did not include input_name property");
-      $this->assertTrue(property_exists($propval->extra, 'display_name'), "Parameter (Extra) JSON did not include display_name property");
-      $this->assertTrue(property_exists($propval->extra, 'description'), "Parameter (Extra) JSON did not include description property");
-      $this->assertTrue(property_exists($propval->extra, 'default_value'), "Parameter (Extra) JSON did not include default_value property");
-      $this->assertTrue(property_exists($propval->extra, 'rs_input_name'), "Parameter (Extra) JSON did not include rs_input_name property");
-    }
-    $this->assertTrue(property_exists($jsonObj, 'server_templates'), "Product JSON did not include server_templates");
-    $server_templates = get_object_vars($jsonObj->server_templates);
-    $this->assertGreaterThan(0, count($server_templates));
-    foreach($server_templates as $propname => $propval) {
-      $this->assertTrue(property_exists($propval, 'nickname'), "Server Template JSON did not include nickname property");
-      $this->assertTrue(property_exists($propval, 'version'), "Server Template JSON did not include version property");
-      $this->assertTrue(property_exists($propval, 'publication_id'), "Server Template JSON did not include publication_id property");
-    }
+    $this->assertEquals("name", $jsonObj->resources[0]->name);
   }
 
-  public function testCanConvertToJsonWithStaticValues() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+  /**
+   * @group odm_to_json
+   */
+  public function testToInputJsonConvertsArrayOfScalarProperly() {
+    $str = <<<EOF
+{
+  "id": "518a8f839aec0cc32e000000",
+  "version": "1.0.0",
+  "name": "PHP 3-Tier",
+  "icon_filename": "php.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "ssl_enable_product_input",
+      "resource_type": "select_product_input",
+      "options": ["true", "false"],
+      "default_value": ["false"],
+      "input_name": "ssl_enable",
+      "display_name": "Enable SSL",
+      "description": "Enable SSL for application servers?",
+      "advanced": true
+    }
+  ]
+}
+EOF;
 
-    \SelfService\Product\php3tier::add($em);
+    $productService = $this->getProductService();
 
-    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
-    $jsonStr = $productService->toJson(1, array(), false);
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+    $product = null;
+    foreach($products as $prod) {
+      $product = $prod;
+    }
+    $jsonStr = $productService->toInputJson($product->id);
     $jsonObj = json_decode($jsonStr);
-    $this->assertFalse(property_exists($jsonObj, 'meta_inputs'));
+    $resource = $jsonObj->resources[0];
+    $this->assertEquals("select_product_input", $resource->resource_type);
+    $this->assertEquals(array("true","false"), $resource->options);
+    $this->assertEquals(array("false"), $resource->default_value);
+  }
+
+  /**
+   * @group odm_to_json
+   */
+  public function testCanConvertToInputJson() {
+    $str = file_get_contents(__DIR__ . '/../../../../../../json/input/kitchensink.json');
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+
+    $product = null;
+    foreach($products as $prod) {
+      $product = $prod;
+    }
+
+    $jsonStr = $productService->toInputJson($product->id);
+    $jsonObj = json_decode($jsonStr);
+
+    $schema = json_decode(file_get_contents(__DIR__ . '/../../../../../../json/input/schema.json'));
+
+    // Validate
+    $validator = new \JsonSchema\Validator();
+    $validator->check($jsonObj, $schema);
+
+    $errors = "";
+    foreach ($validator->getErrors() as $error) {
+        $errors .= sprintf("[%s] %s\n", $error['property'], $error['message']);
+    }
+    $this->assertTrue($validator->isValid(), $errors);
+  }
+
+  /**
+   * @group odm_to_json
+   */
+  public function testCanConvertToOutputJson() {
+    $str = file_get_contents(__DIR__ . '/../../../../../../json/input/kitchensink.json');
+
+    $productService = $this->getProductService();
+
+    $productService->createFromJson($str);
+
+    $products = $productService->findAll();
+    $this->assertEquals(1, $products->count());
+
+    $product = null;
+    foreach($products as $prod) {
+      $product = $prod;
+    }
+
+    $jsonStr = $productService->toOutputJson($product->id);
+
+    # TODO: This is a bandaid until such a time as I create a proper schema
+    # and validate against it
+    $regex = '/\{\s*"ref":\s*"(text_product_input|select_product_input|cloud_product_input|input_type_product_input|datacenter_product_input)"';
+    $this->assertEquals(0, preg_match($regex, $jsonStr));
+
+    $jsonObj = json_decode($jsonStr);
+
+    $schema = json_decode(file_get_contents(__DIR__ . '/../../../../../../json/input/schema.json'));
+
+    // Validate
+    $validator = new \JsonSchema\Validator();
+    $validator->check($jsonObj, $schema);
+
+    $errors = "";
+    foreach ($validator->getErrors() as $error) {
+        $errors .= sprintf("[%s] %s\n", $error['property'], $error['message']);
+    }
+    $this->assertTrue($validator->isValid(), $errors);
   }
 
 }

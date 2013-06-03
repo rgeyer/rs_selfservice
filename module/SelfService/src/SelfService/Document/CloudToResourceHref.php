@@ -44,10 +44,4 @@ class CloudToResourceHref {
    */
   public $resource_hrefs;
 
-  /**
-   * @ODM\Boolean
-   * @var bool
-   */
-  public $multiselect = false;
-
 }

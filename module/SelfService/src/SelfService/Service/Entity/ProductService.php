@@ -39,6 +39,7 @@ use SelfService\Document\TextProductInput;
 use SelfService\Document\SecurityGroupRule;
 use SelfService\Document\CloudProductInput;
 use SelfService\Document\SelectProductInput;
+use SelfService\Document\CloudToResourceHref;
 use SelfService\Document\DatacenterProductInput;
 use SelfService\Document\ElasticityParamsBounds;
 use SelfService\Document\ElasticityParamsPacing;
@@ -286,12 +287,7 @@ class ProductService extends BaseEntityService {
   }
 
   protected function stdClassToOdm(&$odmProduct, $stdClass) {
-    // Three cases
-    // 1 - The property is a scalar, copy it directly
-    // 2 - The property is a ref, copy it directly
-    // 3 - The property is a nested (schema) resource_type with a
-    //  corresponding (odm) schema type. Needs to be mapped to an
-    //  appropriate odm object
+    // Four cases
     // 4 - The property is a nested (schema) type with an embedded (odm)
     //  type.  The new ODM object must be instantiated and properties copied
     $odmObject = null;
@@ -390,9 +386,31 @@ class ProductService extends BaseEntityService {
         break;
       case "instance_type_product_input":
         $odmObject = new InstanceTypeProductInput();
+        if(property_exists($stdClass, 'default_value') && is_array($stdClass->default_value)) {
+          $odmObject->default_value = array();
+          foreach($stdClass->default_value as $default_value) {
+            $odmCloudToResourceHref = new CloudToResourceHref();
+            $objectvars = get_object_vars($default_value);
+            foreach($objectvars as $key => $val) {
+              $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmCloudToResourceHref, $key, $val);
+            }
+            $odmObject->default_value[] = $odmCloudToResourceHref;
+          }
+        }
         break;
       case "datacenter_product_input":
         $odmObject = new DatacenterProductInput();
+        if(property_exists($stdClass, 'default_value') && is_array($stdClass->default_value)) {
+          $odmObject->default_value = array();
+          foreach($stdClass->default_value as $default_value) {
+            $odmCloudToResourceHref = new CloudToResourceHref();
+            $objectvars = get_object_vars($default_value);
+            foreach($objectvars as $key => $val) {
+              $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmCloudToResourceHref, $key, $val);
+            }
+            $odmObject->default_value[] = $odmCloudToResourceHref;
+          }
+        }
         break;
       case "alert_spec":
         $odmObject = new AlertSpec();
@@ -405,25 +423,40 @@ class ProductService extends BaseEntityService {
     $odmProduct->resources[] = $odmObject;
   }
 
-  protected function doNeedfulToObjectVarOfStdClass(&$odmProduct, &$odmObject, $key, $val) {
+  protected function doNeedfulToObjectVarOfStdClass(&$odmProduct, &$odmObject, $key, $val, $key_is_array = false) {
     if(is_object($val)) {
       if(property_exists($val, "resource_type")) {
         // It's an embedded resource with an ODM type
         $this->stdClassToOdm($odmProduct, $val);
-        $odmObject->{$key} = array(
-          "ref" => $val->resource_type,
-          "id" => $val->id,
-          "nested" => true
-        );
+        $ref = new \stdClass();
+        $ref->ref = $val->resource_type;
+        $ref->id = $val->id;
+        $ref->nested = true;
+        if($key_is_array) {
+          $odmObject->{$key}[] = $ref;
+        } else {
+          $odmObject->{$key} = $ref;
+        }
       } else if(property_exists($val, "ref")) {
-        $odmObject->{$key} = $val;
+        if($key_is_array) {
+          $odmObject->{$key}[] = $val;
+        } else {
+          $odmObject->{$key} = $val;
+        }
       }
     } else if (is_array($val)) {
+      if(!property_exists($odmObject, $key)) {
+        $odmObject->{$key} = array();
+      }
       foreach($val as $subval) {
-        $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject, $key, $subval);
+        $this->doNeedfulToObjectVarOfStdClass($odmProduct, $odmObject, $key, $subval, true);
       }
     } else {
-      $odmObject->{$key} = $val;
+      if($key_is_array) {
+        $odmObject->{$key}[] = $val;
+      } else {
+        $odmObject->{$key} = $val;
+      }
     }
   }
 
@@ -450,6 +483,44 @@ class ProductService extends BaseEntityService {
       }
     }
     return $stdClass;
+  }
+
+  protected function odmToStdClass($odm) {
+    $stdClass = new \stdClass();
+    foreach(get_object_vars($odm) as $key => $val) {
+      if(is_array($val)) {
+        $stdClass->{$key} = array();
+        foreach($val as $aryval) {
+          $stdClass->{$key}[] = is_scalar($aryval) ? $aryval : $this->odmToStdClass($aryval);
+        }
+      } else if (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
+        $stdClass->{$key} = array();
+        foreach($val as $aryval) {
+          $stdClass->{$key}[] = $this->odmToStdClass($aryval);
+        }
+      } else if (strpos(get_class($val), "SelfService\Document") === 0) {
+        $stdClass->{$key} = $this->odmToStdClass($val);
+      } else if ($val !== null) {
+        if(property_exists($val, "nested")) {
+          unset($val->nested);
+        }
+        $stdClass->{$key} = $val;
+      }
+    }
+    return $stdClass;
+  }
+
+  public function toInputJson($id) {
+    $product = $this->find($id);
+    $stdClass = $this->odmToStdClass($product);
+    return json_encode($stdClass);
+  }
+
+  public function toOutputJson($id, array $params = array()) {
+    $product = $this->find($id);
+    $product->mergeMetaInputs($params);
+    $stdClass = $this->odmToStdClass($product);
+    return json_encode($stdClass);
   }
 
   public function toJson($id, array $params = array(), $include_meta_inputs = true) {

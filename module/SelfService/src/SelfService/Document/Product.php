@@ -92,4 +92,59 @@ class Product {
    * @var (Deployment|Input|Instance|SecurityGroup|SecurityGroupRule|Server|AlertSpec|ServerArray|ElasticityParams|ServerTemplate|TextProductInput|SelectProductInput|CloudProductInput|InstanceTypeProductInput|DatacenterProductInput)[]
    */
   public $resources;
+
+  protected $inputtypesarray = array(
+    "text_product_input",
+    "instance_type_product_input",
+    "select_product_input",
+    "datacenter_product_input",
+    "cloud_product_input"
+  );
+
+  /**
+   * Replaces *_product_input references with the values passed in as $params
+   * @param array $params An associative array of key/value pairs.  The key is
+   * the input_name of the *_product_input, and the value is what will replace
+   * all matching references.
+   */
+  public function mergeMetaInputs(array $params) {
+    // Convert the params array from input_name:value to resource_id:value pairs
+    $paramKeys = array_keys($params);
+    $valuesByInputId = array();
+    foreach($this->resources as $resource) {
+      if(in_array($resource->resource_type, $this->inputtypesarray)) {
+        if(in_array($resource->input_name, $paramKeys)) {
+          $valuesByInputId[$resource->id] = $params[$resource->input_name];
+        } else {
+          $valuesByInputId[$resource->id] = $resource->default_value;
+        }
+      }
+    }
+
+    foreach($this->resources as $resource) {
+      $this->replaceInputRefsWithScalar($resource, $valuesByInputId);
+    }
+  }
+
+  /**
+   * @param $object An object who's properties will be iterated over.  Where a
+   * property is a reference, it will be replaced by the value from the $params param
+   * @param array $params An associative array of key/value pairs.  The key is the
+   * id of the *_product_input ref, and the value will replace the reference.
+   * @return void
+   */
+  protected function replaceInputRefsWithScalar(&$object, array $params) {
+    $objvars = get_object_vars($object);
+    foreach($objvars as $key => $val) {
+      if(is_array($val)) {
+        if(in_array("ref", array_keys($val))) {
+          $object->{$key} = $params[$val['id']];
+        } else {
+          foreach($object as $item) {
+            $this->replaceInputRefsWithScalar($item, $params);
+          }
+        }
+      }
+    }
+  }
 }

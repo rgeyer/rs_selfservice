@@ -25,36 +25,33 @@ class ProductTest extends AbstractHttpControllerTestCase {
     );
   }
 
-  public function testFoo() {
-    $dm = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
+  public function testCanMergeMetaInputs() {
     $product = new \SelfService\Document\Product();
+    $sg = new \SelfService\Document\SecurityGroup();
+    $meta_name = new \SelfService\Document\TextProductInput();
+    $meta_name->id = "foo_id";
+    $meta_name->input_name = "foo";
 
-    $deployment = new \SelfService\Document\Deployment();
-    $deployment->id = "FooDepl";
-    $deployment->name = "foo"; # array("rel" => "text_product_input", "id" => "foobarbaz");
-    $deployment->server_tag_scope = "deployment";
-    $deployment->depends = new \SelfService\Document\Depend();
-    $deployment->depends->value = array('foo');
-    $deployment->depends->id = "some_input";
-    $deployment->depends->match = "any";
-    $deployment->depends->ref = "text_product_input";
+    $sg->name = array(
+      "ref" => "text_product_input",
+      "id" => "foo_id"
+    );
 
-    $product->icon_filename = "foo.png";
-    $product->launch_servers = true;
-    $product->name = "Foo";
-    $product->resources = array($deployment);
+    $desc = new \SelfService\Document\TextProductInput();
+    $desc->id = "desc_id";
+    $desc->input_name = "bar";
+    $desc->default_value = "baz";
 
-    $instance_type_input = new \SelfService\Document\InstanceTypeProductInput();
+    $sg->description = array(
+      "ref" => "text_product_input",
+      "id" => "desc_id"
+    );
+    $product->resources[] = $sg;
+    $product->resources[] = $meta_name;
+    $product->resources[] = $desc;
 
-    $dm->persist($product);
-    $dm->flush();
-
-    $prods = $dm->getRepository("SelfService\Document\Product")->findAll();
-    foreach($prods as $prod) {
-      foreach($prod->resources as $doc) {
-        print json_encode($doc);
-        $this->assertTrue(is_string($doc->name));
-      }
-    }
+    $product->mergeMetaInputs(array('foo' => 'bar'));
+    $this->assertEquals('bar', $sg->name);
+    $this->assertEquals('baz', $sg->description);
   }
 }
