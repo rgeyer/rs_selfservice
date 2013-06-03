@@ -566,7 +566,7 @@
     },
     "instance_type_product_input" : {
       "type":"object",
-      "required":["id","resource_type","cloud_product_input","default_value","input_name","display_name"],
+      "required":["id","resource_type","cloud_product_input","input_name","display_name"],
       "properties":{
         "id": { "type":"string" },
         "resource_type": { "enum": ["instance_type_product_input"] },
@@ -589,7 +589,7 @@
     },
     "datacenter_product_input" : {
       "type":"object",
-      "required":["id","resource_type","cloud_product_input","default_value","input_name","display_name"],
+      "required":["id","resource_type","cloud_product_input","input_name","display_name"],
       "properties":{
         "id": { "type":"string" },
         "resource_type": { "enum": ["datacenter_product_input"] },
