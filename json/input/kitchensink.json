@@ -81,7 +81,8 @@
       ],
       "input_name": "datacenter",
       "display_name": "Doesn't Matter",
-      "display": false
+      "display": false,
+      "multiselect": true
     },
     {
       "id": "lb_instance_type",
@@ -183,17 +184,6 @@
             "ref": "text_product_input",
             "id": "ssl_enable_product_input",
             "value": ["false"]
-          }
-        },
-        {
-          "id": "SslEnableInput",
-          "resource_type": "input",
-          "name": "web_apache\/ssl_enable",
-          "value": "text:true",
-          "depends": {
-            "ref": "text_product_input",
-            "id": "ssl_enable_product_input",
-            "value": ["true"]
           }
         },
         {
