@@ -14,20 +14,25 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
     );
     parent::setUp();
 
-    $serviceManager = $this->getApplicationServiceLocator();
-
-    // Initialize the schema.. Maybe I should register a module for clearing the schema/data
-    // and/or loading mock test data
-    $em = $serviceManager->get('doctrine.entitymanager.orm_default');
-    $cli = new \Symfony\Component\Console\Application("PHPUnit Bootstrap", 1);
+    $cli = $this->getApplicationServiceLocator()->get('doctrine.cli');
     $cli->setAutoExit(false);
-    $helperSet = $cli->getHelperSet();
-    $helperSet->set(new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em), 'em');
-    $cli->addCommands(array(new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand()));
+
     $cli->run(
-      new \Symfony\Component\Console\Input\ArrayInput(array('orm:schema-tool:create')),
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:drop')),
       new \Symfony\Component\Console\Output\NullOutput()
     );
+
+    $cli->run(
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:create')),
+      new \Symfony\Component\Console\Output\NullOutput()
+    );
+  }
+
+  /**
+   * @return \SelfService\Service\Entity\ProvisionedProductService
+   */
+  protected function getProvisionedProductService() {
+    return $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
   }
 
   public function testCreateCanBeAccessed() {
@@ -37,7 +42,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
     $this->assertControllerName('selfservice\controller\api\provisionedproduct');
     $this->assertResponseStatusCode(201);
     $this->assertHasResponseHeader('Location');
-    $this->assertRegExp(',api/provisionedproduct/1,', strval($this->getResponse()));
+    $this->assertRegExp(',api/provisionedproduct/[0-9a-z]+,', strval($this->getResponse()));
   }
 
   public function testDeleteCanBeAccessed() {
@@ -65,16 +70,8 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testObjectsCanBeAccessed() {
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
-    $productService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
-    \SelfService\Product\php3tier::add($em);
-    $product = $productService->find(1);
-    $params = array(
-      'product' => $product,
-    );
-
-    $provisionedProductService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
-    $provisionedProductService->create($params);
+    $provisionedProductService = $this->getProvisionedProductService();
+    $provisionedProduct = $provisionedProductService->create(array());
 
     $this->getRequest()->setContent(
       json_encode(
@@ -84,13 +81,13 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
         )
       )
     );
-    $this->dispatch('/api/provisionedproduct/1/objects',Request::METHOD_POST);
+    $this->dispatch(sprintf('/api/provisionedproduct/%s/objects', $provisionedProduct->id), Request::METHOD_POST);
 
     $this->assertResponseStatusCode(201);
   }
 
   public function testObjectsReturns405OnNonPostMethod() {
-    $this->dispatch('/api/provisionedproduct/1/objects', Request::METHOD_PUT);
+    $this->dispatch('/api/provisionedproduct/abc123/objects', Request::METHOD_PUT);
 
     $this->assertResponseStatusCode(405);
   }

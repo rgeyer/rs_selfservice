@@ -37,7 +37,7 @@ return array(
           'route' => '/provisionedproducts[/:action][/:id]',
           'constraints' => array(
             'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-            'id' => '[0-9]+'
+            'id' => '[a-z0-9]+'
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',
@@ -52,7 +52,7 @@ return array(
           'route' => '/product[/:action][/:id]',
           'constraints' => array(
             'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-            'id' => '[0-9]+'
+            'id' => '[a-z0-9]+'
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',
@@ -121,7 +121,7 @@ return array(
         'options' => array(
           'route' => '/api/provisionedproduct[/:id][/:action]',
           'constraints' => array(
-            'id' => '[0-9]+'
+            'id' => '[a-z0-9]+'
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller\Api',
