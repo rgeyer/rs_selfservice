@@ -2,7 +2,6 @@
 
 namespace SelfServiceTest\Service;
 
-use SelfService\Entity\Provisionable\Product;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
 /**
@@ -36,16 +35,6 @@ class ProductServiceTest extends AbstractHttpControllerTestCase {
    */
   protected function getProductService() {
     return $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
-  }
-
-  protected function assertIsReference($jsonObj, $ref) {
-    $this->assertInstanceOf('stdClass', $ref);
-    $this->assertTrue(property_exists($ref, 'rel'),
-      "reference did not have a rel property");
-    $this->assertTrue(property_exists($ref, 'id'),
-      "reference did not have an id property");
-    $this->assertTrue(property_exists($jsonObj->{$ref->rel}, $ref->id),
-      "reference links to a $ref->rel with id $ref->id which does not exist");
   }
 
   /**
