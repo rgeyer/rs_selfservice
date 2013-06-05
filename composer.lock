@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "b5527b3dc17b7de287a86f6dabfcaa3d",
+    "hash": "5fe660bfca34dab42f51bed962d7f77f",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -279,76 +279,6 @@
             "time": "2013-05-27 19:11:46"
         },
         {
-            "name": "doctrine/dbal",
-            "version": "2.4.0-RC1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/dbal.git",
-                "reference": "2.4.0-RC1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/2.4.0-RC1",
-                "reference": "2.4.0-RC1",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/common": "2.4.*@beta",
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*",
-                "symfony/console": "2.*"
-            },
-            "suggest": {
-                "symfony/console": "Allows use of the command line interface"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.4.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Doctrine\\DBAL\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com",
-                    "homepage": "http://www.instaclick.com"
-                },
-                {
-                    "name": "Roman Borschel",
-                    "email": "roman@code-factory.org"
-                },
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                }
-            ],
-            "description": "Database Abstraction Layer",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "database",
-                "dbal",
-                "persistence",
-                "queryobject"
-            ],
-            "time": "2013-05-27 19:17:11"
-        },
-        {
             "name": "doctrine/doctrine-module",
             "version": "0.7.2",
             "source": {
@@ -507,86 +437,6 @@
                 "zf2"
             ],
             "time": "2013-05-29 23:12:01"
-        },
-        {
-            "name": "doctrine/doctrine-orm-module",
-            "version": "0.7.0",
-            "source": {
-                "type": "git",
-                "url": "git://github.com/doctrine/DoctrineORMModule.git",
-                "reference": "0.7.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/doctrine/DoctrineORMModule/archive/0.7.0.zip",
-                "reference": "0.7.0",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/dbal": ">=2.3-dev,<2.5-dev",
-                "doctrine/doctrine-module": "0.7.*",
-                "doctrine/orm": ">=2.3-dev,<2.5-dev",
-                "php": ">=5.3.3",
-                "zendframework/zend-form": "2.*",
-                "zendframework/zend-mvc": "2.*",
-                "zendframework/zend-servicemanager": "2.*",
-                "zendframework/zend-stdlib": "2.*"
-            },
-            "require-dev": {
-                "doctrine/migrations": "1.*",
-                "zendframework/zend-developer-tools": "dev-master"
-            },
-            "suggest": {
-                "doctrine/migrations": "doctrine migrations if you want to keep your schema definitions versioned",
-                "zendframework/zend-developer-tools": "zend-developer-tools if you want to profile operations executed by the ORM during development"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.8.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "DoctrineORMModule\\": "src/",
-                    "DoctrineORMModuleTest\\": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kyle Spraggs",
-                    "email": "theman@spiffyjr.me",
-                    "homepage": "http://www.spiffyjr.me/"
-                },
-                {
-                    "name": "Marco Pivetta",
-                    "email": "ocramius@gmail.com",
-                    "homepage": "http://marco-pivetta.com/",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Evan Coury",
-                    "email": "me@evancoury.com",
-                    "homepage": "http://blog.evan.pro/"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@hotmail.com"
-                }
-            ],
-            "description": "Zend Framework 2 Module that provides Doctrine ORM functionality",
-            "homepage": "http://www.doctrine-project.org/",
-            "keywords": [
-                "doctrine",
-                "module",
-                "orm",
-                "zf2"
-            ],
-            "time": "2013-01-13 19:47:34"
         },
         {
             "name": "doctrine/inflector",
@@ -835,80 +685,6 @@
                 "persistence"
             ],
             "time": "2013-02-26 22:19:21"
-        },
-        {
-            "name": "doctrine/orm",
-            "version": "2.4.0-RC1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "2.4.0-RC1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/2.4.0-RC1",
-                "reference": "2.4.0-RC1",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/collections": ">=1.1,<2.0",
-                "doctrine/dbal": ">=2.4-beta,<2.5-dev",
-                "ext-pdo": "*",
-                "php": ">=5.3.2",
-                "symfony/console": "2.*"
-            },
-            "require-dev": {
-                "symfony/yaml": "2.1"
-            },
-            "suggest": {
-                "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
-            },
-            "bin": [
-                "bin/doctrine",
-                "bin/doctrine.php"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.4.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Doctrine\\ORM\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com",
-                    "homepage": "http://www.instaclick.com"
-                },
-                {
-                    "name": "Roman Borschel",
-                    "email": "roman@code-factory.org"
-                },
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                }
-            ],
-            "description": "Object-Relational-Mapper for PHP",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "database",
-                "orm"
-            ],
-            "time": "2013-05-27 19:47:16"
         },
         {
             "name": "fp/lightopenid",
@@ -1370,12 +1146,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "8ec309ea3686685c66162ee9885ec9c6f7fa2ffb"
+                "reference": "1380eec964ebd2f0e28801190ffeb0e1d6444154"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/8ec309ea3686685c66162ee9885ec9c6f7fa2ffb",
-                "reference": "8ec309ea3686685c66162ee9885ec9c6f7fa2ffb",
+                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/1380eec964ebd2f0e28801190ffeb0e1d6444154",
+                "reference": "1380eec964ebd2f0e28801190ffeb0e1d6444154",
                 "shasum": ""
             },
             "require": {
@@ -1421,7 +1197,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2013-05-29 21:49:14"
+            "time": "2013-06-04 10:49:25"
         },
         {
             "name": "zendframework/zendframework",
