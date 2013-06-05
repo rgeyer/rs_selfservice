@@ -27,6 +27,7 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * @IgnoreAnnotation("OnlyOne")
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
@@ -55,7 +56,9 @@ class SecurityGroupRule extends AbstractResource {
   public $protocol;
 
   /**
-   * @ODM\EmbedOne(targetDocument="SecurityGroupRuleProtocolDetail")
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\EmbedMany(targetDocument="SecurityGroupRuleProtocolDetail")
    * @var \SelfService\Document\SecurityGroupRuleProtocolDetail
    */
   public $protocol_details;

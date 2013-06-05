@@ -27,6 +27,7 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * @IgnoreAnnotation("OnlyOne")
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  *
@@ -38,25 +39,33 @@ class ElasticityParams extends AbstractResource {
   public $resource_type = "elasticity_params";
 
   /**
-   * @ODM\EmbedOne(targetDocument="ElasticityParamsBounds")
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\EmbedMany(targetDocument="ElasticityParamsBounds")
    * @var \SelfService\Document\ElasticityParamsBounds
    */
   public $bounds;
 
   /**
-   * @ODM\EmbedOne(targetDocument="ElasticityParamsPacing")
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\EmbedMany(targetDocument="ElasticityParamsPacing")
    * @var \SelfService\Document\ElasticityParamsPacing
    */
   public $pacing;
 
   /**
-   * @ODM\EmbedOne(targetDocument="ElasticityParamsAlertSpecificParams")
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\EmbedMany(targetDocument="ElasticityParamsAlertSpecificParams")
    * @var \SelfService\Document\ElasticityParamsAlertSpecificParams
    */
   public $alert_specific_params;
 
   /**
-   * @ODM\EmbedOne(targetDocument="ElasticityParamsQueueSpecificParams")
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\EmbedMany(targetDocument="ElasticityParamsQueueSpecificParams")
    * @var \SelfService\Document\ElasticityParamsQueueSpecificParams
    */
   public $queue_specific_params;

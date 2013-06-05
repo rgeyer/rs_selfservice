@@ -30,7 +30,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class ElasticityParamsBounds {
+class ElasticityParamsBounds extends CanDepend {
 
   /**
    * @ODM\Hash

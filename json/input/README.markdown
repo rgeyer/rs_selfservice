@@ -14,6 +14,20 @@ contain an extra key "nested" which indicates that when de-serializing the value
 should be nested in the parent resource, rather than be a top level resource in
 #/resources
 
+# Peculiarities
+
+## Depends
+
+Every resource in the schema can "depend" upon a product_input value matching
+a certain value or set of values.  In cases where a resource may only have one
+sub resource (I.E. ServerArray->ElasticityParams) the schema still defines this
+as an array.  The reason is that the array may contain many options with different
+"depend" values.
+
+If many sub resources in an array match, the first one listed in the product will
+be used.  It is best practice to provide a "default" resource as the last resource
+in the array.
+
 # TODO
 
 * elasticity_params/schedule/time, currently a string, rather than string_or_input.

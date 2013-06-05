@@ -27,10 +27,11 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * @IgnoreAnnotation("OnlyOne")
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-class ElasticityParamsQueueSpecificParams {
+class ElasticityParamsQueueSpecificParams extends CanDepend {
 
   /**
    * @ODM\Hash
@@ -39,13 +40,17 @@ class ElasticityParamsQueueSpecificParams {
   public $collect_audit_entries;
 
   /**
-   * @ODM\EmbedOne(targetDocument="ElasticityParamsQueueSpecificParamsItemAge")
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\EmbedMany(targetDocument="ElasticityParamsQueueSpecificParamsItemAge")
    * @var \SelfService\Document\ElasticityParamsQueueSpecificParamsItemAge
    */
   public $item_age;
 
   /**
-   * @ODM\EmbedOne(targetDocument="ElasticityParamsQueueSpecificParamsQueueSize")
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\EmbedMany(targetDocument="ElasticityParamsQueueSpecificParamsQueueSize")
    * @var \SelfService\Document\ElasticityParamsQueueSpecificParamsQueueSize
    */
   public $queue_size;

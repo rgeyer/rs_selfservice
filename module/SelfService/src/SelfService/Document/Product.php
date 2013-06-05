@@ -102,12 +102,14 @@ class Product {
   );
 
   /**
-   * Replaces *_product_input references with the values passed in as $params
    * @param array $params An associative array of key/value pairs.  The key is
    * the input_name of the *_product_input, and the value is what will replace
    * all matching references.
+   * @return array An associative array of key/value pairs.  The key is
+   * the resource id of the *_product_input, and the default value or override
+   * value for that input.
    */
-  public function mergeMetaInputs(array $params) {
+  protected function convertInputParamsToResourceIdKeys($params) {
     // Convert the params array from input_name:value to resource_id:value pairs
     $paramKeys = array_keys($params);
     $valuesByInputId = array();
@@ -120,6 +122,89 @@ class Product {
         }
       }
     }
+    return $valuesByInputId;
+  }
+
+  /**
+   * Removes all resources which have a "depends" property which does not match
+   * the values passed in as $params
+   * @param array $params An associative array of key/value pairs.  The key is
+   * the input_name of the *_product_input, and the value is what will replace
+   * all matching references.
+   * @return void
+   */
+  public function resolveDepends(array $params) {
+    $valuesByInputId = $this->convertInputParamsToResourceIdKeys($params);
+
+    foreach($this->resources as $idx =>$resource) {
+      if(!$this->hasDependsMatch($resource, $valuesByInputId)) {
+        print "Unsetting idx $idx\n";
+        unset($this->resources[$idx]);
+      }
+    }
+  }
+
+  protected function hasDependsMatch($resource, array $params) {
+    $does_match = true;
+    $objvars = get_object_vars($resource);
+    foreach($objvars as $key => $val) {
+      if($key == "depends") {
+        print "It's got a depends ".$resource->depends['id']."\n";
+        print json_encode($resource);
+        $input_value_as_array = (array)$params[$resource->depends['id']];
+        $depends_value_as_array = (array)$resource->depends['value'];
+        if($resource->depends['match'] == "any") {
+          print "Comparing for any\n";
+          $intersect = array_intersect($depends_value_as_array, $input_value_as_array);
+          print_r($depends_value_as_array);
+          print_r($input_value_as_array);
+          print_r($intersect);
+          $does_match = count($intersect) > 0;
+        } else {
+          print "Comparing for all\n";
+          $diff = array_diff($depends_value_as_array, $input_value_as_array);
+          print_r($depends_value_as_array);
+          print_r($input_value_as_array);
+          print_r($diff);
+          $does_match = count($diff) == 0;
+        }
+      }
+    }
+
+    /*if(array_key_exists('depends', $objvars)) {
+      print "It's got a depends ".$resource->depends->id."\n";
+      print json_encode($resource);
+      $input_value_as_array = (array)$params[$resource->depends->id];
+      $depends_value_as_array = (array)$resource->depends->value;
+      if($resource->depends->match == "any") {
+        print "Comparing for any\n";
+        $intersect = array_intersect($depends_value_as_array, $input_value_as_array);
+        print_r($depends_value_as_array);
+        print_r($input_value_as_array);
+        print_r($intersect);
+        $does_match = count($intersect) > 0;
+      } else {
+        print "Comparing for all\n";
+        $diff = array_diff($depends_value_as_array, $input_value_as_array);
+        print_r($depends_value_as_array);
+        print_r($input_value_as_array);
+        print_r($diff);
+        $does_match = count($diff) == 0;
+      }
+    }*/
+    return $does_match;
+    # TODO: Should I validate the depends->ref type to the input matched
+    # by the depends->id? I don't currently have the resource_type in $params
+  }
+
+  /**
+   * Replaces *_product_input references with the values passed in as $params
+   * @param array $params An associative array of key/value pairs.  The key is
+   * the input_name of the *_product_input, and the value is what will replace
+   * all matching references.
+   */
+  public function mergeMetaInputs(array $params) {
+    $valuesByInputId = $this->convertInputParamsToResourceIdKeys($params);
 
     foreach($this->resources as $resource) {
       $this->replaceInputRefsWithScalar($resource, $valuesByInputId);
@@ -136,13 +221,14 @@ class Product {
   protected function replaceInputRefsWithScalar(&$object, array $params) {
     $objvars = get_object_vars($object);
     foreach($objvars as $key => $val) {
-      if(is_array($val)) {
-        if(in_array("ref", array_keys($val))) {
+      if($key == "depends") { continue; }
+      if (is_array($val)) {
+        if(in_array("ref", array_keys($val)) && preg_match('/^[a-z]+_product_input$/', $val['ref'])) {
           $object->{$key} = $params[$val['id']];
-        } else {
-          foreach($object as $item) {
-            $this->replaceInputRefsWithScalar($item, $params);
-          }
+        }
+      } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
+        foreach($val as $item) {
+          $this->replaceInputRefsWithScalar($item, $params);
         }
       }
     }

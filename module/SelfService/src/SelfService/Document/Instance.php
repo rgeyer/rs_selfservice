@@ -65,7 +65,7 @@ class Instance extends AbstractResource {
   public $security_groups;
 
   /**
-   * @ODM\Hash
+   * @ODM\Collection
    * @var array
    */
   public $server_template;

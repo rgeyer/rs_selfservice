@@ -27,6 +27,7 @@ namespace SelfService\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
+ * @IgnoreAnnotation("OnlyOne")
  * @ODM\EmbeddedDocument
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
@@ -53,14 +54,18 @@ class ServerArray extends AbstractResource {
   public $description;
 
   /**
-   * @ODM\Hash
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\Collection
    * @var array
    */
   public $elasticity_params;
 
   /**
-   * @ODM\Hash
-   * @var array|string
+   * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
+   * that only one of these values should be present in the output
+   * @ODM\Collection
+   * @var array
    */
   public $instance;
 
