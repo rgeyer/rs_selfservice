@@ -1,6 +1,6 @@
 <?php
 /*
-Copyright (c) 2011-2013 Ryan J. Geyer <me@ryangeyer.com>
+Copyright (c) 2013 Ryan J. Geyer <me@ryangeyer.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -22,37 +22,34 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace SelfService\Controller;
+namespace SelfService\Provisioner;
 
-/**
- * IndexController
- * 
- * @author Ryan J. Geyer <me@ryangeyer.com>
- */
-class IndexController extends BaseController {
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+
+abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
 
   /**
-   * @return \SelfService\Service\Entity\ProductService
+   * @var ServiceLocatorInterface
    */
-  protected function getProductEntityService() {
-    return $this->getServiceLocator()->get('SelfService\Service\Entity\ProductService');
-  }
-	
-	private $_noAuthRequired;
-	
-	public function indexAction() {
-    $products = $this->getProductEntityService()->findAll();
+  protected $serviceLocator;
 
-		foreach ( $products as $product ) {
-			$product->img_url = "images/icons/" . $product->icon_filename;
-		}
-
-		return array( 'products' => $products, 'use_layout' => false );
-	}
-
-  public function adminindexAction() {
-    return array('use_layout' => true);
+  /**
+   * @return ServiceLocatorInterface
+   */
+  public function getServiceLocator() {
+    return $this->serviceLocator;
   }
 
+  /**
+   * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceLocator
+   * @return void
+   */
+  public function setServiceLocator(ServiceLocatorInterface $serviceLocator) {
+    $this->serviceLocator = $serviceLocator;
+  }
+
+  public abstract function provision($json);
+
+  public abstract function cleanup($json);
 }
-

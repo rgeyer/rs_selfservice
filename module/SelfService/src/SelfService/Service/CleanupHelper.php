@@ -24,11 +24,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Service;
 
-use SelfService\Entity\ProvisionedArray;
-use SelfService\Entity\ProvisionedServer;
-use SelfService\Entity\ProvisionedSshKey;
-use SelfService\Entity\ProvisionedDeployment;
-use SelfService\Entity\ProvisionedSecurityGroup;
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
 use RGeyer\Guzzle\Rs\Model\Mc\ServerArray;
 
@@ -59,10 +54,10 @@ class CleanupHelper {
   }
 
   /**
-   * @param \ProvisionedArray $array The RSSS ORM Model for a provisioned array, used only for it's ->href param
+   * @param stdClass $array A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
    * @return bool True if the array had no running instances and was destroyed.  False if the array had running instances, and the multi_terminate method was called
    */
-  public function cleanupServerArray(ProvisionedArray $array) {
+  public function cleanupServerArray($array) {
     $api_array = $this->client->newModel('ServerArray');
     $api_array->find_by_href($array->href);
     if($api_array->instances_count > 0) {
@@ -75,10 +70,10 @@ class CleanupHelper {
   }
 
   /**
-   * @param \ProvisionedServer $server The RSSS ORM Model for a provisioned array, used only for it's ->href param
+   * @param stdClass $server A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
    * @return bool True if the array had no running instances and was destroyed.  False if the server was running, and the servers_terminate method was called
    */
-  public function cleanupServer(ProvisionedServer $server){
+  public function cleanupServer($server){
     $api_server = $this->client->newModel('Server');
     $api_server->find_by_href($server->href);
     if(!in_array($api_server->state, array('inactive','stopped','decommissioning'))) {
@@ -93,10 +88,10 @@ class CleanupHelper {
   }
 
   /**
-   * @param \ProvisionedDeployment $deployment The RSSS ORM Model for a provisioned array, used only for it's ->href param
+   * @param stdClass $deployment A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
    * @return bool Always true, throws exceptions if an error occurred
    */
-  public function cleanupDeployment(ProvisionedDeployment $deployment) {
+  public function cleanupDeployment($deployment) {
     $api_deployment = $this->client->newModel('Deployment');
     $api_deployment->find_by_href($deployment->href);
     $api_deployment->destroy();
@@ -104,10 +99,10 @@ class CleanupHelper {
   }
 
   /**
-   * @param \ProvisionedSshKey $ssh_key The RSSS ORM Model for a provisioned ssh key, used only for it's ->href and ->cloud_id params
+   * @param stdClass $ssh_key A json representation of a \SelfService\Document\ProvisionedObject for a provisioned ssh key, used only for it's ->href and ->cloud_id params
    * @return bool Always true, throws exceptions if an error occurred
    */
-  public function cleanupSshKey(ProvisionedSshKey $ssh_key) {
+  public function cleanupSshKey($ssh_key) {
     $api_ssh_key = $this->client->newModel('SshKey');
     $api_ssh_key->cloud_id = $ssh_key->cloud_id;
     $api_ssh_key->find_by_href($ssh_key->href);
@@ -117,10 +112,10 @@ class CleanupHelper {
 
 
   /**
-   * @param \ProvisionedSecurityGroup $deployment The RSSS ORM Model for a provisioned security group, used only for it's ->href param
+   * @param stdClass $sec_grp A json representation of a \SelfService\Document\ProvisionedObject for a provisioned security group, used only for it's ->href param
    * @return bool Always true, throws exceptions if an error occurred
    */
-  public function cleanupSecurityGroupRules(ProvisionedSecurityGroup $sec_grp) {
+  public function cleanupSecurityGroupRules($sec_grp) {
     $api_sec_grp = $this->client->newModel('SecurityGroup');
     $api_sec_grp->cloud_id = $sec_grp->cloud_id;
     $api_sec_grp->find_by_href($sec_grp->href);
@@ -135,10 +130,10 @@ class CleanupHelper {
 
 
   /**
-   * @param \ProvisionedSecurityGroup $deployment The RSSS ORM Model for a provisioned security group, used only for it's ->href and ->cloud_id params
+   * @param stdClass $sec_grp A json representation of a \SelfService\Document\ProvisionedObject for a provisioned security group, used only for it's ->href and ->cloud_id params
    * @return bool Always true, throws exceptions if an error occurred
    */
-  public function cleanupSecurityGroup(ProvisionedSecurityGroup $sec_grp) {
+  public function cleanupSecurityGroup($sec_grp) {
     $api_sec_grp = $this->client->newModel('SecurityGroup');
     $api_sec_grp->cloud_id = $sec_grp->cloud_id;
     $api_sec_grp->find_by_href($sec_grp->href);

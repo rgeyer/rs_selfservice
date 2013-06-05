@@ -2,7 +2,7 @@
 
 namespace SelfServiceTest\Controller\Console;
 
-use SelfService\Entity\User;
+use SelfService\Document\User;
 
 use Zend\Test\PHPUnit\Controller\AbstractConsoleControllerTestCase;
 
@@ -15,27 +15,27 @@ class UserControllerTest extends AbstractConsoleControllerTestCase {
 
     $cli = $this->getApplicationServiceLocator()->get('doctrine.cli');
     $cli->setAutoExit(false);
+
+    $cli->run(
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:drop')),
+      new \Symfony\Component\Console\Output\NullOutput()
+    );
+
     $cli->run(
       new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:create')),
       new \Symfony\Component\Console\Output\NullOutput()
     );
   }
 
-  public function tearDown() {
-    parent::tearDown();
-
-    $cli = $this->getApplicationServiceLocator()->get('doctrine.cli');
-    $cli->setAutoExit(false);
-    $cli->run(
-      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:drop')),
-      new \Symfony\Component\Console\Output\NullOutput()
-    );
+  /**
+   * @return \SelfService\Service\Entity\UserService
+   */
+  protected function getUserEntityService() {
+    return $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
   }
 
   public function testIndexUserActionCanBeAccessed() {
     $this->dispatch('users list');
-
-    print strval($this->getResponse()->getContent());
 
     $this->assertActionName('index');
     $this->assertControllerName('selfservice\controller\user');

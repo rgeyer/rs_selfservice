@@ -6,32 +6,31 @@ use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
 class ProductControllerTest extends AbstractHttpControllerTestCase {
 
-  protected function mockProvisioningHelper() {
-    return $this->getMockBuilder('SelfService\Service\ProvisioningHelper')
-      ->disableOriginalConstructor()
-      ->getMock();
-  }
-
   public function setUp() {
     $this->setApplicationConfig(
       include __DIR__ . '/../../../../../../config/application.config.php'
     );
     parent::setUp();
 
-    $serviceManager = $this->getApplicationServiceLocator();
-
-    // Initialize the schema.. Maybe I should register a module for clearing the schema/data
-    // and/or loading mock test data
-    $em = $serviceManager->get('doctrine.entitymanager.orm_default');
-    $cli = new \Symfony\Component\Console\Application("PHPUnit Bootstrap", 1);
+    $cli = $this->getApplicationServiceLocator()->get('doctrine.cli');
     $cli->setAutoExit(false);
-    $helperSet = $cli->getHelperSet();
-    $helperSet->set(new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em), 'em');
-    $cli->addCommands(array(new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand()));
+
     $cli->run(
-      new \Symfony\Component\Console\Input\ArrayInput(array('orm:schema-tool:create')),
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:drop')),
       new \Symfony\Component\Console\Output\NullOutput()
     );
+
+    $cli->run(
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:create')),
+      new \Symfony\Component\Console\Output\NullOutput()
+    );
+  }
+
+  /**
+   * @return \SelfService\Service\Entity\ProductService
+   */
+  protected function getProductEntityService() {
+    return $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProductService');
   }
 
   public function testIndexActionCanBeAccessed() {
@@ -45,10 +44,8 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testProvisionActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $sl = $this->getApplicationServiceLocator();
-    $sl->setAllowOverride(true);
-    $sl->setService('rs_provisioning_helper', $this->mockProvisioningHelper());
-    $this->dispatch('/product/provision/1');
+    $product = $this->getProductEntityService()->createFromJson(array('nickname' => "foo"));
+    $this->dispatch('/product/provision/'.$product->id);
 
     $response = strval($this->getResponse());
 
@@ -88,7 +85,8 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testCanAccessEditAction() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/product/edit/1');
+    $product = $this->getProductEntityService()->createFromJson(array('nickname' => "foo"));
+    $this->dispatch('/product/edit/'.$product->id);
 
     $response = strval($this->getResponse());
 
@@ -100,7 +98,8 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testEditActionListsIcons() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/product/edit/1');
+    $product = $this->getProductEntityService()->createFromJson(array('nickname' => "foo"));
+    $this->dispatch('/product/edit/'.$product->id);
 
     $response = strval($this->getResponse());
 
@@ -112,12 +111,8 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testCanAccessUpdateAction() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
-
-    \SelfService\Product\php3tier::add($em);
-
-    $this->dispatch('/product/update/1');
+    $product = $this->getProductEntityService()->createFromJson(array('nickname' => "foo"));
+    $this->dispatch('/product/update/'.$product->id);
 
     $response = strval($this->getResponse());
 

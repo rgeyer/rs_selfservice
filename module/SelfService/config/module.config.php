@@ -6,6 +6,7 @@ use Zend\Log\Writer\Stream;
 use SelfService\Service\CleanupHelper;
 use SelfService\Service\ProvisioningHelper;
 use Zend\Authentication\AuthenticationService;
+use SelfService\Zend\Authentication\Adapter\GoogleAuthAdapter;
 
 return array(
   'router' => array(
@@ -166,7 +167,7 @@ return array(
       'routes' => array(
         'product' => array(
           'options' => array(
-            'route' => 'product add <name>',
+            'route' => 'product add <name> [--path]',
             'defaults' => array(
               'controller' => 'SelfService\Controller\Product',
               'action' => 'consoleadd',
@@ -279,6 +280,9 @@ return array(
         $logger->addWriter($writer);
         return $logger;
       },
+      'AuthenticationAdapter' => function($serviceManager) {
+        return new GoogleAuthAdapter($serviceManager);
+      },
       'AuthenticationService' => function($serviceManager) {
         $config = $serviceManager->get('Configuration');
         $acct_id = $config['rsss']['cloud_credentials']['rightscale']['account_id'];
@@ -290,11 +294,21 @@ return array(
         $storage = new \Zend\Authentication\Storage\Session("auth", null, $manager);
         return new AuthenticationService($storage);
       },
+      'LightOpenID' => function($serviceManager) {
+        $config = $serviceManager->get('Configuration');
+        return new \LightOpenID($config['rsss']['hostname']);
+      },
+      'Provisioner' => function($serviceManager) {
+        $config = $serviceManager->get('Configuration');
+        return new $config['rsss']['provisioner_class'];
+      }
     ),
     'invokables' => array(
       'SelfService\Service\Entity\UserService'      => 'SelfService\Service\Entity\UserService',
       'SelfService\Service\Entity\ProductService'   => 'SelfService\Service\Entity\ProductService',
       'SelfService\Service\Entity\ProvisionedProductService'   => 'SelfService\Service\Entity\ProvisionedProductService',
+      'SelfService\Provisioner\MockProvisioner' => 'SelfService\Provisioner\MockProvisioner',
+      'SelfService\Provisioner\RsssProvisioner' => 'SelfService\Provisioner\RsssProvisioner'
     ),
   ),
   'translator' => array(

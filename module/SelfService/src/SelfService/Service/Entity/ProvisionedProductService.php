@@ -32,11 +32,20 @@ class ProvisionedProductService extends BaseEntityService {
   protected $entityClass = 'SelfService\Document\ProvisionedProduct';
 
   /**
+   * @return \SelfService\Service\Entity\UserService
+   */
+  protected function getUserEntityService() {
+    return $this->getServiceLocator()->get('SelfService\Service\Entity\UserService');
+  }
+
+  /**
    * @param array $params
    * @return \SelfService\Document\ProvisionedProduct
    */
   public function create(array $params) {
+    $authSvc = $this->getServiceLocator()->get('AuthenticationService');
     $params['createdate'] = new MongoDate();
+    $params['owner'] = $authSvc->getIdentity();
     return parent::create($params);
   }
 

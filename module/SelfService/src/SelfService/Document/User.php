@@ -33,9 +33,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class User
 {
 	/**
+   * Unique Identifier for the object in the database
    * @ODM\Id
-	 * @var integer
-	 */
+   * @var string
+   */
 	public $id;
 	
 	/**

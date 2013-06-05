@@ -35,7 +35,7 @@ class Product {
   /**
    * Unique Identifier for the object in the database
    * @ODM\Id
-   * @var integer
+   * @var string
    */
   public $id;
 

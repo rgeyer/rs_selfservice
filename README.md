@@ -64,6 +64,38 @@ Add products from definition files (TODO: Document the description file format) 
 
 ```php /public/index.php product add php3tier```
 
+# Extending
+
+The RightScale SelfService Vending Machine can be extended in three key ways.
+
+1. Custom products.  Using a well defined JSON schema, new products can be added
+2. Custom provisioners. While RSSS can provision products, that responsibility can also be delegated to other tools or systems.
+3. Callbacks (Not yet implemented). Througout key lifecycle events of a product, calls can be made from the RSSS to external systems which can alter the results of that lifecycle event.
+
+## Products
+
+## Provisioners
+
+RSSS has an abstract PHP class found at
+./module/SelfService/src/Provisioners/AbstractProvisioner which defines the
+interface for a provisioner.
+
+When a product is selected in the RSSS UI, a JSON representation of the desired
+product is generated.  That JSON representation is passed into the provision()
+method of the provisioner.
+
+RSSS provides two provisioner implementations.
+
+1. RsApiProvisioner - This provisioner uses the RightScale API 1.5 to provision
+all desired resources for a product.
+2. CloudFlowProvisioner - (Not yet implemented) This provisioner delegates the
+provisioning to a CloudFlow process which is designed to injest the JSON
+representation of the desired product.
+
+To create your own provisioner, create a PHP class which extends
+SelfService\Provisioner\AbstractProvisioner and change the rsss/provisioner config
+option in your applications ./confi/local.php config file.
+
 # TODO
 * Soft deletes for products, provisioned products, perhaps others?
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.

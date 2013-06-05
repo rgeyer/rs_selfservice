@@ -11,18 +11,16 @@ class IndexControllerTest extends AbstractHttpControllerTestCase {
     );
     parent::setUp();
 
-    $serviceManager = $this->getApplicationServiceLocator();
-
-    // Initialize the schema.. Maybe I should register a module for clearing the schema/data
-    // and/or loading mock test data
-    $em = $serviceManager->get('doctrine.entitymanager.orm_default');
-    $cli = new \Symfony\Component\Console\Application("PHPUnit Bootstrap", 1);
+    $cli = $this->getApplicationServiceLocator()->get('doctrine.cli');
     $cli->setAutoExit(false);
-    $helperSet = $cli->getHelperSet();
-    $helperSet->set(new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em), 'em');
-    $cli->addCommands(array(new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand()));
+
     $cli->run(
-      new \Symfony\Component\Console\Input\ArrayInput(array('orm:schema-tool:create')),
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:drop')),
+      new \Symfony\Component\Console\Output\NullOutput()
+    );
+
+    $cli->run(
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:create')),
       new \Symfony\Component\Console\Output\NullOutput()
     );
   }
@@ -39,10 +37,10 @@ class IndexControllerTest extends AbstractHttpControllerTestCase {
 
   public function testIndexActionRendersProducts() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $product = new \SelfService\Entity\Provisionable\Product();
+    $product = new \SelfService\Document\Product();
     $product->launch_servers = false;
     $product->name = "foo";
-    $em = $this->getApplicationServiceLocator()->get('doctrine.entitymanager.orm_default');
+    $em = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
     $em->persist($product);
     $em->flush();
 

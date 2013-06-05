@@ -62,5 +62,6 @@ return array(
         '8'     => 'AWS',
       ),
     ),
+    'provisioner_class' => 'SelfService\Provisioner\RsApiProvisioner',
   ),
 );

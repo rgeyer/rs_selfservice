@@ -12,20 +12,25 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
     );
     parent::setUp();
 
-    $serviceManager = $this->getApplicationServiceLocator();
-
-    // Initialize the schema.. Maybe I should register a module for clearing the schema/data
-    // and/or loading mock test data
-    $em = $serviceManager->get('doctrine.entitymanager.orm_default');
-    $cli = new \Symfony\Component\Console\Application("PHPUnit Bootstrap", 1);
+    $cli = $this->getApplicationServiceLocator()->get('doctrine.cli');
     $cli->setAutoExit(false);
-    $helperSet = $cli->getHelperSet();
-    $helperSet->set(new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em), 'em');
-    $cli->addCommands(array(new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand()));
+
     $cli->run(
-      new \Symfony\Component\Console\Input\ArrayInput(array('orm:schema-tool:create')),
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:drop')),
       new \Symfony\Component\Console\Output\NullOutput()
     );
+
+    $cli->run(
+      new \Symfony\Component\Console\Input\ArrayInput(array('odm:schema:create')),
+      new \Symfony\Component\Console\Output\NullOutput()
+    );
+  }
+
+  /**
+   * @return \SelfService\Service\Entity\ProvisionedProductService
+   */
+  protected function getProvisionedProductEntityService() {
+    return $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
   }
 
   public function testIndexActionCanBeAccessed() {
@@ -39,7 +44,8 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testCleanupActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/provisionedproducts/cleanup');
+    $provisionedProduct = $this->getProvisionedProductEntityService()->create(array());
+    $this->dispatch('/provisionedproducts/cleanup/'.$provisionedProduct->id);
 
     $response = strval($this->getResponse());
 

@@ -36,6 +36,10 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testCreateCanBeAccessed() {
+    $sm = $this->getApplicationServiceLocator();
+    $standin_adapter = new \Zend\Cache\Storage\Adapter\Memory();
+    $sm->setAllowOverride(true);
+    $sm->setService('cache_storage_adapter', $standin_adapter);
     $this->dispatch('/api/provisionedproduct', Request::METHOD_POST);
 
     $this->assertActionName('create');
@@ -70,6 +74,10 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testObjectsCanBeAccessed() {
+    $sm = $this->getApplicationServiceLocator();
+    $standin_adapter = new \Zend\Cache\Storage\Adapter\Memory();
+    $sm->setAllowOverride(true);
+    $sm->setService('cache_storage_adapter', $standin_adapter);
     $provisionedProductService = $this->getProvisionedProductService();
     $provisionedProduct = $provisionedProductService->create(array());
 
@@ -101,7 +109,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
       )
     );
 
-    $this->dispatch('/api/provisionedproduct/1/objects',Request::METHOD_POST);
+    $this->dispatch('/api/provisionedproduct/abc123/objects',Request::METHOD_POST);
 
     $response = strval($this->getResponse());
 
@@ -119,7 +127,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
       )
     );
 
-    $this->dispatch('/api/provisionedproduct/1/objects',Request::METHOD_POST);
+    $this->dispatch('/api/provisionedproduct/abc123/objects',Request::METHOD_POST);
 
     $response = strval($this->getResponse());
 

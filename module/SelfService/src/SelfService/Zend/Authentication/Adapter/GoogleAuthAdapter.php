@@ -24,68 +24,114 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Zend\Authentication\Adapter;
 
-use Zend\Authentication\Adapter\AdapterInterface;
-use Zend\Authentication\Result;
-use SelfService\Entity\User;
 
-class GoogleAuthAdapter implements AdapterInterface {
+use SelfService\Document\User;
+use Zend\Authentication\Result;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Authentication\Adapter\AdapterInterface;
+
+class GoogleAuthAdapter {
+
+  /**
+   * @var \Zend\ServiceManager\ServiceLocatorInterface
+   */
+  protected $serviceLocator;
+
+  /**
+   * @return \Zend\ServiceManager\ServiceLocatorInterface
+   */
+  public function getServiceLocator() {
+    return $this->serviceLocator;
+  }
+
 	/**
 	 * @var \LightOpenID
 	 */
 	protected $_oid;
 
-	protected $em;
+  /**
+   * @return \SelfService\Service\Entity\UserService
+   */
+  protected function getUserEntityService() {
+    return $this->getServiceLocator()->get('SelfService\Service\Entity\UserService');
+  }
 
+  /**
+   * Returns the principal first name and last name concatenated
+   * TODO: Probably should throw a more specific exception
+   * @throws \Exception if the principal has not been authenticated or is not valid
+   * @return string Principal first and last name concatenated
+   */
   public function getPrincipalName() {
+    if(!$this->_oid->validate()) {
+      throw new \Exception("The principal is not valid. Make sure the user has authenticated through a browser");
+    }
     $attributes = $this->_oid->getAttributes();
     return $attributes['namePerson/first'] . ' ' . $attributes['namePerson/last'];
   }
 
+  /**
+   * Returns the principal email address
+   * TODO: Probably should throw a more specific exception
+   * @throws \Exception if the principal has not been authenticated or is not valid
+   * @return string Principal email address
+   */
   public function getPrincipalEmail() {
+    if(!$this->_oid->validate()) {
+      throw new \Exception("The principal is not valid. Make sure the user has authenticated through a browser");
+    }
     $attributes = $this->_oid->getAttributes();
     return $attributes['contact/email'];
   }
 
-	public function __construct($entityManager, $hostname) {
-		$this->_oid = new \LightOpenID($hostname);
+	public function __construct(ServiceLocatorInterface $serviceLocator) {
+    $this->serviceLocator = $serviceLocator;
+		$this->_oid = $this->getServiceLocator()->get('LightOpenID');
     $this->_oid->required = array('namePerson/first', 'namePerson/last', 'contact/email');
-		$this->em = $entityManager;
 	}
 
 	/**
-	 * @return The string value of LightOpenID->mode
+	 * @return string The string value of LightOpenID->mode
 	 */
 	public function getOidMode() {
-		return $this->_oid->mode;
+		return $this->_oid->__get('mode');
 	}
 
-	public function redirectUrlForGoogleAuth() {
+  /**
+   * @return \String The OpenID URL the user should browse to in order to get authenticated.
+   */
+	public function getOpenIdUrl() {
 		$this->_oid->__set('identity', 'https://www.google.com/accounts/o8/id');
 		return $this->_oid->authUrl();
 	}
 
+  /**
+   * @return \Zend\Authentication\Result
+   */
 	public function authenticate() {
-		if($this->_oid->mode == 'cancel') {
+		if($this->getOidMode() == 'cancel') {
 			return new Result(Result::FAILURE, $this->_oid);
 		} elseif ($this->_oid->validate()) {
-      $query = $this->em->createQuery("select u from SelfService\Entity\User u where u.oid_url = :oid_url or u.email = :email");
-      $query->setParameters(
-        array(
-          'oid_url' => $this->_oid->__get('identity'),
-          'email' => $this->getPrincipalEmail()
+      $identity = $this->_oid->__get('identity');
+      $query = $this->getUserEntityService()->getQueryBuilder()
+        ->where(
+          sprintf('u.oid_url = "%s" or u.email = %s',
+                  $identity,
+                  $this->getPrincipalEmail()
+          )
         )
+        ->getQuery();
+      $user_params = array(
+        'oid_url' => $identity,
+        'email' => $this->getPrincipalEmail(),
+        'name' => $this->getPrincipalName()
       );
-			$user = $query->getResult();
+			$user = $query->getSingleResult();
 			if(!$user) {
-				$user = new User();
+				$user = $this->getUserEntityService()->create($user_params);
 			} else {
-        $user = array_pop($user);
+        $this->getUserEntityService()->update($user, $user_params);
       }
-      $user->oid_url = $this->_oid->__get('identity');
-      $user->email = $this->getPrincipalEmail();
-      $user->name = $this->getPrincipalName();
-      $this->em->persist($user);
-      $this->em->flush();
 			return new Result(Result::SUCCESS, $user);
 		} else {
 			return new Result(Result::FAILURE_CREDENTIAL_INVALID, $this->_oid);

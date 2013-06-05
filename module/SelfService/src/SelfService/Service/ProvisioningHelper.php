@@ -30,12 +30,6 @@ use RGeyer\Guzzle\Rs\Model\Mc\Deployment;
 
 use Doctrine\ORM\PersistentCollection;
 
-use SelfService\Entity\Provisionable\Server;
-use SelfService\Entity\Provisionable\AlertSpec;
-use SelfService\Entity\Provisionable\ServerArray;
-use SelfService\Entity\Provisionable\SecurityGroup;
-use SelfService\Entity\Provisionable\ServerTemplate as OrmServerTemplate;
-
 use RGeyer\Guzzle\Rs\Model\Mc\ServerTemplate as ApiServerTemplate;
 
 class ProvisioningHelper {
@@ -278,7 +272,7 @@ class ProvisioningHelper {
   }
 
   /**
-   * @param array|Doctrine\ORM\PersistentCollection of \SelfService\Entity\Provisionable\SecurityGroup[] $groups A list of provisionable groups for which you'd like hrefs
+   * @param \stdClass[] $groups An array of std_class representations of \SelfService\Document|SecurityGroup objects of provisionable groups for which you'd like hrefs
    * @return String[] the href for each provisioned security group
    */
   protected function _getProvisionedSecurityGroupHrefs($groups) {
@@ -298,13 +292,13 @@ class ProvisioningHelper {
    * Provisions one or many Servers of the specified type
    *
    * @throws \InvalidArgumentException if there are ServerTemplate discovery or import issues.
-   * @param SelfService\Entity\Provisionable\Server $server An rsss Doctrine ORM Model describing the desired server.
+   * @param stdClass $server An stdClass representing at \SelfService\Document\Server describing the desired server.
    * @param \RGeyer\Guzzle\Rs\Model\Mc\Deployment $deployment The previously provisioned deployment the server(s) should be created in
    * @return array A mix of RGeyer\Guzzle\Rs\Model\Mc\Server and RGeyer\Guzzle\Rs\Model\Mc\SshKey objects which were created during the process
    */
-  public function provisionServer(Server $server, Deployment $deployment) {
+  public function provisionServer($server, Deployment $deployment) {
     $result = array();
-    $cloud_id = $server->cloud_id->getVal();
+    $cloud_href = $server->instance->cloud_href;
 
     $st = $this->_findOrImportServerTemplate(
       $server->server_template->nickname->getVal(),

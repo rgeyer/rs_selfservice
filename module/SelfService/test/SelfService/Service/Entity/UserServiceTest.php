@@ -27,8 +27,17 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
     );
   }
 
-  public function tearDown() {
-    parent::tearDown();
+  /**
+   * @return \SelfService\Service\Entity\UserService
+   */
+  protected function getUserEntityService() {
+    return $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
+  }
+
+  public function testCreateReturnsPersistedDocumentWithId() {
+    $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
+    $user = $userService->create(array());
+    $this->assertNotNull($user->id);
   }
 
   public function testCanGetAllUsers() {
@@ -120,6 +129,32 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
 
     $users = $userService->findAll();
     $this->assertFalse($users->getNext()->authorized, "User was not deauthorized after deauthorize action was taken");
+  }
+
+  public function testCanFindByEmail() {
+    $userService = $this->getUserEntityService();
+
+    $this->assertEquals(0, $userService->findAll()->count());
+
+    $userService->create(array('email' => 'foo@bar.baz'));
+
+    $user = $userService->findByEmail('foo@bar.baz');
+
+    $this->assertNotNull($user);
+    $this->assertInstanceOf('SelfService\Document\User', $user);
+  }
+
+  public function testCanFindByOidUrl() {
+    $userService = $this->getUserEntityService();
+
+    $this->assertEquals(0, $userService->findAll()->count());
+
+    $userService->create(array('oid_url' => 'http://oid.url'));
+
+    $user = $userService->findByOidUrl('http://oid.url');
+
+    $this->assertNotNull($user);
+    $this->assertInstanceOf('SelfService\Document\User', $user);
   }
 
 }

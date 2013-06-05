@@ -52,6 +52,22 @@ class UserService extends BaseEntityService {
   }
 
   /**
+   * @param $oid_url Users oid url
+   * @return \SelfService\Document\User|null
+   */
+  public function findByOidUrl($oid_url) {
+    $dm = $this->getDocumentManager();
+    $oid_url = urldecode($oid_url);
+    $users = $dm->getRepository($this->entityClass)->findBy(array('oid_url' => $oid_url));
+    # TODO: What if it returns more than one?
+    if($users && $users->count() == 1) {
+      return $users->getNext();
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * @param $email Email address of the user to find
    * @return \SelfService\Document\User|null
    */

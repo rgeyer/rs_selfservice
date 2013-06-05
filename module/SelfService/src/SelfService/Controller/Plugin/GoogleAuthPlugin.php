@@ -32,6 +32,13 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class GoogleAuthPlugin extends AbstractPlugin {
 
+  /**
+   * @return \SelfService\Service\Entity\UserService
+   */
+  protected function getUserEntityService($serviceManager) {
+    return $serviceManager->get('SelfService\Service\Entity\UserService');
+  }
+
   protected function redirect(MvcEvent $event, array $options, array $params = array()) {
     $url = $event->getRouter()->assemble($params, $options);
     $response = $event->getResponse();
@@ -70,9 +77,9 @@ class GoogleAuthPlugin extends AbstractPlugin {
 		if(!$auth->hasIdentity()) {
 			$redirect_to_auth = true;
 		} else {
-      $em = $serviceManager->get('doctrine.entitymanager.orm_default');
+      $userService = $this->getUserEntityService($serviceManager);
+      $user = $userService->findByOidUrl($auth->getIdentity()->oid_url);
 
-			$user = $em->getRepository('SelfService\Entity\User')->findOneBy(array('oid_url' => $auth->getIdentity()->oid_url));
 			$redirect_to_auth = ($user == null);
 		}
 

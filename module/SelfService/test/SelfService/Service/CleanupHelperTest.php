@@ -13,13 +13,6 @@ use RGeyer\Guzzle\Rs\Model\Mc\SshKey;
 use RGeyer\Guzzle\Rs\Model\Mc\Deployment;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
-
-use SelfService\Entity\ProvisionedArray;
-use SelfService\Entity\ProvisionedServer;
-use SelfService\Entity\ProvisionedSshKey;
-use SelfService\Entity\ProvisionedDeployment;
-use SelfService\Entity\ProvisionedSecurityGroup;
-
 class CleanupHelperTest extends AbstractHttpControllerTestCase {
 
   protected $_guzzletestcase;
@@ -48,7 +41,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new ServerArray();
     $api_model->href = "/api/server_arrays/1234";
-    $orm_model = new ProvisionedArray($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
     $response = $helper->cleanupServerArray($orm_model);
     $requests = $this->_guzzletestcase->getMockedRequests();
@@ -72,7 +66,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new ServerArray();
     $api_model->href = "/api/server_arrays/1234";
-    $orm_model = new ProvisionedArray($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
 
     # Try once, there will be running instances, and a terminate request will be made
@@ -96,7 +91,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new Server();
     $api_model->href = "/api/servers/1234";
-    $orm_model = new ProvisionedServer($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
     $response = $helper->cleanupServer($orm_model);
     $requests = $this->_guzzletestcase->getMockedRequests();
@@ -118,7 +114,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new Server();
     $api_model->href = "/api/servers/1234";
-    $orm_model = new ProvisionedServer($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
     $response = $helper->cleanupServer($orm_model);
     $requests = $this->_guzzletestcase->getMockedRequests();
@@ -139,7 +136,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new Server();
     $api_model->href = "/api/servers/1234";
-    $orm_model = new ProvisionedServer($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
     $response = $helper->cleanupServer($orm_model);
     $requests = $this->_guzzletestcase->getMockedRequests();
@@ -157,7 +155,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new Deployment();
     $api_model->href = "/api/deployments/1234";
-    $orm_model = new ProvisionedDeployment($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
     $response = $helper->cleanupDeployment($orm_model);
     $requests = $this->_guzzletestcase->getMockedRequests();
@@ -176,7 +175,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new SshKey();
     $api_model->href = "/api/cloud/12345/ssh_keys/1234";
-    $orm_model = new ProvisionedSshKey($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $orm_model->cloud_id = '12345';
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
     $response = $helper->cleanupSshKey($orm_model);
@@ -198,7 +198,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new SecurityGroup();
     $api_model->href = "/api/clouds/12345/security_groups/ABC123";
-    $orm_model = new ProvisionedSecurityGroup($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $orm_model->cloud_id = '12345';
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
     $helper->cleanupSecurityGroupRules($orm_model);
@@ -218,7 +219,8 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     );
     $api_model = new SecurityGroup();
     $api_model->href = "/api/clouds/12345/security_groups/ABC123";
-    $orm_model = new ProvisionedSecurityGroup($api_model);
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
     $orm_model->cloud_id = '12345';
     $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
     $helper->cleanupSecurityGroup($orm_model);

@@ -29,6 +29,7 @@ use Doctrine\ORM\EntityManager;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use SelfService\Document\Exception\NotFoundException;
 
 class BaseEntityService implements ServiceLocatorAwareInterface {
 
@@ -73,14 +74,19 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
   }
 
   /**
-   * @param $id The ID of the entity to return
+   * @throws \SelfService\Document\Exception\NotFoundException
+   * @param $id
    * @param int $lockMode
    * @param null $lockVersion
-   * @return object $document
+   * @return \Doctrine\ODM\MongoDB\The|object
    */
   public function find($id, $lockMode = LockMode::NONE, $lockVersion = null) {
     $dm = $this->getDocumentManager();
-    return $dm->getRepository($this->entityClass)->find($id, $lockMode, $lockVersion);
+    $doc = $dm->getRepository($this->entityClass)->find($id, $lockMode, $lockVersion);
+    if(!$doc) {
+      throw new NotFoundException();
+    }
+    return $doc;
   }
 
   /**
@@ -108,6 +114,29 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
     $dm->persist($entity);
     $dm->flush();
     return $entity;
+  }
+
+  public function update($idOrOdm, array $params) {
+    $entity = $idOrOdm;
+    if(is_scalar($idOrOdm)) {
+      $entity = $this->find($idOrOdm);
+    }
+    $dm = $this->getDocumentManager();
+    foreach($params as $paramname => $param) {
+      if(property_exists($entity, $paramname)) {
+        $entity->{$paramname} = $param;
+      }
+    }
+    $dm->persist($entity);
+    $dm->flush();
+    return $entity;
+  }
+
+  /**
+   * @return \Doctrine\ODM\MongoDB\Query\Builder
+   */
+  public function getQueryBuilder() {
+    return $this->getDocumentManager()->createQueryBuilder($this->entityClass);
   }
 
 }

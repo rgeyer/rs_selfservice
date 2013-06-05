@@ -11,6 +11,7 @@
         <testsuite name="rs_selfservice">
             <directory>./</directory>
             <exclude>./SelfService/Helpers.php</exclude>
+            <exclude>./SelfService/Service/ProvisioningHelperTest.php</exclude>
         </testsuite>
     </testsuites>
 </phpunit>

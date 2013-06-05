@@ -35,21 +35,33 @@ use SelfService\Zend\Authentication\Adapter\GoogleAuthAdapter;
  */
 class LoginController extends BaseController {
 
+  /**
+   * @return \SelfService\Zend\Authentication\Adapter\GoogleAuthAdapter
+   */
+  protected function getAuthenticationAdapter() {
+    return $this->getServiceLocator()->get('AuthenticationAdapter');
+  }
+
+  /**
+   * @return \Zend\Authentication\AuthenticationService
+   */
+  protected function getAuthenticationService() {
+    return $this->getServiceLocator()->get('AuthenticationService');
+  }
+
   public function indexAction() {
     return array('form_action' => $this->url()->fromRoute('login', array('action' => 'process')));
   }
 
   public function processAction() {
     $response = array();
-    $config = $this->getServiceLocator()->get('Configuration');
-    $rsss_options = $config['rsss'];
-    $authAdapter = new GoogleAuthAdapter($this->getEntityManager(), $rsss_options['hostname']);
+    $authAdapter = $this->getAuthenticationAdapter();
     if (!$authAdapter->getOidMode()) {
-      $this->redirect()->toUrl($authAdapter->redirectUrlForGoogleAuth());
+      $this->redirect()->toUrl($authAdapter->getOpenIdUrl());
     } elseif ($authAdapter->getOidMode() == 'cancel') {
       $response['message'] = 'You cancelled authenticating with Google, refresh if you\'d like to try again';
     } else {
-      $authSvc = $this->getServiceLocator()->get('AuthenticationService');
+      $authSvc = $this->getAuthenticationService();
       $result = $authSvc->authenticate($authAdapter);
       if ($result->getCode() == Result::SUCCESS) {
         #$sess = new Container('auth');
@@ -63,7 +75,7 @@ class LoginController extends BaseController {
   }
 
   public function logoutAction() {
-    $authSvc = $this->getServiceLocator()->get('AuthenticationService');
+    $authSvc = $this->getAuthenticationService();
     $authSvc->clearIdentity();
     $this->redirect()->toRoute('login');
   }
