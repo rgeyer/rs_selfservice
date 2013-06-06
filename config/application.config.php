@@ -4,7 +4,6 @@ return array(
     'modules' => array(
         'SelfService',
         'DoctrineModule',
-        'DoctrineORMModule',
         'DoctrineMongoODMModule',
         'SmartyModule',
         'ZendDeveloperTools'
