@@ -298,7 +298,7 @@ class ProvisioningHelper {
    */
   public function provisionServer($server, Deployment $deployment) {
     $result = array();
-    $cloud_href = $server->instance->cloud_href;
+    $cloud_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromHref('cloud', $server->instance->cloud_href);
 
     $st = $this->_findOrImportServerTemplate(
       $server->server_template->nickname->getVal(),
@@ -349,8 +349,6 @@ class ProvisioningHelper {
       if($ssh_key) {
         $params['server[instance][ssh_key_href]'] = $ssh_key->href;
       }
-
-      # TODO: Add instance type href and randomized (or HA best practice'd) datacenter href here
 
       $api_server->cloud_id = $cloud_id;
       $api_server->create($params);

@@ -125,6 +125,37 @@ class Product {
     return $valuesByInputId;
   }
 
+  public function pruneBrokenRefs() {
+    $topLevelResourceIds = array();
+    foreach($this->resources as $resource) {
+      $topLevelResourceIds[] = $resource->id;
+    }
+
+    foreach($this->resources as $resource) {
+      $this->isBrokenRef($resource, $topLevelResourceIds);
+    }
+  }
+
+  protected function isBrokenRef(&$resource, $resource_ids) {
+    $retval = false;
+    if(property_exists($resource, "ref")) {
+      return !in_array($resource->id, $resource_ids);
+    } else {
+      $objvars = get_object_vars($resource);
+      foreach($objvars as $key => $val) {
+        if(is_array($val)) {
+          foreach($val as $idx => $subresource) {
+            if($this->isBrokenRef($subresource, $resource_ids)) {
+              unset($resource->{$key}[$idx]);
+            }
+          }
+        }
+        $resource->{$key} = array_merge($resource->{$key});
+      }
+    }
+    return $retval;
+  }
+
   /**
    * Removes all resources which have a "depends" property which does not match
    * the values passed in as $params
@@ -136,62 +167,38 @@ class Product {
   public function resolveDepends(array $params) {
     $valuesByInputId = $this->convertInputParamsToResourceIdKeys($params);
 
-    foreach($this->resources as $idx =>$resource) {
+    foreach($this->resources as $idx => $resource) {
       if(!$this->hasDependsMatch($resource, $valuesByInputId)) {
-        print "Unsetting idx $idx\n";
         unset($this->resources[$idx]);
       }
     }
   }
 
-  protected function hasDependsMatch($resource, array $params) {
+  protected function hasDependsMatch(&$resource, array $params) {
     $does_match = true;
     $objvars = get_object_vars($resource);
     foreach($objvars as $key => $val) {
-      if($key == "depends") {
-        print "It's got a depends ".$resource->depends['id']."\n";
-        print json_encode($resource);
-        $input_value_as_array = (array)$params[$resource->depends['id']];
-        $depends_value_as_array = (array)$resource->depends['value'];
-        if($resource->depends['match'] == "any") {
-          print "Comparing for any\n";
+      if($key == "depends" && $val !== null) {
+        $input_value_as_array = array_key_exists($resource->depends->id, $params) ?
+          (array)$params[$resource->depends->id] : array();
+        $depends_value_as_array = (array)$resource->depends->value;
+        if($resource->depends->match == "any") {
           $intersect = array_intersect($depends_value_as_array, $input_value_as_array);
-          print_r($depends_value_as_array);
-          print_r($input_value_as_array);
-          print_r($intersect);
           $does_match = count($intersect) > 0;
         } else {
-          print "Comparing for all\n";
           $diff = array_diff($depends_value_as_array, $input_value_as_array);
-          print_r($depends_value_as_array);
-          print_r($input_value_as_array);
-          print_r($diff);
           $does_match = count($diff) == 0;
         }
+      } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
+        $resetAry = array();
+        foreach($val as $idx => $subresource) {
+          if($this->hasDependsMatch($subresource, $params)) {
+            $resetAry[] = $subresource;
+          }
+        }
+        $resource->{$key} = $resetAry;
       }
     }
-
-    /*if(array_key_exists('depends', $objvars)) {
-      print "It's got a depends ".$resource->depends->id."\n";
-      print json_encode($resource);
-      $input_value_as_array = (array)$params[$resource->depends->id];
-      $depends_value_as_array = (array)$resource->depends->value;
-      if($resource->depends->match == "any") {
-        print "Comparing for any\n";
-        $intersect = array_intersect($depends_value_as_array, $input_value_as_array);
-        print_r($depends_value_as_array);
-        print_r($input_value_as_array);
-        print_r($intersect);
-        $does_match = count($intersect) > 0;
-      } else {
-        print "Comparing for all\n";
-        $diff = array_diff($depends_value_as_array, $input_value_as_array);
-        print_r($depends_value_as_array);
-        print_r($input_value_as_array);
-        print_r($diff);
-        $does_match = count($diff) == 0;
-      }
-    }*/
     return $does_match;
     # TODO: Should I validate the depends->ref type to the input matched
     # by the depends->id? I don't currently have the resource_type in $params
@@ -222,10 +229,8 @@ class Product {
     $objvars = get_object_vars($object);
     foreach($objvars as $key => $val) {
       if($key == "depends") { continue; }
-      if (is_array($val)) {
-        if(in_array("ref", array_keys($val)) && preg_match('/^[a-z]+_product_input$/', $val['ref'])) {
-          $object->{$key} = $params[$val['id']];
-        }
+      if (property_exists($val, "ref") && preg_match('/^[a-z]+_product_input$/', $val->ref)) {
+        $object->{$key} = $params[$val->id];
       } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
         foreach($val as $item) {
           $this->replaceInputRefsWithScalar($item, $params);
