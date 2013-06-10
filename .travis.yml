@@ -9,4 +9,5 @@ before_script:
   - php composer.phar install
   - mkdir logs
   - touch logs/application.log
+  - phpenv config-add travis-php.ini
 script: phpunit -c module/SelfService/test/phpunit.xml
