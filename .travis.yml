@@ -5,9 +5,9 @@ php:
 services:
   - mongodb
 before_script:
+  - phpenv config-add travis-php.ini
   - wget --quiet http://getcomposer.org/composer.phar
   - php composer.phar install
   - mkdir logs
   - touch logs/application.log
-  - phpenv config-add travis-php.ini
 script: phpunit -c module/SelfService/test/phpunit.xml
