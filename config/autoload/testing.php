@@ -29,6 +29,20 @@ return array(
         'dbname' => 'rs_selfservice_test'
       )
     ),
+    'driver' => array(
+      'odm_default' => array(
+        'drivers' => array(
+          'SelfService\Document' => 'annotation_driver'
+        )
+      ),
+      'annotation_driver' => array(
+        'class' => 'Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver',
+        'cache' => 'array',
+        'paths' => array(
+          __DIR__ . '/../../module/SelfService/src/SelfService/Document'
+        )
+      )
+    ),
     'configuration' => array(
       'odm_default' => array(
         'default_db' => 'rs_selfservice_test'
