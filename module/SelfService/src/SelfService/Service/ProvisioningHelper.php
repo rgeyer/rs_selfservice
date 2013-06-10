@@ -25,10 +25,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Service;
 
 use RGeyer\Guzzle\Rs\RightScaleClient;
-use RGeyer\Guzzle\Rs\Common\ClientFactory;
 use RGeyer\Guzzle\Rs\Model\Mc\Deployment;
+use RGeyer\Guzzle\Rs\Common\ClientFactory;
 
-use Doctrine\ORM\PersistentCollection;
 
 use RGeyer\Guzzle\Rs\Model\Mc\ServerTemplate as ApiServerTemplate;
 
@@ -64,7 +63,7 @@ class ProvisioningHelper {
    * array(
    *  '12345' => array(
    *    'api' => \RGeyer\Guzzle\Rs\Model\AbstractSecurityGroup,
-   *    'model' => \SecurityGroup # The doctrine ORM model
+   *    'model' => \stdClass # The security group representation as defined in the output json schema
    * );
    *
    * @var array An associative array (hash) of security groups.
@@ -272,7 +271,7 @@ class ProvisioningHelper {
   }
 
   /**
-   * @param \stdClass[] $groups An array of std_class representations of \SelfService\Document|SecurityGroup objects of provisionable groups for which you'd like hrefs
+   * @param \stdClass[] $groups An array of stdClass representations of a SecurityGroup (as defined in the output json schema) for which you'd like hrefs
    * @return String[] the href for each provisioned security group
    */
   protected function _getProvisionedSecurityGroupHrefs($groups) {
@@ -292,18 +291,18 @@ class ProvisioningHelper {
    * Provisions one or many Servers of the specified type
    *
    * @throws \InvalidArgumentException if there are ServerTemplate discovery or import issues.
-   * @param stdClass $server An stdClass representing at \SelfService\Document\Server describing the desired server.
+   * @param stdClass $server The server representation as defined in the output json schema
    * @param \RGeyer\Guzzle\Rs\Model\Mc\Deployment $deployment The previously provisioned deployment the server(s) should be created in
    * @return array A mix of RGeyer\Guzzle\Rs\Model\Mc\Server and RGeyer\Guzzle\Rs\Model\Mc\SshKey objects which were created during the process
    */
   public function provisionServer($server, Deployment $deployment) {
     $result = array();
-    $cloud_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromHref('cloud', $server->instance->cloud_href);
+    $cloud_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($server->instance->cloud_href);
 
     $st = $this->_findOrImportServerTemplate(
-      $server->server_template->nickname->getVal(),
-      $server->server_template->version->getVal(),
-      $server->server_template->publication_id->getVal()
+      $server->instance->server_template->name,
+      $server->instance->server_template->revision,
+      $server->instance->server_template->publication_id
     );
 
     $mci_href = null;
@@ -320,24 +319,26 @@ class ProvisioningHelper {
       }
     }
 
-    $server_secgrps = $this->_getProvisionedSecurityGroupHrefs($server->security_groups);
+    $server_secgrps = $this->_getProvisionedSecurityGroupHrefs($server->instance->security_groups);
 
-    $this->log->info("About to provision " . $server->count->getVal() . " servers of type " . $server->nickname->getVal());
+    $this->log->info("About to provision " . $server->count . " servers of type " . $server->name_prefix);
 
-    for ($i=1; $i <= $server->count->getVal(); $i++) {
-      $nickname = $server->nickname->getVal();
-      if($server->count->getVal() > 1) {
+    for ($i=1; $i <= $server->count; $i++) {
+      $nickname = $server->name_prefix;
+      if($server->count > 1) {
         $nickname .= $i;
       }
 
       $params = array();
       $api_server = $this->client->newModel('Server');
 
+      $instance_href = $server->instance->instance_type_href != null ? $server->instance->instance_type_href : $instance_type_href;
+
       $params['server[name]'] = $nickname;
       $params['server[deployment_href]'] = $deployment->href;
       $params['server[instance][server_template_href]'] = $st->href;
       $params['server[instance][cloud_href]'] = $this->_clouds[$cloud_id]->href;
-      $params['server[instance][instance_type_href]'] = $server->instance_type != null ? $server->instance_type->getVal() : $instance_type_href;
+      $params['server[instance][instance_type_href]'] = $instance_href;
       if(count($server_secgrps) > 0) {
         $params['server[instance][security_group_hrefs]'] = $server_secgrps;
       }
@@ -357,7 +358,12 @@ class ProvisioningHelper {
       $result[] = $api_server;
       $this->_servers[strval($server->id)][] = $api_server;
 
-      $this->log->info(sprintf("Created Server - Name: %s ID: %s", $server->nickname->getVal(), $api_server->id));
+      $this->log->info(sprintf("Created Server - Name: %s ID: %s", $server->name_prefix, $api_server->id));
+      if($server->alert_specs) {
+        foreach($server->alert_specs as $alert) {
+          $this->_provisionAlertSpec($alert, $api_server->href);
+        }
+      }
     }
     return $result;
   }
@@ -367,7 +373,8 @@ class ProvisioningHelper {
    *
    * @param string $name The name for the deployment
    * @param string|null $description A description for the deployment, or null
-   * @param \SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput[] $inputs An array of inputs specified for the product
+   * @param array $inputs An associative array of inputs specified for the deployment
+   * where the key is the name of the input and the value is the value of the input.
    * @return \RGeyer\Guzzle\Rs\Model\Mc\Deployment The newly created deployment
    */
   public function provisionDeployment($name, $description = null, $inputs = array()) {
@@ -394,20 +401,16 @@ class ProvisioningHelper {
 
   /**
    * @param \RGeyer\Guzzle\Rs\Model\Mc\Deployment $deployment A RightScaleAPIClient model representing the provisioned deployment, only the ->href property is used
-   * @param \SelfService\Entity\Provisionable\MetaInputs\InputProductMetaInput[] $inputs An array of inputs specified for the product
+   * @param array $inputs An associative array of inputs specified for the deployment
+   * where the key is the name of the input and the value is the value of the input.
    * @return void
    */
   public function updateDeployment($deployment, $inputs) {
     if(count($inputs) > 0) {
-      $inputs_2_0_ary = array();
-      foreach($inputs as $input) {
-        $inputs_2_0_ary[$input->rs_input_name] = $input->getVal();
-      }
-
       $command = $this->client->getCommand('inputs_multi_update',
         array(
           'path' => str_replace('/api/', '', $deployment->href).'/inputs/multi_update',
-          'inputs' => $inputs_2_0_ary
+          'inputs' => $inputs
         )
       );
       $command->execute();
@@ -418,11 +421,11 @@ class ProvisioningHelper {
   /**
    * Creates a new security group, using RightScale API 1.5 as appropriate.
    *
-   * @param SelfService\Entity\Provisionable\SecurityGroup $security_group The Doctrine model describing the desired security group
+   * @param \stdClass $security_group The security group representation as defined in the output json schema
    * @return bool|\RGeyer\Guzzle\Rs\Model\Mc\SecurityGroup False if no group was created, a created security group if successful
    */
-  public function provisionSecurityGroup(SecurityGroup $security_group) {
-    $cloud_id = $security_group->cloud_id->getVal();
+  public function provisionSecurityGroup($security_group) {
+    $cloud_id = RightScaleClient::getIdFromRelativeHref($security_group->cloud_href);
     // Check if this cloud supports security groups first!
     if(!$this->_clouds[$cloud_id]->supportsCloudFeature('security_groups')) {
       $this->log->debug('The specified cloud (' . $cloud_id . ') does not support security groups, skipping the creation of the security group');
@@ -431,8 +434,8 @@ class ProvisioningHelper {
 
     $secGrp = null;
     $secGrp = $this->client->newModel('SecurityGroup');
-    $secGrp->name = $security_group->name->getVal();
-    $secGrp->description = $security_group->description->getVal();
+    $secGrp->name = $security_group->name;
+    $secGrp->description = $security_group->description;
     $secGrp->cloud_id = $cloud_id;
     $secGrp->create();
     // This feels a bit hacky?
@@ -443,7 +446,7 @@ class ProvisioningHelper {
       'model' => $security_group
     );
 
-    $this->log->info(sprintf("Created Security Group - Name: %s ID: %s", $security_group->name->getVal(), $secGrp->id));
+    $this->log->info(sprintf("Created Security Group - Name: %s ID: %s", $security_group->name, $secGrp->id));
 
     return $secGrp;
   }
@@ -453,11 +456,11 @@ class ProvisioningHelper {
    * security group since groups may reference each other, meaning all groups must be created
    * first, then rules can be added later.
    *
-   * @param SelfService\Entity\Provisionable\SecurityGroup $security_group
+   * @param \stdClass $security_group The security group representation as defined in the output json schema
    * @return bool
    */
-  public function provisionSecurityGroupRules(SecurityGroup $security_group) {
-    $cloud_id = $security_group->cloud_id->getVal();
+  public function provisionSecurityGroupRules($security_group) {
+    $cloud_id = RightScaleClient::getIdFromRelativeHref($security_group->cloud_href);
     // Check if this cloud supports security groups first!
     if(!$this->_clouds[$cloud_id]->supportsCloudFeature('security_groups')) {
       $this->log->debug('The specified cloud (' . $cloud_id . ') does not support security groups, skipping the creation of the security group rules');
@@ -482,10 +485,10 @@ class ProvisioningHelper {
     $api = $this->_security_groups[$security_group->id]['api'];
     $owner = $this->_owners[$cloud_id];
 
-    $this->log->info("About to provision " . count($security_group->rules) . " rules for Security Group " . $security_group->name->getVal());
-    foreach ( $security_group->rules as $rule ) {
+    $this->log->info("About to provision " . count($security_group->security_group_rules) . " rules for Security Group " . $security_group->name);
+    foreach ( $security_group->security_group_rules as $rule ) {
       $other_model = null; // Declare this up here so it can be accessed when logging at the end
-      if($rule->ingress_group) {
+      if($rule->source_type == "group") {
         if(array_key_exists($rule->ingress_group->id, $this->_security_groups)) {
           $ingress_group = $this->_security_groups[$rule->ingress_group->id];
 
@@ -493,11 +496,11 @@ class ProvisioningHelper {
           $other_api = $ingress_group['api'];
 
           $api->createGroupRule(
-            $other_model->name->getVal(),
+            $other_model->name,
             $owner,
-            $rule->ingress_protocol->getVal(),
-            $rule->ingress_from_port->getVal(),
-            $rule->ingress_to_port->getVal()
+            $rule->protocol,
+            $rule->protocol_details->start_port,
+            $rule->protocol_details->end_port
           );
         } else {
           $this->log->warn(sprintf("No concrete security group was provisioned for security group doctrine model ID %s.  Skipping rule creation", $rule->ingress_group->id));
@@ -505,35 +508,35 @@ class ProvisioningHelper {
         }
       } else {
         $api->createCidrRule(
-          $rule->ingress_protocol->getVal(),
-          $rule->ingress_cidr_ips->getVal(),
-          $rule->ingress_from_port->getVal(),
-          $rule->ingress_to_port->getVal()
+          $rule->protocol,
+          $rule->cidr_ips,
+          $rule->protocol_details->start_port,
+          $rule->protocol_details->end_port
         );
       }
 
       $this->log->info(
         sprintf("Created Security Group Rule - Group Name: %s Rule: protocol: %s ports: %s..%s %s: %s",
-          $security_group->name->getVal(),
-          $rule->ingress_protocol->getVal(),
-          $rule->ingress_from_port->getVal(),
-          $rule->ingress_to_port->getVal(),
-          $rule->ingress_group ? 'group' : 'IPs',
-          $rule->ingress_group ? $other_model->name->getVal() : $rule->ingress_cidr_ips->getVal()
+          $security_group->name,
+          $rule->protocol,
+          $rule->protocol_details->start_port,
+          $rule->protocol_details->end_port,
+          $rule->source_type,
+          $rule->source_type == "group" ? $other_model->name : $rule->cidr_ips
         )
       );
     }
     return true;
   }
 
-  public function provisionServerArray(ServerArray $array, Deployment $deployment) {
+  public function provisionServerArray($array, Deployment $deployment) {
     $result = array();
-    $cloud_id = $array->cloud_id->getVal();
+    $cloud_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($array->instance->cloud_href);
 
     $st = $this->_findOrImportServerTemplate(
-      $array->server_template->nickname->getVal(),
-      $array->server_template->version->getVal(),
-      $array->server_template->publication_id->getVal()
+      $array->instance->server_template->name,
+      $array->instance->server_template->revision,
+      $array->instance->server_template->publication_id
     );
 
     $mci_href = null;
@@ -542,19 +545,20 @@ class ProvisioningHelper {
 
     $secgrps = $this->_getProvisionedSecurityGroupHrefs($array->security_groups);
 
+    # TODO: Handle queue or alert based arrays. Only alert at the moment
     $params = array(
-      'server_array[name]' => $array->nickname->getVal(),
+      'server_array[name]' => $array->name,
       'server_array[state]' => 'disabled',
       # TODO: These params assume an alert type, might want to be smarter or
       # not allow any type besides alert
-      'server_array[array_type]' => $array->type->getVal(),
+      'server_array[array_type]' => $array->array_type,
       'server_array[elasticity_params][alert_specific_params][decision_threshold]' => '51',
-      'server_array[elasticity_params][alert_specific_params][voters_tag_predicate]' => $array->tag->getVal(),
+      'server_array[elasticity_params][alert_specific_params][voters_tag_predicate]' => $array->elasticity_params->alert_specific_params->voters_tag_predicate,
       'server_array[elasticity_params][pacing][resize_calm_time]' => '10',
       'server_array[elasticity_params][pacing][resize_up_by]' => '3',
       'server_array[elasticity_params][pacing][resize_down_by]' => '1',
-      'server_array[elasticity_params][bounds][max_count]' => strval($array->max_count->getVal()),
-      'server_array[elasticity_params][bounds][min_count]' => strval($array->min_count->getVal()),
+      'server_array[elasticity_params][bounds][max_count]' => strval($array->elasticity_params->bounds->max_count),
+      'server_array[elasticity_params][bounds][min_count]' => strval($array->elasticity_params->bounds->min_count),
       'server_array[deployment_href]' => $deployment->href,
       'server_array[instance][cloud_href]' => $this->_clouds[$cloud_id]->href,
       'server_array[instance][server_template_href]' => $st->href,
@@ -582,50 +586,32 @@ class ProvisioningHelper {
 
     $result[] = $api_array;
     $this->_arrays[strval($array->id)] = $api_array;
-    $this->log->info(sprintf("Created Array - Name: %s ID: %s", $array->nickname->getVal(), $api_array->id));
+    $this->log->info(sprintf("Created Array - Name: %s ID: %s", $array->name, $api_array->id));
+    if($array->alert_specs) {
+      foreach($array->alert_specs as $alert) {
+        $this->_provisionAlertSpec($alert, $api_array->href);
+      }
+    }
     return $result;
   }
 
-  public function provisionAlertSpec(AlertSpec $alert) {
-    $alert_spec_subject_hrefs = array();
-    foreach($alert->subjects as $subject) {
-      switch(get_class($subject)) {
-        case "SelfService\Entity\Provisionable\Server":
-          $strid = strval($subject->id);
-          if(array_key_exists($strid, $this->_servers)) {
-            foreach($this->_servers[$strid] as $server) {
-              $alert_spec_subject_hrefs[] = $server->href;
-            }
-          }
-          break;
-        case "SelfService\Entity\Provisionable\ServerArray":
-          $strid = strval($subject->id);
-          if(array_key_exists($strid, $this->_arrays)) {
-            $alert_spec_subject_hrefs[] = $this->_arrays[$strid]->href;
-          }
-          break;
-      }
+  public function _provisionAlertSpec($alert, $subject_href) {
+    $api_alert_spec = $this->client->newModel('AlertSpec');
+    $api_alert_spec->name = $alert->name;
+    $api_alert_spec->file = $alert->file;
+    $api_alert_spec->variable = $alert->variable;
+    $api_alert_spec->condition = $alert->condition;
+    $api_alert_spec->threshold = $alert->threshold;
+    $api_alert_spec->duration = $alert->duration;
+    $api_alert_spec->subject_href = $subject_href;
+    if($alert->vote_tag && $alert->vote_type) {
+      $api_alert_spec->vote_tag = $alert->vote_tag;
+      $api_alert_spec->vote_type = $alert->vote_type;
+    } else if ($alert->escalation_name) {
+      $api_alert_spec->escalation_name = $alert->escalation_name;
     }
-
-    foreach($alert_spec_subject_hrefs as $subject_href) {
-      $api_alert_spec = $this->client->newModel('AlertSpec');
-      $api_alert_spec->name = $alert->name->getVal();
-      $api_alert_spec->file = $alert->file->getVal();
-      $api_alert_spec->variable = $alert->variable->getVal();
-      $api_alert_spec->condition = $alert->cond->getVal();
-      $api_alert_spec->threshold = $alert->threshold->getVal();
-      $api_alert_spec->duration = $alert->duration->getVal();
-      $api_alert_spec->subject_href = $subject_href;
-      if($alert->action->getVal() == 'vote') {
-        $api_alert_spec->vote_tag = $alert->vote_tag->getVal();
-        $api_alert_spec->vote_type = $alert->vote_type->getVal();
-      } else if ($alert->action->getVal() == 'escalation') {
-        $api_alert_spec->escalation_name = $alert->escalation_name->getVal();
-      }
-      $api_alert_spec->create();
-      $this->log->info(sprintf("Created Alert Spec - Name: %s For Subject: %s", $api_alert_spec->name, $subject_href));
-    }
-
+    $api_alert_spec->create();
+    $this->log->info(sprintf("Created Alert Spec - Name: %s For Subject: %s", $api_alert_spec->name, $subject_href));
   }
 
   public function launchServers() {
