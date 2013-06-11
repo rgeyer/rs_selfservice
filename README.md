@@ -154,6 +154,10 @@ option in your applications ./confi/local.php config file.
 * CF for generating json from running/created deployment
 * CF for performing callbacks to RSSS (async)
 * On Products Admin, allow changes to ServerTemplate and revision, which metainputs are requested and their default values.
+* Support Queue based arrays
+* Support schedules on arrays - Dependency upon rs_guzzle_client being able to make the call with the correct params.
+* Support datacenter policy on sarrays - Dependency upon rs_guzzle_client being able to make the call with the correct params.
+* Support optimized - Dependency upon rs_guzzle_client to consider this a valid param.
 
 # Misc Useful stuff
 ## Icon Pack
