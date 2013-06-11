@@ -17,9 +17,19 @@
       "6:9999-9999-9999",
       "7:9999-9999-9999",
       "8:9999-9999-9999"
-    ]
+    ],
+    "dns": {
+      "id": "dynamic dns id"
+    }
+  },
+  "sys_dns": {
+    "choice": "Route53",
+    "user": "key",
+    "password": "secret"
   },
   "run_list": [
+    "sys_dns::default",
+    "rsss::setup_rsss_aio",
     "rsss::setup_rsss"
   ]
 }

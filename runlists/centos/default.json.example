@@ -80,9 +80,9 @@
     "password": "password"
   },
   "run_list": [
+    "recipe[resolver]",
     "recipe[rs_vagrant_shim]",
     "recipe[system::hostname]",
-    "recipe[resolver]",
     "recipe[sys_dns::default]",
     "recipe[logging::default]",
     "recipe[sys_firewall::default]",
