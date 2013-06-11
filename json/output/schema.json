@@ -82,10 +82,6 @@
         "resource_type": { "enum": ["server_array"] },
         "array_type": { "enum": ["alert","queue"] },
         "description": { "type":"string" },
-        "datacenter_policy":{
-          "type": "array",
-          "items": { "$ref": "#/definitions/datacenter_policy" }
-        },
         "elasticity_params": { "$ref": "#/definitions/elasticity_params" },
         "instance": { "$ref": "#/definitions/instance" },
         "name": { "type":"string" },
@@ -95,16 +91,6 @@
           "type": "array",
           "items": { "$ref": "#/definitions/alert_spec" }
         }
-      }
-    },
-    "datacenter_policy": {
-      "type": "object",
-      "required": ["resource_type","datacenter_href","max","weight"],
-      "properties": {
-        "resource_type": { "enum": ["datacenter_policy"] },
-        "datacenter_href": { "type": "string" },
-        "max": { "type": "string" },
-        "weight": { "type": "string" }
       }
     },
     "elasticity_params": {
@@ -195,7 +181,7 @@
         "cloud_href": {
           "type": "string"
         },
-        "datacenter_href": { "type": "string" },
+        "datacenter_hrefs": { "type": "array" },
         "inputs": {
           "type": "array",
           "items": { "$ref": "#/definitions/input" }

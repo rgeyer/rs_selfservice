@@ -311,11 +311,15 @@ class ProvisioningHelper {
 
     $datacenter_hrefs = array();
     if($this->_clouds[$cloud_id]->supportsCloudFeature('datacenters')) {
-      $datacenters = $this->api_cache->getDatacenters($cloud_id);
-      foreach($datacenters as $datacenter) {
-        # TODO: Filter by datacenters specified as defaults for product, or
-        # specified as a meta input by the user
-        $datacenter_hrefs[] = $datacenter->href;
+      if($server->instance->datacenter_hrefs) {
+        $datacenter_hrefs = $server->instance->datacenter_hrefs;
+      } else {
+        $datacenters = $this->api_cache->getDatacenters($cloud_id);
+        foreach($datacenters as $datacenter) {
+          # TODO: Filter by datacenters specified as defaults for product, or
+          # specified as a meta input by the user
+          $datacenter_hrefs[] = $datacenter->href;
+        }
       }
     }
 
@@ -332,7 +336,7 @@ class ProvisioningHelper {
       $params = array();
       $api_server = $this->client->newModel('Server');
 
-      $instance_href = $server->instance->instance_type_href != null ? $server->instance->instance_type_href : $instance_type_href;
+      $instance_href = $server->instance->instance_type_href ?: $instance_type_href;
 
       $params['server[name]'] = $nickname;
       $params['server[deployment_href]'] = $deployment->href;
@@ -548,23 +552,29 @@ class ProvisioningHelper {
     # TODO: Handle queue or alert based arrays. Only alert at the moment
     $params = array(
       'server_array[name]' => $array->name,
-      'server_array[state]' => 'disabled',
-      # TODO: These params assume an alert type, might want to be smarter or
-      # not allow any type besides alert
+      'server_array[state]' => $array->state ?: 'disabled',
       'server_array[array_type]' => $array->array_type,
-      'server_array[elasticity_params][alert_specific_params][decision_threshold]' => '51',
-      'server_array[elasticity_params][alert_specific_params][voters_tag_predicate]' => $array->elasticity_params->alert_specific_params->voters_tag_predicate,
-      'server_array[elasticity_params][pacing][resize_calm_time]' => '10',
-      'server_array[elasticity_params][pacing][resize_up_by]' => '3',
-      'server_array[elasticity_params][pacing][resize_down_by]' => '1',
-      'server_array[elasticity_params][bounds][max_count]' => strval($array->elasticity_params->bounds->max_count),
-      'server_array[elasticity_params][bounds][min_count]' => strval($array->elasticity_params->bounds->min_count),
+      'server_array[elasticity_params][bounds][max_count]' => strval($array->elasticity_params->bounds->max_count) ?: '10',
+      'server_array[elasticity_params][bounds][min_count]' => strval($array->elasticity_params->bounds->min_count) ?: '2',
+      'server_array[elasticity_params][pacing][resize_calm_time]' => strval($array->elasticity_params->pacing->resize_calm_time) ?: "10",
+      'server_array[elasticity_params][pacing][resize_up_by]' => strval($array->elasticity_params->pacing->resize_up_by) ?: "3",
+      'server_array[elasticity_params][pacing][resize_down_by]' => strval($array->elasticity_params->pacing->resize_down_by) ?: "1",
       'server_array[deployment_href]' => $deployment->href,
       'server_array[instance][cloud_href]' => $this->_clouds[$cloud_id]->href,
       'server_array[instance][server_template_href]' => $st->href,
       'server_array[instance][multi_cloud_image_href]' => $mci_href,
       'server_array[instance][instance_type_href]' => $instance_type_href,
     );
+    /* TODO: rs_guzzle_client doesn't consider this a valid parameter
+     * if($array->optimized) {
+      $params['server_array[optimized]'] = strval($array->optimized);
+    }*/
+    if($array->array_type == "alert") {
+      $params = array_merge($params, array(
+        'server_array[elasticity_params][alert_specific_params][decision_threshold]' => strval($array->elasticity_params->alert_specific_params->decision_threshold) ?: '51',
+        'server_array[elasticity_params][alert_specific_params][voters_tag_predicate]' => $array->elasticity_params->alert_specific_params->voters_tag_predicate
+      ));
+    }
     if(count($secgrps) > 0) {
       $params['server_array[instance][security_group_hrefs]'] = $secgrps;
     }
@@ -572,6 +582,23 @@ class ProvisioningHelper {
     if($ssh_key) {
       $params['server_array[instance][ssh_key_href]'] = $ssh_key->href;
     }
+    /* TODO: When this parameter type is properly supported in rs_guzzle_client
+     * reimplement this.
+     * https://github.com/rgeyer/rs_guzzle_client/issues/6
+    if($array->instance->datacenter_hrefs &&
+       count($array->instance->datacenter_hrefs) > 0) {
+      $datacenter_count = count($array->instance->datacenter_hrefs);
+      $each = intval(100/$datacenter_count);
+      $remainder = intval(100%$datacenter_count);
+      foreach($array->instance->datacenter_hrefs as $idx => $dc_href) {
+        $params['server_array[datacenter_policy]['.$idx.'][datacenter_href]'] = $dc_href;
+        $params['server_array[datacenter_policy]['.$idx.'][max]'] = 0;
+        $params['server_array[datacenter_policy]['.$idx.'][weight]'] = $each;
+        if($idx == 0 && $remainder != 0) {
+          $params['server_array[datacenter_policy]['.$idx.'][weight]'] = $each+$remainder;
+        }
+      }
+    }*/
 
     $api_array = $this->client->newModel('ServerArray');
     $api_array->create($params);

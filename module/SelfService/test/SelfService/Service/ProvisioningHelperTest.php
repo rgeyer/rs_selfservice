@@ -413,7 +413,52 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $this->assertEquals(count($request_paths), count($this->_guzzletestcase->getMockedRequests()));
   }
 
-  public function testProvisionServerUsesInstanceTypeWhenDefaultIsAvailable() {}
+  public function testProvisionServerUsesInstanceTypeWhenDefaultIsAvailable() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/no_instance_type/response',
+      '1.5/instance_types/json/response',
+      '1.5/datacenters/json/response',
+      '1.5/servers_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $server_model = new \stdClass();
+    $server_model->count = 1;
+    $server_model->name_prefix = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->instance_type_href = "/api/clouds/11111/instance_types/12345";
+    $instance_model->security_groups = array();
+    $server_model->instance = $instance_model;
+
+    $cache_adapter = $this->getApplicationServiceLocator()->get('cache_storage_adapter');
+    $this->assertFalse($cache_adapter->hasItem('instance_types_11111'));
+
+    $provisioned_stuff = $helper->provisionServer($server_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains('instance_type_href]=%2Fapi%2Fclouds%2F11111%2Finstance_types%2F12345',strval($responses[8]));}
 
   public function testProvisionServerPicksInstanceTypeWhenNoDefaultIsAvailable() {
     $log = $this->getMock('Zend\Log\Logger');
@@ -462,9 +507,92 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $this->assertContains('instance_type_href]=%2Fapi%2Fclouds%2F12345%2Finstance_types%2F12345OPP9B9RLTDK',strval($responses[8]));
   }
 
-  public function testProvisionServerUsesDatacentersWhenDefaultIsAvailable() {}
+  public function testProvisionServerUsesDatacentersWhenDefaultIsAvailable() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/no_instance_type/response',
+      '1.5/instance_types/json/response',
+      '1.5/servers_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $server_model = new \stdClass();
+    $server_model->count = 1;
+    $server_model->name_prefix = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->datacenter_hrefs = array("/api/clouds/11111/datacenters/12345");
+    $instance_model->security_groups = array();
+    $server_model->instance = $instance_model;
 
-  public function testProvisionServerPicksDatacentersWhenNoDefaultIsAvailable() {}
+    $provisioned_stuff = $helper->provisionServer($server_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains('datacenter_href]=%2Fapi%2Fclouds%2F11111%2Fdatacenters%2F12345',strval($responses[7]));
+  }
+
+  public function testProvisionServerPicksDatacentersWhenNoDefaultIsAvailable() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/no_instance_type/response',
+      '1.5/instance_types/json/response',
+      '1.5/datacenters/json/response',
+      '1.5/servers_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $server_model = new \stdClass();
+    $server_model->count = 1;
+    $server_model->name_prefix = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $server_model->instance = $instance_model;
+
+    $provisioned_stuff = $helper->provisionServer($server_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains('datacenter_href]=%2Fapi%2Fclouds%2F12345%2Fdatacenters%2F12345F8AT46B08LN',strval($responses[8]));}
 
   public function testCanProvisionServerWithVoteAlertSpec() {
     $log = $this->getMock('Zend\Log\Logger');
@@ -862,25 +990,483 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $this->assertContains("alert_spec[escalation_name]=critical", strval($responses[8]));
   }
 
-  public function testProvisionServerArrayUsesDatacentersWhenDefaultIsAvailable() {}
+  public function testProvisionServerArrayUsesDatacentersWhenDefaultIsAvailable() {
+    $this->markTestSkipped("See: https://github.com/rgeyer/rs_guzzle_client/issues/6");
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $bounds = new \stdClass();
+    $bounds->max_count = 10;
+    $bounds->min_count = 2;
+    $elasticity_params->bounds = $bounds;
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $alert_specific_params->decision_threshold = "51";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->datacenter_hrefs = array("/api/clouds/11111/datacenters/11111");
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("datacenter_href]=%2Fapi%2Fclouds%2Fdatacenters%2F/11111", strval($responses[6]));
+  }
 
-  public function testProvisionServerArrayPicksDatacentersWhenNoDefaultIsAvailable() {}
+  public function testProvisionServerArraySetsDecisionThresholdIfMissing() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $bounds = new \stdClass();
+    $bounds->max_count = 10;
+    $bounds->min_count = 2;
+    $elasticity_params->bounds = $bounds;
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("decision_threshold]=51", strval($responses[6]));
+  }
 
-  public function testProvisionServerArraySetsDecisionThresholdIfMissing() { }
+  public function testProvisionServerArrayUsesDecisionThresholdIfSet() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $bounds = new \stdClass();
+    $bounds->max_count = 10;
+    $bounds->min_count = 2;
+    $elasticity_params->bounds = $bounds;
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $alert_specific_params->decision_threshold = "22";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("decision_threshold]=22", strval($responses[6]));
+  }
 
-  public function testProvisionServerArrayUsesDecisionThresholdIfSet() { }
+  public function testProvisionServerArraySetsPacingIfMissing() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $bounds = new \stdClass();
+    $bounds->max_count = 10;
+    $bounds->min_count = 2;
+    $elasticity_params->bounds = $bounds;
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("resize_calm_time]=10", strval($responses[6]));
+    $this->assertContains("resize_up_by]=3", strval($responses[6]));
+    $this->assertContains("resize_down_by]=1", strval($responses[6]));
+  }
 
-  public function testProvisionServerArraySetsPacingIfMissing() { }
+  public function testProvisionServerArrayUsesPacingIfSet() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $bounds = new \stdClass();
+    $bounds->max_count = 10;
+    $bounds->min_count = 2;
+    $elasticity_params->bounds = $bounds;
+    $pacing = new \stdClass();
+    $pacing->resize_calm_time = 30;
+    $pacing->resize_up_by = 10;
+    $pacing->resize_down_by = 5;
+    $elasticity_params->pacing = $pacing;
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("resize_calm_time]=30", strval($responses[6]));
+    $this->assertContains("resize_up_by]=10", strval($responses[6]));
+    $this->assertContains("resize_down_by]=5", strval($responses[6]));
+  }
 
-  public function testProvisionServerArrayUsesPacingIfSet() { }
+  public function testProvisionServerArraySetsBoundsIfMissing() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("bounds][max_count]=10", strval($responses[6]));
+    $this->assertContains("bounds][min_count]=2", strval($responses[6]));
+  }
 
-  public function testProvisionServerArrayAlertSpecific() { }
+  public function testProvisionServerArrayUsesBoundsIfSet() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $bounds = new \stdClass();
+    $bounds->max_count = 100;
+    $bounds->min_count = 10;
+    $elasticity_params->bounds = $bounds;
+    $pacing = new \stdClass();
+    $pacing->resize_calm_time = 30;
+    $pacing->resize_up_by = 10;
+    $pacing->resize_down_by = 5;
+    $elasticity_params->pacing = $pacing;
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("bounds][max_count]=100", strval($responses[6]));
+    $this->assertContains("bounds][min_count]=10", strval($responses[6]));
+  }
 
-  public function testProvisionServerArrayQueueSpecific() { }
+  public function testProvisionServerArrayQueueSpecific() {
+    $this->markTestSkipped("Too lazy to implement queue specific right now");
+  }
 
-  public function testProvisionServerArraySetsStateIfSet() { }
+  public function testProvisionServerArraySetsStateIfSet() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $bounds = new \stdClass();
+    $bounds->max_count = 10;
+    $bounds->min_count = 2;
+    $elasticity_params->bounds = $bounds;
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $alert_specific_params->decision_threshold = "51";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $array_model->state = 'enabled';
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("server_array[state]=enabled", strval($responses[6]));
+  }
 
-  public function testProvisionServerArrayUsesOptimizedIfSet() { }
+  public function testProvisionServerArrayUsesOptimizedIfSet() {
+    $this->markTestSkipped("rs_guzzle_client doesn't support the param yet.");
+    $log = $this->getMock('Zend\Log\Logger');
+    $request_paths = array(
+      '1.5/clouds/json/with_different_ids/response',
+      '1.5/server_templates/json/response',
+      '1.5/deployments_create/response',
+      '1.5/tags_multi_add/response',
+      '1.5/multi_cloud_images/json/response',
+      '1.5/multi_cloud_image_settings/json/response',
+      '1.5/server_arrays_create/response',
+      '1.5/tags_multi_add/response'
+    );
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),$request_paths);
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $clouds = $helper->getClouds();
+    # TODO: Hacky, hacky, hacky...
+    $clouds[11111]->href = '/api/clouds/12345';
+    $clouds[12345] = $clouds[11111];
+    $helper->setClouds($clouds);
+    $deployment = $helper->provisionDeployment('foo');
+    $server_template_model = new \stdClass();
+    $server_template_model->name = "Database Manager for Microsoft SQL Server (v12.11.1-LTS)";
+    $server_template_model->publication_id = "1234";
+    $server_template_model->revision = 5;
+    $array_model = new \stdClass();
+    $elasticity_params = new \stdClass();
+    $bounds = new \stdClass();
+    $bounds->max_count = 10;
+    $bounds->min_count = 2;
+    $elasticity_params->bounds = $bounds;
+    $alert_specific_params = new \stdClass();
+    $array_model->array_type = "alert";
+    $alert_specific_params->voters_tag_predicate = "tag";
+    $alert_specific_params->decision_threshold = "51";
+    $elasticity_params->alert_specific_params = $alert_specific_params;
+    $array_model->elasticity_params = $elasticity_params;
+    $array_model->name = "DB";
+    $instance_model = new \stdClass();
+    $instance_model->cloud_href = "/api/clouds/11111";
+    $instance_model->server_template = $server_template_model;
+    $instance_model->security_groups = array();
+    $array_model->instance = $instance_model;
+    $array_model->optimized = 'true';
+    $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
+    # Cloud 11111 does not support security groups, so only one item (a server) is provisioned
+    $this->assertEquals(1, count($provisioned_stuff));
+    # Make sure the helper made all of the expected API calls
+    $responses = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(count($request_paths), count($responses));
+    $this->assertContains("server_array[state]=enabled", strval($responses[6]));}
+
+  public function testProvisionServerArrayUsesScheduleIfSet() {
+    $this->markTestSkipped("rs_guzzle_client doesn't support the param yet.");
+  }
 
   public function testProvisionServerArrayThrowsErrorIfTemplateNotImported() {
     $this->markTestSkipped("Impossible to get this error, since an ST will either be found, or imported.  If import fails, a different and more nasty error is thrown");

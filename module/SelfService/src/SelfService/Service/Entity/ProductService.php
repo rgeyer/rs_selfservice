@@ -541,7 +541,7 @@ class ProductService extends BaseEntityService {
     $product->resolveDepends($params);
     $product->pruneBrokenRefs();
     $stdClass = $this->odmToStdClass($product);
-    return json_encode($product);
+    return json_encode($stdClass);
   }
 
 }
