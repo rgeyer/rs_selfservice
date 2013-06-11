@@ -30,7 +30,7 @@ use Zend\Authentication\Result;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Authentication\Adapter\AdapterInterface;
 
-class GoogleAuthAdapter {
+class GoogleAuthAdapter implements AdapterInterface {
 
   /**
    * @var \Zend\ServiceManager\ServiceLocatorInterface
@@ -63,7 +63,7 @@ class GoogleAuthAdapter {
    * @return string Principal first and last name concatenated
    */
   public function getPrincipalName() {
-    if(!$this->_oid->validate()) {
+    if(count($this->_oid->getAttributes()) == 0) {
       throw new \Exception("The principal is not valid. Make sure the user has authenticated through a browser");
     }
     $attributes = $this->_oid->getAttributes();
@@ -77,7 +77,7 @@ class GoogleAuthAdapter {
    * @return string Principal email address
    */
   public function getPrincipalEmail() {
-    if(!$this->_oid->validate()) {
+    if(count($this->_oid->getAttributes()) == 0) {
       throw new \Exception("The principal is not valid. Make sure the user has authenticated through a browser");
     }
     $attributes = $this->_oid->getAttributes();

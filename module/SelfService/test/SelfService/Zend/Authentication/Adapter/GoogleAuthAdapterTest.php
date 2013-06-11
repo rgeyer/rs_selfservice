@@ -22,6 +22,11 @@ class GoogleAuthAdapterTest extends AbstractConsoleControllerTestCase {
     return $this->getApplicationServiceLocator()->get('AuthenticationAdapter');
   }
 
+  public function testImplementsAdapterInterface() {
+    $authAdapter = $this->getAuthenticationAdapter();
+    $this->assertInstanceOf('Zend\Authentication\Adapter\AdapterInterface', $authAdapter);
+  }
+
   /**
    * @expectedException Exception
    * @expectedExceptionMessage The principal is not valid. Make sure the user has authenticated through a browser
@@ -30,8 +35,8 @@ class GoogleAuthAdapterTest extends AbstractConsoleControllerTestCase {
     $lightMock = $this->getMock('\LightOpenID');
 
     $lightMock->expects($this->once())
-      ->method('validate')
-      ->will($this->returnValue(false));
+      ->method('getAttributes')
+      ->will($this->returnValue(array()));
 
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('LightOpenID', $lightMock);
@@ -43,11 +48,7 @@ class GoogleAuthAdapterTest extends AbstractConsoleControllerTestCase {
   public function testGetPrincipleNameConcatenantesFirstAndLast() {
     $lightMock = $this->getMock('\LightOpenID');
 
-    $lightMock->expects($this->once())
-      ->method('validate')
-      ->will($this->returnValue(true));
-
-    $lightMock->expects($this->once())
+    $lightMock->expects($this->exactly(2))
       ->method('getAttributes')
       ->will($this->returnValue(array('namePerson/first' => 'first', 'namePerson/last' => 'last')));
 
@@ -67,8 +68,8 @@ class GoogleAuthAdapterTest extends AbstractConsoleControllerTestCase {
     $lightMock = $this->getMock('\LightOpenID');
 
     $lightMock->expects($this->once())
-      ->method('validate')
-      ->will($this->returnValue(false));
+      ->method('getAttributes')
+      ->will($this->returnValue(array()));
 
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('LightOpenID', $lightMock);
@@ -80,11 +81,7 @@ class GoogleAuthAdapterTest extends AbstractConsoleControllerTestCase {
   public function testCanGetPrincipalEmail() {
     $lightMock = $this->getMock('\LightOpenID');
 
-    $lightMock->expects($this->once())
-      ->method('validate')
-      ->will($this->returnValue(true));
-
-    $lightMock->expects($this->once())
+    $lightMock->expects($this->exactly(2))
       ->method('getAttributes')
       ->will($this->returnValue(array('contact/email' => 'foo@bar.baz')));
 
