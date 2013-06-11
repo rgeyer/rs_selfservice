@@ -3,7 +3,7 @@
   <fieldset>
     <label for="{$meta_input->input_name}">{$meta_input->display_name}:</label>
     {if preg_match('/CloudProductInput$/', get_class($meta_input))}
-    <select name="{$meta_input->input_name}" id="{$meta_input->input_name}" class="cloud_meta">
+    <select name="{$meta_input->input_name}" id="{$meta_input->id}" class="cloud_meta">
       {foreach $clouds as $cloud_id => $cloud_name}
       <option value="{$cloud_name}">{$cloud_id}</option>
       {/foreach}
@@ -13,17 +13,17 @@
     </select>
     <script>
       $(function() {
-        instance_type_selects = $('#{$meta_input->cloud->input_name}').data('instance_type_selects');
+        instance_type_selects = $('#{$meta_input->cloud_product_input.id}').data('instance_type_selects');
         if(!instance_type_selects) {
           instance_type_selects = [];
         }
         instance_type_selects.push($('#{$meta_input->input_name}'));
-        $('#{$meta_input->cloud->input_name}').data('instance_type_selects', instance_type_selects);
+        $('#{$meta_input->cloud_product_input.id}').data('instance_type_selects', instance_type_selects);
       });
     </script>
     {elseif preg_match('/DatacenterProductInput$/', get_class($meta_input)) }
     {else}
-    <input type="text" name="{$meta_input->input_name}" id="{$meta_input->input_name}" value="{$meta_input->getVal()}"/>
+    <input type="text" name="{$meta_input->input_name}" id="{$meta_input->input_name}" value="{$meta_input->default_value}"/>
     {/if}
     <div style="font-size: -1; color: grey;"><img src="{$this->basePath()}/images/info.png" /> {$meta_input->description}</div>
   </fieldset>

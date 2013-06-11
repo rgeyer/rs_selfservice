@@ -122,4 +122,132 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
     $this->assertContains('{"result":"success"', $response);
     $this->assertContains('content-type: application/json;', $response);
   }
+
+  public function testRenderMetaFormCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+
+    $apicacheadapter = $this->getMockBuilder("SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService("RightScaleAPICache", $apicacheadapter);
+
+    $product = $this->getProductEntityService()->createFromJson(array('nickname' => "foo"));
+    $this->dispatch('/product/rendermetaform/'.$product->id);
+
+    $response = strval($this->getResponse());
+
+    $this->assertActionName('rendermetaform');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+  }
+
+  public function testRenderMetaFormContainsForm() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+
+    $apicacheadapter = $this->getMockBuilder("SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService("RightScaleAPICache", $apicacheadapter);
+
+    $product = $this->getProductEntityService()->createFromJson(array('nickname' => "foo"));
+    $this->dispatch('/product/rendermetaform/'.$product->id);
+
+    $this->assertActionName('rendermetaform');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+    $this->assertXpathQueryCount('//form', 1);
+  }
+
+  public function testRenderMetaFormActionIsCorrect() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+
+    $apicacheadapter = $this->getMockBuilder("SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService("RightScaleAPICache", $apicacheadapter);
+
+    $product = $this->getProductEntityService()->createFromJson(array('nickname' => "foo"));
+    $this->dispatch('/product/rendermetaform/'.$product->id);
+
+    $this->assertActionName('rendermetaform');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+    $this->assertXpathQueryCount('//form[@action="/product/provision/'.$product->id.'"]', 1);
+  }
+
+  public function testRenderMetaFormRendersOneInput() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+
+    $apicacheadapter = $this->getMockBuilder("SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService("RightScaleAPICache", $apicacheadapter);
+
+    $json = <<<EOF
+{
+  "name": "foo",
+  "resources": [
+    {
+      "id": "fooinput",
+      "resource_type": "text_product_input",
+      "default_value": "foo",
+      "input_name": "fooinput",
+      "display_name": "display name",
+      "description": "description"
+    }
+  ]
+}
+EOF;
+
+    $product = $this->getProductEntityService()->createFromJson($json);
+    $this->dispatch('/product/rendermetaform/'.$product->id);
+
+    $this->assertActionName('rendermetaform');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+    $this->assertXpathQueryCount('//input[@id="fooinput"]', 1);
+    $this->assertXpathQueryCount('//input[@name="fooinput"]', 1);
+    $this->assertXpathQueryCount('//input[@value="foo"]', 1);
+    $this->assertXpathQueryCount('//label[@for="fooinput"]', 1);
+    $this->assertXpathQueryCount('//label["display name"]', 1);
+  }
+
+  public function testRenderMetaFormRendersCloudInput() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+
+    $apicacheadapter = $this->getMockBuilder("SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService("RightScaleAPICache", $apicacheadapter);
+
+    $json = <<<EOF
+{
+  "name": "foo",
+  "resources": [
+    {
+      "id": "fooinput",
+      "resource_type": "cloud_product_input",
+      "default_value": "foo",
+      "input_name": "fooinput",
+      "display_name": "display name",
+      "description": "description"
+    }
+  ]
+}
+EOF;
+
+    $product = $this->getProductEntityService()->createFromJson($json);
+    $this->dispatch('/product/rendermetaform/'.$product->id);
+
+    $this->assertActionName('rendermetaform');
+    $this->assertControllerName('selfservice\controller\product');
+    $this->assertResponseStatusCode(200);
+    $this->assertXpathQueryCount('//select[@id="fooinput"]', 1);
+    $this->assertXpathQueryCount('//select[@name="fooinput"]', 1);
+  }
 }

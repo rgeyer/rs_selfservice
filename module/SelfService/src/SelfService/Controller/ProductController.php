@@ -97,8 +97,8 @@ class ProductController extends BaseController {
 
     $meta_inputs = array();
     foreach($product->resources as $resource) {
-      if(is_a('\SelfService\Document\AbstractProductInput', $resource)) {
-        $meta_inputs = $resource;
+      if(is_a($resource, '\SelfService\Document\AbstractProductInput')) {
+        $meta_inputs[] = $resource;
       }
     }
 
