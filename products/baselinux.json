@@ -1,0 +1,114 @@
+{
+  "version": "1.0.0",
+  "name": "Base Linux",
+  "icon_filename": "redhat.png",
+  "launch_servers": true,
+  "resources": [
+    {
+      "id": "deployment_name",
+      "resource_type": "text_product_input",
+      "default_value": "Base",
+      "input_name": "deployment_name",
+      "display_name": "Deployment Name",
+      "description": "The deployment name"
+    },
+    {
+      "id": "cloud",
+      "resource_type": "cloud_product_input",
+      "default_value": "/api/clouds/1",
+      "input_name": "cloud",
+      "display_name": "Cloud",
+      "description": "The target cloud for the servers"
+    },
+    {
+      "id": "instance_count",
+      "resource_type": "text_product_input",
+      "default_value": "1",
+      "input_name": "instance_count",
+      "display_name": "Count",
+      "description": "The number of instances to create and launch"
+    },
+    {
+      "id": "instance_type",
+      "resource_type": "instance_type_product_input",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud" },
+      "default_value": [
+        {
+          "cloud_href": "/api/clouds/1",
+          "resource_hrefs": ["/api/clouds/1/instance_types/6U7NRRI3I0UM"]
+        },
+        {
+          "cloud_href": "/api/clouds/2",
+          "resource_hrefs": ["/api/clouds/2/instance_types/DSPQL6A26DJIA"]
+        }
+      ],
+      "input_name": "instance_type",
+      "display_name": "Instance Type",
+      "description": "The instance type for the servers"
+    },
+    {
+      "id": "Deployment",
+      "resource_type": "deployment",
+      "name": { "ref": "text_product_input", "id": "deployment_name" },
+      "inputs": [],
+      "servers": [
+        {
+          "id": "BaseServer",
+          "resource_type": "server",
+          "name_prefix": "base",
+          "optimized": false,
+          "count": { "ref": "text_product_input", "id": "instance_count" },
+          "instance": {
+            "id": "BaseInstance",
+            "resource_type": "instance",
+            "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+            "instance_type_href": { "ref": "instance_type_product_input", "id": "instance_type" },
+            "security_groups": [
+              { "ref": "security_group", "id": "DefaultSecurityGroup" }
+            ],
+            "server_template": { "ref": "server_template", "id": "BaseServerTemplate" }
+          }
+        }
+      ],
+      "server_arrays": []
+    },
+    {
+      "id": "DefaultSecurityGroup",
+      "resource_type": "security_group",
+      "name": "base-default",
+      "description": "Base Linux",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "id": "SshIngressSecurityGroupRule",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "cidr_ips": "0.0.0.0\/0",
+          "source_type": "cidr_ips",
+          "protocol_details": {
+            "end_port": "22",
+            "start_port": "22"
+          }
+        },
+        {
+          "id": "HttpIngressSecurityGroupRule",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "cidr_ips": "0.0.0.0\/0",
+          "source_type": "cidr_ips",
+          "protocol_details": {
+            "end_port": "80",
+            "start_port": "80"
+          }
+        }
+      ]
+    },
+    {
+      "id": "BaseServerTemplate",
+      "resource_type": "server_template",
+      "name": "Base ServerTemplate for Linux (v13.2.1)",
+      "revision": "121",
+      "publication_id": "46542"
+    }
+  ]
+}

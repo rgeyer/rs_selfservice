@@ -1,9 +1,8 @@
 {
-  "id": "518a8f839aec0cc32e000000",
   "version": "1.0.0",
   "name": "PHP 3-Tier",
   "icon_filename": "php.png",
-  "launch_servers": true,
+  "launch_servers": false,
   "resources": [
     {
       "id": "deployment_name",
