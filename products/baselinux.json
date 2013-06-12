@@ -35,7 +35,7 @@
       "default_value": [
         {
           "cloud_href": "/api/clouds/1",
-          "resource_hrefs": ["/api/clouds/1/instance_types/6U7NRRI3I0UM"]
+          "resource_hrefs": ["/api/clouds/1/instance_types/CQQV62T389R32"]
         },
         {
           "cloud_href": "/api/clouds/2",

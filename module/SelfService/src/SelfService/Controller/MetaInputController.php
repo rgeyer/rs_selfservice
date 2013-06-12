@@ -28,8 +28,15 @@ use Zend\View\Model\JsonModel;
 
 class MetaInputController extends BaseController {
 
+  /**
+   * @return \SelfService\Service\RightScaleAPICache
+   */
+  protected function getRightScaleApiCache() {
+    return $this->getServiceLocator()->get('RightScaleAPICache');
+  }
+
   public function instancetypesAction() {
-    $client = $this->getServiceLocator()->get('RightScaleAPICache');
+    $client = $this->getRightScaleApiCache();
     $instance_types = $client->getInstanceTypes($this->params('id'));
     $retval = array();
     foreach($instance_types as $itype) {
@@ -40,6 +47,20 @@ class MetaInputController extends BaseController {
     }
 
     return new JsonModel(array('instance_types' => $retval, 'instance_type_ids' => $this->params()->fromPost('instance_type_ids')));
+  }
+
+  public function datacentersAction() {
+    $client = $this->getRightScaleApiCache();
+    $datacenters = $client->getDatacenters($this->params('id'));
+    $retval = array();
+    foreach($datacenters as $dc) {
+      $thisclass = new \stdClass();
+      $thisclass->href = $dc->href;
+      $thisclass->name = $dc->name;
+      $retval[] = $thisclass;
+    }
+
+    return new JsonModel(array('datacenters' => $retval, 'datacenter_ids' => $this->params()->fromPost('datacenter_ids')));
   }
 
 }

@@ -98,6 +98,13 @@ class ProductController extends BaseController {
     $meta_inputs = array();
     foreach($product->resources as $resource) {
       if(is_a($resource, '\SelfService\Document\AbstractProductInput')) {
+        if($resource->default_value && get_class($resource->default_value) == "Doctrine\ODM\MongoDB\PersistentCollection") {
+          $ary = array();
+          foreach($resource->default_value as $value) {
+            $ary[] = $value;
+          }
+          $resource->default_value = $ary;
+        }
         $meta_inputs[] = $resource;
       }
     }

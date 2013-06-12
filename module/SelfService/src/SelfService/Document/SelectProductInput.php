@@ -41,6 +41,12 @@ class SelectProductInput extends AbstractProductInput {
   public $default_value;
 
   /**
+   * @ODM\Collection
+   * @var string[]
+   */
+  public $options;
+
+  /**
    * @ODM\Boolean
    * @var bool
    */

@@ -158,6 +158,7 @@ option in your applications ./confi/local.php config file.
 * Support schedules on arrays - Dependency upon rs_guzzle_client being able to make the call with the correct params.
 * Support datacenter policy on sarrays - Dependency upon rs_guzzle_client being able to make the call with the correct params.
 * Support optimized - Dependency upon rs_guzzle_client to consider this a valid param.
+* Implement "subnet" product input
 
 # Misc Useful stuff
 ## Icon Pack
