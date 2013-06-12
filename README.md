@@ -159,6 +159,9 @@ option in your applications ./confi/local.php config file.
 * Support datacenter policy on sarrays - Dependency upon rs_guzzle_client being able to make the call with the correct params.
 * Support optimized - Dependency upon rs_guzzle_client to consider this a valid param.
 * Implement "subnet" product input
+* "API First" Approach
+  * API authentication (probably 2-legged OAuth)
+  * All views should be calling API methods for form submits etc.
 
 # Misc Useful stuff
 ## Icon Pack
