@@ -21,7 +21,6 @@ vendor
 .DS_Store
 *.zpk
 *.depl.properties
-data
 rs_vagrant_shim
 runlists/centos/default.json
 runlists/centos/setup_rsss.json
