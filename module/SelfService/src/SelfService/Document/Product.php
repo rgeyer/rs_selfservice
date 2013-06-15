@@ -101,13 +101,23 @@ class Product {
     "cloud_product_input"
   );
 
+  protected $depends_on_cloud_array = array(
+    "instance_type_product_input",
+    "datacenter_product_input"
+  );
+
   /**
    * @param array $params An associative array of key/value pairs.  The key is
    * the input_name of the *_product_input, and the value is what will replace
    * all matching references.
    * @return array An associative array of key/value pairs.  The key is
-   * the resource id of the *_product_input, and the default value or override
-   * value for that input.
+   * the resource id of the *_product_input.  The value can be one of the following.
+   *  * scalar - The value passed in as input, or the default value
+   *  * array - Same as above, but for multi value types
+   *  * stdClass - A class with the properties "cloud_product_input_id" and "value".
+   *    This is used only for product_input types which depend upon the value of
+   *    a cloud input.  The "cloud_product_input_id" will contain the resource id
+   *    of the cloud input upon which this product_input depends.
    */
   protected function convertInputParamsToResourceIdKeys($params) {
     // Convert the params array from input_name:value to resource_id:value pairs
@@ -119,6 +129,14 @@ class Product {
           $valuesByInputId[$resource->id] = $params[$resource->input_name];
         } else {
           $valuesByInputId[$resource->id] = $resource->default_value;
+          // Need to include some more metadata for inputs which depend upon
+          // the cloud input.
+          if(in_array($resource->resource_type, $this->depends_on_cloud_array)) {
+            $detailedValue = new \stdClass();
+            $detailedValue->cloud_product_input_id = $resource->cloud_product_input["id"];
+            $detailedValue->value = $valuesByInputId[$resource->id];
+            $valuesByInputId[$resource->id] = $detailedValue;
+          }
         }
       }
     }
@@ -138,8 +156,8 @@ class Product {
 
   protected function isBrokenRef(&$resource, $resource_ids) {
     $retval = false;
-    if(property_exists($resource, "ref")) {
-      return !in_array($resource->id, $resource_ids);
+    if(is_array($resource) && array_key_exists("ref", $resource)) {
+      return !in_array($resource["id"], $resource_ids);
     } else {
       $objvars = get_object_vars($resource);
       foreach($objvars as $key => $val) {
@@ -149,8 +167,8 @@ class Product {
               unset($resource->{$key}[$idx]);
             }
           }
+          $resource->{$key} = array_merge($resource->{$key});
         }
-        $resource->{$key} = array_merge($resource->{$key});
       }
     }
     return $retval;
@@ -169,7 +187,7 @@ class Product {
 
     foreach($this->resources as $idx => $resource) {
       if(!$this->hasDependsMatch($resource, $valuesByInputId)) {
-        unset($this->resources[$idx]);
+        $this->resources->removeElement($resource);
       }
     }
   }
@@ -179,10 +197,10 @@ class Product {
     $objvars = get_object_vars($resource);
     foreach($objvars as $key => $val) {
       if($key == "depends" && $val !== null) {
-        $input_value_as_array = array_key_exists($resource->depends->id, $params) ?
-          (array)$params[$resource->depends->id] : array();
-        $depends_value_as_array = (array)$resource->depends->value;
-        if($resource->depends->match == "any") {
+        $input_value_as_array = array_key_exists($resource->depends["id"], $params) ?
+          (array)$params[$resource->depends["id"]] : array();
+        $depends_value_as_array = (array)$resource->depends["value"];
+        if($resource->depends["match"] == "any") {
           $intersect = array_intersect($depends_value_as_array, $input_value_as_array);
           $does_match = count($intersect) > 0;
         } else {
@@ -190,18 +208,16 @@ class Product {
           $does_match = count($diff) == 0;
         }
       } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
-        $resetAry = array();
         foreach($val as $idx => $subresource) {
-          if($this->hasDependsMatch($subresource, $params)) {
-            $resetAry[] = $subresource;
+          if(!$this->hasDependsMatch($subresource, $params)) {
+            $resource->{$key}->removeElement($subresource);
           }
         }
-        $resource->{$key} = $resetAry;
       }
     }
     return $does_match;
-    # TODO: Should I validate the depends->ref type to the input matched
-    # by the depends->id? I don't currently have the resource_type in $params
+    # TODO: Should I validate the depends['ref'] type to the input matched
+    # by the depends['id']? I don't currently have the resource_type in $params
   }
 
   /**
@@ -214,6 +230,9 @@ class Product {
     $valuesByInputId = $this->convertInputParamsToResourceIdKeys($params);
 
     foreach($this->resources as $resource) {
+      if(strpos($resource->resource_type, "product_input") > 0) {
+        $this->resources->removeElement($resource);
+      }
       $this->replaceInputRefsWithScalar($resource, $valuesByInputId);
     }
   }
@@ -228,9 +247,22 @@ class Product {
   protected function replaceInputRefsWithScalar(&$object, array $params) {
     $objvars = get_object_vars($object);
     foreach($objvars as $key => $val) {
-      if($key == "depends") { continue; }
-      if (property_exists($val, "ref") && preg_match('/^[a-z]+_product_input$/', $val->ref)) {
-        $object->{$key} = $params[$val->id];
+      if ($key == "depends") { continue; }
+      if (is_array($val) && array_key_exists("ref", $val) && preg_match('/^[a-z_]+_product_input$/', $val["ref"])) {
+        $derived_val = $params[$val["id"]];
+        if($derived_val instanceof \stdClass && property_exists($derived_val, "cloud_product_input_id")) {
+          $compare_cloud_href = $params[$derived_val->cloud_product_input_id];
+          # Initialize the reference to null
+          $object->{$key} = null;
+          foreach($derived_val->value as $cloud_to_resource_href_hash) {
+            if($cloud_to_resource_href_hash->cloud_href == $compare_cloud_href) {
+              $resource_href = $cloud_to_resource_href_hash->resource_hrefs;
+              $object->{$key} = $val["ref"] == "instance_type_product_input" ? array_pop($resource_href) : $resource_href;
+            }
+          }
+        } else {
+          $object->{$key} = $params[$val["id"]];
+        }
       } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
         foreach($val as $item) {
           $this->replaceInputRefsWithScalar($item, $params);

@@ -134,9 +134,10 @@ class ProductService extends BaseEntityService {
 
     $inputs = array();
 
-    $cloud_href = new \stdClass();
-    $cloud_href->ref = "cloud_product_input";
-    $cloud_href->id = "cloud_product_input";
+    $cloud_href = array(
+      "ref" => "cloud_product_input",
+      "id" => "cloud_product_input"
+    );
 
     $product = new Product();
     $product->launch_servers = false;
@@ -183,13 +184,15 @@ class ProductService extends BaseEntityService {
     $protocol_details->end_port = 65535;
     $tcprule->protocol_details[] = $protocol_details;
     $tcprule->protocol = "tcp";
-    $tcprule->ingress_group = new \stdClass();
-    $tcprule->ingress_group->ref = "security_group";
-    $tcprule->ingress_group->id = "all_in_security_group";
-    $rulerel = new \stdClass();
-    $rulerel->ref = "security_group_rule";
-    $rulerel->id = "all_in_security_group_tcp_rule";
-    $rulerel->nested = true;
+    $tcprule->ingress_group = array(
+      "ref" => "security_group",
+      "id" => "all_in_security_group"
+    );
+    $rulerel = array(
+      "ref" => "security_group_rule",
+      "id" => "all_in_security_group_tcp_rule",
+      "nested" => true
+    );
     $secgrp->security_group_rules[] = $rulerel;
     $product->resources[] = $tcprule;
 
@@ -201,13 +204,15 @@ class ProductService extends BaseEntityService {
     $protocol_details->end_port = 65535;
     $udprule->protocol_details[] = $protocol_details;
     $udprule->protocol = "udp";
-    $udprule->ingress_group = new \stdClass();
-    $udprule->ingress_group->ref = "security_group";
-    $udprule->ingress_group->id = "all_in_security_group";
-    $rulerel = new \stdClass();
-    $rulerel->ref = "security_group_rule";
-    $rulerel->id = "all_in_security_group_udp_rule";
-    $rulerel->nested = true;
+    $udprule->ingress_group = array(
+      "ref" => "security_group",
+      "id" => "all_in_security_group"
+    );
+    $rulerel = array(
+      "ref" => "security_group_rule",
+      "id" => "all_in_security_group_tcp_rule",
+      "nested" => true
+    );
     $secgrp->security_group_rules[] = $rulerel;
     $product->resources[] = $udprule;
 
@@ -230,22 +235,25 @@ class ProductService extends BaseEntityService {
           $server->count = 1;
           $server_instance = new Instance();
           $server_instance->cloud_href = $cloud_href;
-          $grouprel = new \stdClass();
-          $grouprel->ref = "security_group";
-          $grouprel->id = "all_in_security_group";
+          $grouprel = array(
+            "ref" => "security_group",
+            "id" => "all_in_security_group"
+          );
           $server_instance->security_groups[] = $grouprel;
-          $templaterel = new \stdClass();
-          $templaterel->ref = "server_template";
-          $templaterel->id = $template->id;
-          $templaterel->nested = true;
+          $templaterel = array(
+            "ref" => "server_template",
+            "id" => $template->id,
+            "nested" => true
+          );
           $server_instance->server_template[] = $templaterel;
           $server->instance[] = $server_instance;
           $server->name_prefix = $server_or_array->info->nickname;
           $product->resources[] = $server;
-          $serverrel = new \stdClass();
-          $serverrel->ref = "server";
-          $serverrel->id = $server->id;
-          $serverrel->nested = true;
+          $serverrel = array(
+            "ref" => "server",
+            "id" => $server->id,
+            "nested" => true
+          );
           $deployment->servers[] = $serverrel;
 
           foreach($server_or_array->inputs as $key=>$input) {
@@ -268,10 +276,11 @@ class ProductService extends BaseEntityService {
       $metainput->default_value = $value['value'];
       $metainput->display = !$value['override'];
       $product->resources[] = $metainput;
-      $inputrel = new \stdClass();
-      $inputrel->ref = "text_product_input";
-      $inputrel->id = $metainput->id;
-      $inputrel->nested = true;
+      $inputrel = array(
+        "ref" => "text_product_input",
+        "id" => $metainput->id,
+        "nested" => true
+      );
       $deployment->inputs[] = $inputrel;
     }
 
@@ -447,20 +456,27 @@ class ProductService extends BaseEntityService {
       if(property_exists($val, "resource_type")) {
         // It's an embedded resource with an ODM type
         $this->stdClassToOdm($odmProduct, $val);
-        $ref = new \stdClass();
-        $ref->ref = $val->resource_type;
-        $ref->id = $val->id;
-        $ref->nested = true;
+        $ref = array(
+          "ref" => $val->resource_type,
+          "id" => $val->id,
+          "nested" => true
+        );
         if($key_is_array) {
           $odmObject->{$key}[] = $ref;
         } else {
           $odmObject->{$key} = $ref;
         }
       } else if(property_exists($val, "ref")) {
+        // Casting to array here because although json_decode creates an stdClass
+        // these references get stored in mongodb as hashes, as well as rehydrated
+        // by mongo-odm as hashes.  Lots of unit tests were mistakenly passing
+        // because they were fetching the cached object which represented these
+        // as stdClass rather than a hash, which is what they'd be represented as
+        // when fetched from mongodb.
         if($key_is_array) {
-          $odmObject->{$key}[] = $val;
+          $odmObject->{$key}[] = (array)$val;
         } else {
-          $odmObject->{$key} = $val;
+          $odmObject->{$key} = (array)$val;
         }
       }
     } else if (is_array($val)) {
@@ -504,7 +520,7 @@ class ProductService extends BaseEntityService {
     return $stdClass;
   }
 
-  protected function odmToStdClass($odm) {
+  public function odmToStdClass($odm) {
     $stdClass = new \stdClass();
     foreach(get_object_vars($odm) as $key => $val) {
       if(is_array($val)) {
@@ -523,7 +539,7 @@ class ProductService extends BaseEntityService {
         if(property_exists($val, "nested")) {
           unset($val->nested);
         }
-        $stdClass->{$key} = $val;
+        $stdClass->{$key} = is_scalar($val) ? $val : $this->odmToStdClass($val);
       }
     }
     return $stdClass;
@@ -531,16 +547,21 @@ class ProductService extends BaseEntityService {
 
   public function toInputJson($id) {
     $product = $this->find($id);
+    $this->getDocumentManager()->detach($product);
+    # TODO: Need to (de)nest only the nested.
     $stdClass = $this->odmToStdClass($product);
     return json_encode($stdClass);
   }
 
   public function toOutputJson($id, array $params = array()) {
     $product = $this->find($id);
+    $this->getDocumentManager()->detach($product);
     $product->mergeMetaInputs($params);
     $product->resolveDepends($params);
     $product->pruneBrokenRefs();
+    # TODO: Need to (de)nest everything.
     $stdClass = $this->odmToStdClass($product);
+    # TODO: Some lower level things aren't being rendered such as security_group_rule->protocol_details
     return json_encode($stdClass);
   }
 

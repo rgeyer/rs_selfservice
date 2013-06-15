@@ -18,12 +18,12 @@
         </select>
         <script>
           $(function() {
-            instance_type_selects = $('#{$meta_input->cloud_product_input->id}').data('instance_type_selects');
+            instance_type_selects = $('#{$meta_input->cloud_product_input.id}').data('instance_type_selects');
             if(!instance_type_selects) {
               instance_type_selects = [];
             }
             instance_type_selects.push($('#{$meta_input->input_name}'));
-            $('#{$meta_input->cloud_product_input->id}').data('instance_type_selects', instance_type_selects);
+            $('#{$meta_input->cloud_product_input.id}').data('instance_type_selects', instance_type_selects);
           });
         </script>
         {elseif preg_match('/DatacenterProductInput$/', get_class($meta_input)) }
@@ -31,12 +31,12 @@
         </select>
         <script>
           $(function() {
-            datacenter_selects = $('#{$meta_input->cloud_product_input->id}').data('datacenter_selects');
+            datacenter_selects = $('#{$meta_input->cloud_product_input.id}').data('datacenter_selects');
             if(!datacenter_selects) {
               datacenter_selects = [];
             }
             datacenter_selects.push($('#{$meta_input->input_name}'));
-            $('#{$meta_input->cloud_product_input->id}').data('datacenter_selects', datacenter_selects);
+            $('#{$meta_input->cloud_product_input.id}').data('datacenter_selects', datacenter_selects);
           });
         </script>
         {else}

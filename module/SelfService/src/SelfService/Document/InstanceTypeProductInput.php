@@ -46,24 +46,4 @@ class InstanceTypeProductInput extends AbstractProductInput {
    */
   public $default_value;
 
-  /**
-   * TODO: This doesn't make a lot of sense, and it is a brute force solution.
-   * I was experiencing issues where actual use resulted in the cloud_product_input
-   * property of this object being an associative array (hash) when accessed in
-   * view/product/rendermetaform.tpl.
-   *
-   * However, in unit tests of the product controller, this same property was
-   * appearing as an object.
-   *
-   * Since an object makes the most sense, we're casting to that upon fetching from
-   * the DB. Chances are good other properties on other classes have similar behavior
-   * which will likely result in much of my json -> odm -> json -> stdClass conversion
-   * routines breaking in unpredictable ways.
-   *
-   * @ODM\PostLoad
-   */
-  public function ensureCloudProductInputIsStdClass() {
-    $this->cloud_product_input = (object)$this->cloud_product_input;
-  }
-
 }
