@@ -12,6 +12,7 @@ Vagrant::Config.run do |config|
     default_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_centos6.3_v5.8.8_vagrant.box"
 
     default_config.vm.network :hostonly, "33.33.33.9"
+    default_config.vm.forward_port 27017, 27017
 
     default_config.ssh.max_tries = 40
     default_config.ssh.timeout   = 120
