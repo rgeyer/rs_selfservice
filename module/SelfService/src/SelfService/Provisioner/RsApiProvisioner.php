@@ -26,70 +26,119 @@ namespace SelfService\Provisioner;
 
 class RsApiProvisioner extends AbstractProvisioner {
 
+  /**
+   * @return \SelfService\Service\ProvisioningHelper
+   */
+  protected function getProvisioningHelper() {
+    return $this->getServiceLocator()->get('rs_provisioning_helper');
+  }
+
+  /**
+   * @return \SelfService\Service\Entity\ProvisionedProductService
+   */
+  protected function getProvisionedProductService() {
+    return $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
+  }
+
+  /**
+   * @return \Doctrine\ODM\MongoDB\DocumentManager
+   */
+  protected function getDocumentManager() {
+    return $this->getServiceLocator()->get('doctrine.documentmanager.odm_default');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function provision($json) {
+    $this->getLogger()->debug("RsApiProvisioner::provision called with the following json \n".$json);
+    // TODO: When I can, validate the json against the schema.
+    $product = json_decode($json);
+    $prov_helper = $this->getProvisioningHelper();
+    $prov_prod = $this->getProvisionedProductService()->create(array());
+    $prov_prod->provisioned_objects = array();
+    $now = time();
+
+    $prov_helper->setTags(array('rsss:provisioned_product_id='.$prov_prod->id));
+
+    try {
+      // Security Groups are always first
+      foreach($product->resources as $resource) {
+        if($resource->resource_type == 'security_group') {
+          $resource->name = sprintf("%s-%s", $resource->name, $now);
+          $sg = $prov_helper->provisionSecurityGroup($resource);
+          $prov_prod->provisioned_objects[] =
+            new \SelfService\Document\ProvisionedObject(
+              array(
+                'href' => $sg->href,
+                'cloud_id' => $sg->cloud_id,
+                'type' => 'security_group'
+              )
+            );
+        }
+      }
+
+      // Then the Security Group Rules
+      foreach($product->resources as $resource) {
+        if($resource->resource_type == 'security_group') {
+          $prov_helper->provisionSecurityGroupRules($resource);
+        }
+      }
+
+      // Now deployments and all their sub resources
+      foreach($product->resources as $resource) {
+        if($resource->resource_type == 'deployment') {
+          $inputs = array();
+          foreach($resource->inputs as $input) {
+            $inputs[$input->name] = $inputs->value;
+          }
+          $depldesc = sprintf("Created by rs_selfservice for the '%s' product", $product->name);
+          $deployment = $prov_helper->provisionDeployment($resource->name, $depldesc, $inputs);
+          $prov_prod->provisioned_objects[] =
+            new \SelfService\Document\ProvisionedObject(
+              array(
+                'href' => $deployment->href,
+                'type' => 'deployment'
+              )
+            );
+
+          foreach($resource->servers as $server) {
+            $provisioned_objects = $prov_helper->provisionServer($server, $deployment);
+            foreach($provisioned_objects as $provisioned_object) {
+              $prov_prod->provisioned_objects[] =
+                new \SelfService\Document\ProvisionedObject(
+                  array(
+                    'href' => $provisioned_object->href,
+                    'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server'
+                  )
+                );
+            }
+          }
+
+          foreach($resource->server_arrays as $array) {
+            $provisioned_objects = $prov_helper->provisionServerArray($array, $deployment);
+            foreach($provisioned_objects as $provisioned_object) {
+              $prov_prod->provisioned_objects[] =
+                new \SelfService\Document\ProvisionedObject(
+                  array(
+                    'href' => $provisioned_object->href,
+                    'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server_array'
+                  )
+                );
+            }
+          }
+        }
+      }
+    } catch (\Exception $e) {
+      // Just ensuring that we (at least try to) store the provisioned objects
+      $this->getDocumentManager()->persist($prov_prod);
+      $this->getDocumentManager()->flush();
+      // Bubble up to the caller
+      throw $e;
+    }
+
 //    if(count($product) == 1) {
-//      # TODO: Add a link to the RightScale deployment based on a configuration flag and/or user role
-//      $prov_helper->setTags(array('rsss:provisioned_product_id='.$prov_prod->id));
 //      try {
-//        # Provision and record deployment
-//        $deplname = sprintf("rsss-%s-%s", $product->name, $now);
-//        $deplname = $this->params()->fromPost('deployment_name', $deplname);
-//        $depldesc = sprintf("Created by rs_selfservice for the '%s' product", $product->name);
-//        $depl = $prov_helper->provisionDeployment($deplname, $depldesc, $product->parameters);
-//        $prov_depl = new ProvisionedDeployment($depl);
-//        $prov_prod->provisioned_objects[] = $prov_depl;
-//        $this->getLogger()->info(sprintf("Created Deployment - Name: %s href: %s", $deplname, $depl->href));
-//
-//        # Provision and record security groups
-//        $this->getLogger()->info(sprintf("About to provision %d Security Groups", count($product->security_groups)));
-//        foreach($product->security_groups as $security_group) {
-//          $secGrpBaseName = $security_group->name->getVal();
-//          $secGrpPrefixedName = sprintf("rsss-%s-%s", $secGrpBaseName, $now);
-//          $security_group->name->setVal($secGrpPrefixedName);
-//          $secGrp = $prov_helper->provisionSecurityGroup($security_group);
-//          if($secGrp) {
-//            $prov_grp = new ProvisionedSecurityGroup($secGrp);
-//            $prov_prod->provisioned_objects[] = $prov_grp;
-//          }
-//        }
-//
-//        # Provision and record security group rules
-//        $this->getLogger()->info("About to provision Security Group Rules");
-//        foreach($product->security_groups as $security_group) {
-//          $prov_helper->provisionSecurityGroupRules($security_group);
-//        }
-//
-//        # Provision and record servers (and ssh keys as a byproduct)
-//        $this->getLogger()->info(sprintf("About to provision %d different types of servers", count($product->servers)));
-//        foreach($product->servers as $server) {
-//          foreach($prov_helper->provisionServer($server, $depl) as $provisioned_model) {
-//            # TODO: Shouldn't have to differentiate between the return types here, bad code smell.
-//            if($provisioned_model instanceof SshKey) {
-//              $prov_key = new ProvisionedSshKey($provisioned_model);
-//              $prov_prod->provisioned_objects[] = $prov_key;
-//            }
-//            if($provisioned_model instanceof Server ) {
-//              $prov_svr = new ProvisionedServer($provisioned_model);
-//              $prov_prod->provisioned_objects[] = $prov_svr;
-//            }
-//          }
-//        }
-//
-//        # Provision and record server arrays (and ssh keys as a byproduct)
-//        $this->getLogger()->info(sprintf("About to provision %d server arrays", count($product->arrays)));
-//        foreach($product->arrays as $array) {
-//          foreach($prov_helper->provisionServerArray($array, $depl) as $provisioned_model) {
-//            # TODO: Shouldn't have to differentiate between the return types here, bad code smell.
-//            if($provisioned_model instanceof SshKey) {
-//              $prov_key = new ProvisionedSshKey($provisioned_model);
-//              $prov_prod->provisioned_objects[] = $prov_key;
-//            }
-//            if($provisioned_model instanceof ApiServerArray ) {
-//              $prov_ary = new ProvisionedArray($provisioned_model);
-//              $prov_prod->provisioned_objects[] = $prov_ary;
-//            }
-//          }
-//        }
 //
 //        # Provision and record alert specs
 //        $this->getLogger()->info(sprintf("About to provision %d alert specs", count($product->alerts)));

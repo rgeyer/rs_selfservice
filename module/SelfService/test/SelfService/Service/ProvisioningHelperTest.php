@@ -28,6 +28,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
   }
 
   public function testCanProvisionDeployment() {
+    $log = $this->getMock('Zend\Log\Logger');
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
       array(
         '1.5/clouds/json/response',
@@ -36,7 +37,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
         '1.5/tags_multi_add/response'
       )
     );
-    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), new \stdClass(), array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $helper->setTags(array('foo', 'bar', 'baz'));
     $deployment = $helper->provisionDeployment('name', 'description');
     $requests = $this->_guzzletestcase->getMockedRequests();
@@ -47,6 +48,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
   }
 
   public function testCanUpdateDeploymentWithInputs() {
+    $log = $this->getMock('Zend\Log\Logger');
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
       array(
         '1.5/clouds/json/response',
@@ -56,7 +58,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
         '1.5/inputs_multi_update/response'
       )
     );
-    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), new \stdClass(), array());
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
     $helper->setTags(array('foo', 'bar', 'baz'));
     $inputs = array('foo/bar/baz' => 'text:foobarbaz');
     $deployment = $helper->provisionDeployment('name', 'description', $inputs);

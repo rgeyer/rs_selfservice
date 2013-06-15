@@ -49,6 +49,22 @@ abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
     $this->serviceLocator = $serviceLocator;
   }
 
+  /**
+   * @return \Zend\Log\Logger
+   */
+  protected function getLogger() {
+    return $this->getServiceLocator()->get('logger');
+  }
+
+  /**
+   * = Provisioner best practices
+   *
+   * * provide unique names for security groups since clouds do not allow duplicates. I.E. <productname>-<timestamp>
+   * * tag created items with the provisioned product id
+   *
+   * @abstract
+   * @param $json
+   */
   public abstract function provision($json);
 
   public abstract function cleanup($json);

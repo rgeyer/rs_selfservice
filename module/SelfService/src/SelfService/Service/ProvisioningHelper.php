@@ -400,6 +400,8 @@ class ProvisioningHelper {
 
     $this->updateDeployment($deployment, $inputs);
 
+    $this->log->info(sprintf("Created Deployment - Name: %s href: %s", $name, $deployment->href));
+
     return $deployment;
   }
 

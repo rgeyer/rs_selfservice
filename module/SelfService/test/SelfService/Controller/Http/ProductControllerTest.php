@@ -44,6 +44,14 @@ class ProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testProvisionActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+
+    $helpermock = $this->getMockBuilder('SelfService\Service\ProvisioningHelper')
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('rs_provisioning_helper', $helpermock);
+
     $product = $this->getProductEntityService()->createFromJson(array('nickname' => "foo"));
     $this->dispatch('/product/provision/'.$product->id);
 
