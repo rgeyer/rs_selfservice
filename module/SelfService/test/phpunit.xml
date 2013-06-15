@@ -14,4 +14,9 @@
             <exclude>./SelfService/Service/ProvisioningHelperTest.php</exclude>
         </testsuite>
     </testsuites>
+  <filter>
+    <blacklist>
+      <directory>./../../../vendor</directory>
+    </blacklist>
+  </filter>
 </phpunit>
