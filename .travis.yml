@@ -10,4 +10,6 @@ before_script:
   - php composer.phar install
   - mkdir logs
   - touch logs/application.log
-script: phpunit -d memory_limit=1024M -c module/SelfService/test/phpunit.xml
+  - mkdir -p data/DoctrineMongoODMModule/Hydrator
+  - mkdir -p data/SmartyModule/templates_c
+script: phpunit -d memory_limit=1024M --coverage-text -c module/SelfService/test/phpunit.xml
