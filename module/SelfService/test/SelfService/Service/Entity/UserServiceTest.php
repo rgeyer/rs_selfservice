@@ -157,4 +157,30 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
     $this->assertInstanceOf('SelfService\Document\User', $user);
   }
 
+  public function testCanFindByOidUrlOrEmailWhenPersistedWithOnlyOidUrl() {
+    $userService = $this->getUserEntityService();
+
+    $this->assertEquals(0, $userService->findAll()->count());
+
+    $userService->create(array('oid_url' => 'http://oid.url'));
+
+    $user = $userService->findByOidOrEmail('http://oid.url', 'foo@bar.baz');
+
+    $this->assertNotNull($user);
+    $this->assertInstanceOf('SelfService\Document\User', $user);
+  }
+
+  public function testCanFindByOidUrlOrEmailWhenPersistedWithOnlyEmail() {
+    $userService = $this->getUserEntityService();
+
+    $this->assertEquals(0, $userService->findAll()->count());
+
+    $userService->create(array('email' => 'foo@bar.baz'));
+
+    $user = $userService->findByOidOrEmail('http://oid.url', 'foo@bar.baz');
+
+    $this->assertNotNull($user);
+    $this->assertInstanceOf('SelfService\Document\User', $user);
+  }
+
 }
