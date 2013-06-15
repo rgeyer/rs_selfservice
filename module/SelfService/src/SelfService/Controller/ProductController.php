@@ -120,6 +120,7 @@ class ProductController extends BaseController {
     if(isset($product_id)) {
       $provisioning_adapter = $this->getServiceLocator()->get('Provisioner');
       try {
+        $this->getLogger()->debug("Calling toOutputJson with the following params ".print_r($this->params()->fromPost(), true));
         $output_json = $this->getProductEntityService()->toOutputJson($product_id, $this->params()->fromPost());
 
         $response['messages'][] = sprintf(
@@ -131,6 +132,10 @@ class ProductController extends BaseController {
         $response['result'] = 'error';
         $response['error'] = 'A product with id '.$product_id.' was not found.';
         $this->getLogger()->err($response['error']);
+      } catch (\Exception $e) {
+        $response['result'] = 'error';
+        $response['error'] = $e->getMessage();
+        $this->getLogger()->err("An error occurred provisioning the product. Error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
       }
     } else {
       $response['result'] = 'error';
