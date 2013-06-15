@@ -84,6 +84,20 @@ class UserService extends BaseEntityService {
   }
 
   /**
+   * @param $oid The oid_url to search
+   * @param $email The email address to search
+   * @return \SelfService\Document\User|null
+   */
+  public function findByOidOrEmail($oid, $email) {
+    $qb = $this->getQueryBuilder();
+    $qb->addOr($qb->expr()->field('oid_url')->equals($oid));
+    $qb->addOr($qb->expr()->field('email')->equals($email));
+    $query = $qb->getQuery();
+    $user = $query->getSingleResult();
+    return $user;
+  }
+
+  /**
    * @param $emailEmail address of the user to authorize
    * @return void
    */

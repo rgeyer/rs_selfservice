@@ -117,24 +117,10 @@ class GoogleAuthAdapterTest extends AbstractConsoleControllerTestCase {
   }
 
   public function testAuthenticateCreatesUserWhenNoneExists() {
-    $queryMock = $this->getMockBuilder('Doctrine\MongoDB\Query\Query')
-      ->disableOriginalConstructor()
-      ->getMock();
-    $queryMock->expects($this->once())
-      ->method('getSingleResult')
-      ->will($this->returnValue(null));
-    $queryBuilderMock = $this->getMockBuilder('Doctrine\ODM\MongoDB\Query\Builder')
-      ->disableOriginalConstructor()->getMock();
-    $queryBuilderMock->expects($this->once())
-      ->method('where')
-      ->will($this->returnValue($queryBuilderMock));
-    $queryBuilderMock->expects($this->once())
-      ->method('getQuery')
-      ->will($this->returnValue($queryMock));
     $userServiceMock = $this->getMock('SelfService\Service\Entity\UserService');
     $userServiceMock->expects($this->once())
-      ->method('getQueryBuilder')
-      ->will($this->returnValue($queryBuilderMock));
+      ->method('findByOidOrEmail')
+      ->will($this->returnValue(null));
     $userServiceMock->expects($this->once())
       ->method('create');
     $lightMock = $this->getMock('\LightOpenID');
@@ -164,24 +150,10 @@ class GoogleAuthAdapterTest extends AbstractConsoleControllerTestCase {
 
   public function testAuthenticateUpdatesUserWhenExists() {
     $user = new \SelfService\Document\User();
-    $queryMock = $this->getMockBuilder('Doctrine\MongoDB\Query\Query')
-      ->disableOriginalConstructor()
-      ->getMock();
-    $queryMock->expects($this->once())
-      ->method('getSingleResult')
-      ->will($this->returnValue($user));
-    $queryBuilderMock = $this->getMockBuilder('Doctrine\ODM\MongoDB\Query\Builder')
-      ->disableOriginalConstructor()->getMock();
-    $queryBuilderMock->expects($this->once())
-      ->method('where')
-      ->will($this->returnValue($queryBuilderMock));
-    $queryBuilderMock->expects($this->once())
-      ->method('getQuery')
-      ->will($this->returnValue($queryMock));
     $userServiceMock = $this->getMock('SelfService\Service\Entity\UserService');
     $userServiceMock->expects($this->once())
-      ->method('getQueryBuilder')
-      ->will($this->returnValue($queryBuilderMock));
+      ->method('findByOidOrEmail')
+      ->will($this->returnValue($user));
     $userServiceMock->expects($this->once())
       ->method('update');
     $lightMock = $this->getMock('\LightOpenID');

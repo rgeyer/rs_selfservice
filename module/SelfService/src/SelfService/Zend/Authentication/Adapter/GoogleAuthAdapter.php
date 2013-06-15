@@ -113,16 +113,12 @@ class GoogleAuthAdapter implements AdapterInterface {
 			return new Result(Result::FAILURE, $this->_oid);
 		} elseif ($this->_oid->validate()) {
       $identity = $this->_oid->__get('identity');
-      $qb = $this->getUserEntityService()->getQueryBuilder();
-      $qb->addOr($qb->expr()->field('oid_url')->equals($identity));
-      $qb->addOr($qb->expr()->field('email')->equals($this->getPrincipalEmail()));
-      $query = $qb->getQuery();
+      $user = $this->getUserEntityService()->findByOidOrEmail($identity, $this->getPrincipalEmail());
       $user_params = array(
         'oid_url' => $identity,
         'email' => $this->getPrincipalEmail(),
         'name' => $this->getPrincipalName()
       );
-			$user = $query->getSingleResult();
 			if(!$user) {
 				$user = $this->getUserEntityService()->create($user_params);
 			} else {
