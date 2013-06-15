@@ -162,6 +162,8 @@ option in your applications ./confi/local.php config file.
 * "API First" Approach
   * API authentication (probably 2-legged OAuth)
   * All views should be calling API methods for form submits etc.
+* RsApiProvisioner
+  * Support deployment server_tag_scope property
 
 # Misc Useful stuff
 ## Icon Pack
