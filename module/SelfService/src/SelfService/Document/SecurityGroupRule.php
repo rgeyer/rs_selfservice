@@ -59,7 +59,7 @@ class SecurityGroupRule extends AbstractResource {
    * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
    * that only one of these values should be present in the output
    * @ODM\EmbedMany(targetDocument="SecurityGroupRuleProtocolDetail")
-   * @var \SelfService\Document\SecurityGroupRuleProtocolDetail
+   * @var \SelfService\Document\SecurityGroupRuleProtocolDetail[]
    */
   public $protocol_details;
 

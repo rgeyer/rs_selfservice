@@ -548,7 +548,7 @@ class ProductService extends BaseEntityService {
   public function toInputJson($id) {
     $product = $this->find($id);
     $this->getDocumentManager()->detach($product);
-    # TODO: Need to (de)nest only the nested.
+    $product->replaceRefsWithConcreteResource(true);
     $stdClass = $this->odmToStdClass($product);
     return json_encode($stdClass);
   }
@@ -559,9 +559,9 @@ class ProductService extends BaseEntityService {
     $product->mergeMetaInputs($params);
     $product->resolveDepends($params);
     $product->pruneBrokenRefs();
-    # TODO: Need to (de)nest everything.
+    $product->replaceRefsWithConcreteResource();
     $stdClass = $this->odmToStdClass($product);
-    # TODO: Some lower level things aren't being rendered such as security_group_rule->protocol_details
+    # TODO: Dedupe the "only one" properties
     return json_encode($stdClass);
   }
 

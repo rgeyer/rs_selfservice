@@ -270,4 +270,47 @@ class Product {
       }
     }
   }
+
+  public function replaceRefsWithConcreteResource($nested_only = false) {
+    $resources_by_id = array();
+    $resources_to_delete = array();
+    foreach($this->resources as $resource) {
+      if(strpos($resource->resource_type, "product_input") === false) {
+        $resources_by_id[$resource->id] = $resource;
+      }
+    }
+
+    foreach($this->resources as $resource) {
+      $this->_replaceRefsWithConcreteResource($resource, $resources_by_id, $resources_to_delete, $nested_only);
+    }
+
+    foreach($resources_to_delete as $resource_to_delete) {
+      $this->resources->removeElement($resource_to_delete);
+    }
+  }
+
+  protected $_protectedResourceTypes = array(
+    "security_group"
+  );
+
+  protected function _replaceRefsWithConcreteResource(&$object, $resources_by_id, &$resources_to_delete, $nested_only) {
+    if(is_array($object) && array_key_exists("ref", $object) && strpos("product_input", $object["ref"]) === false) {
+      if(!in_array($object["ref"], $this->_protectedResourceTypes) && (($object["nested"] | $nested_only) == $nested_only)) {
+        $resources_to_delete[$object["id"]] = $resources_by_id[$object["id"]];
+      }
+      return $resources_by_id[$object["id"]];
+    }
+    $objvars = get_object_vars($object);
+    foreach($objvars as $key => $val) {
+      if (is_array($val) && !array_key_exists("ref", $val)) {
+        $ary = array();
+        foreach($val as $item) {
+          $ary[] = $this->_replaceRefsWithConcreteResource($item, $resources_by_id, $resources_to_delete, $nested_only);
+        }
+        $object->{$key} = $ary;
+      }
+    }
+    # TODO: This seems to work, but has a bad code smell..
+    return $object;
+  }
 }

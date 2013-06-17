@@ -700,54 +700,10 @@ EOF;
       "instance_type" => "/api/clouds/1/instance_types/CQQV62T389R32"
     );
 
-    #$jsonStr = $productService->toOutputJson($product->id, $params);
-    #print $jsonStr."\n";
-    #$this->assertTrue(preg_match('/[a-z]+_product_input/', $jsonStr) == 0, "There were input references in the output json, this is a no no");
-//
-//    print "The product id was ".$product->id."\n";
-//    $this->dispatch("/product/provision/".$product->id); #, HttpRequest::METHOD_POST, $params);
-//    print "wait, are we this far?\n";
-//    print strval($this->getResponse());
+    $jsonStr = $productService->toOutputJson($product->id, $params);
+    #print $jsonStr;
+    $this->assertTrue(preg_match('/[a-z]+_product_input/', $jsonStr) == 0, "There were input references in the output json, this is a no no");
     # TODO: Could use more validation here too
-
-
-
-      \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-
-      $helpermock = $this->getMockBuilder('SelfService\Provisioner\RsApiProvisioner')
-        ->disableOriginalConstructor()
-        ->getMock();
-
-      $this->getApplicationServiceLocator()->setAllowOverride(true);
-      $this->getApplicationServiceLocator()->setService('Provisioner', $helpermock);
-
-      #$productService = $this->getProductService();
-
-      #print "Eh?\n";
-
-      #$products = $productService->findAll();
-      #$this->assertEquals(1, $products->count());
-
-      #$product = null;
-      #foreach($products as $prod) {
-      #  $product = $prod;
-      #}
-
-      $product_id = $product->id; //"51bb82909aec0c3b14000000";
-      #$dm = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
-      #$foo = $dm->find("SelfService\Document\Product", $product_id);
-      #$qb = $dm->createQueryBuilder("SelfService\Document\Product");
-      #$qb->where($qb->field('id')->equals($product_id));
-      #$qb->hydrate(false);
-      #$query = $qb->getQuery();
-      #$product = $query->getSingleResult();
-      #print "There are ".count($product)." stored products\n";
-      #print_r($product);
-
-      print "The product id was ".$product_id."\n";
-      $this->dispatch("/product/provision/".$product_id, HttpRequest::METHOD_POST, $params);
-      print "wait, are we this far?\n";
-      print strval($this->getResponse());
   }
 
 }

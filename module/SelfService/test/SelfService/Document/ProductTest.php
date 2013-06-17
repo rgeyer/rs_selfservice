@@ -519,4 +519,183 @@ EOF;
     $product->pruneBrokenRefs();
     $this->assertNotNull($product->resources[0]->name);
   }
+
+  public function testReplaceResourceRefsWithConcreteResourceInArray() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "rule",
+      "resource_type": "security_group_rule",
+      "protocol": "tcp",
+      "cidr_ips": "0.0.0.0\/0",
+      "source_type": "cidr_ips",
+      "protocol_details": [
+        {
+          "end_port": "22",
+          "start_port": "22"
+        }
+      ]
+    },
+    {
+      "id": "group",
+      "resource_type": "security_group",
+      "name": "group",
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "rule" }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->replaceRefsWithConcreteResource();
+
+    $this->assertObjectHasAttribute("id", $product->resources[1]->security_group_rules[0]);
+    $this->assertEquals("rule", $product->resources[1]->security_group_rules[0]->id);
+  }
+
+  public function testReplaceResourceRefsWithConcreteResourceRemovesResolvedResource() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "rule",
+      "resource_type": "security_group_rule",
+      "protocol": "tcp",
+      "cidr_ips": "0.0.0.0\/0",
+      "source_type": "cidr_ips",
+      "protocol_details": [
+        {
+          "end_port": "22",
+          "start_port": "22"
+        }
+      ]
+    },
+    {
+      "id": "group",
+      "resource_type": "security_group",
+      "name": "group",
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "rule" }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->replaceRefsWithConcreteResource();
+
+    $this->assertEquals(1, $product->resources->count());
+  }
+
+  public function testReplaceResourceRefsWithConcreteResourceDoesNotRemoveProtectedTypes() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "rule",
+      "resource_type": "security_group_rule",
+      "protocol": "tcp",
+      "ingress_group": { "ref": "security_group", "id": "group" }
+    },
+    {
+      "id": "group",
+      "resource_type": "security_group",
+      "name": "group",
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "rule" }
+      ]
+    },
+    {
+      "id": "server_template",
+      "resource_type": "server_template"
+    },
+    {
+      "id": "instance",
+      "resource_type": "instance",
+      "security_groups": [
+        { "ref": "security_group", "id": "group" }
+      ],
+      "server_template": [
+        { "ref": "server_template", "id": "server_template" }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->replaceRefsWithConcreteResource();
+
+    $this->assertEquals(2, $product->resources->count());
+    $this->assertEquals("security_group", $product->resources[1]->security_group_rules[0]->ingress_group["ref"]);
+  }
+
+  public function testReplaceResourceRefsWithConcreteResourceCanLimitToNested() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "rule",
+      "resource_type": "security_group_rule",
+      "protocol": "tcp",
+      "ingress_group": { "ref": "security_group", "id": "group" }
+    },
+    {
+      "id": "group",
+      "resource_type": "security_group",
+      "name": "group",
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "rule" }
+      ]
+    },
+    {
+      "id": "instance",
+      "resource_type": "instance",
+      "security_groups": [
+        { "ref": "security_group", "id": "group" }
+      ],
+      "server_template": [
+        {
+          "id": "server_template",
+          "resource_type": "server_template"
+        }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->replaceRefsWithConcreteResource(true);
+
+    $this->assertEquals(2, $product->resources->count());
+  }
 }
