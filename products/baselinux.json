@@ -58,16 +58,18 @@
           "name_prefix": "base",
           "optimized": false,
           "count": { "ref": "text_product_input", "id": "instance_count" },
-          "instance": {
-            "id": "BaseInstance",
-            "resource_type": "instance",
-            "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
-            "instance_type_href": { "ref": "instance_type_product_input", "id": "instance_type" },
-            "security_groups": [
-              { "ref": "security_group", "id": "DefaultSecurityGroup" }
-            ],
-            "server_template": { "ref": "server_template", "id": "BaseServerTemplate" }
-          }
+          "instance": [
+            {
+              "id": "BaseInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+              "instance_type_href": { "ref": "instance_type_product_input", "id": "instance_type" },
+              "security_groups": [
+                { "ref": "security_group", "id": "DefaultSecurityGroup" }
+              ],
+              "server_template": [ { "ref": "server_template", "id": "BaseServerTemplate" } ]
+            }
+          ]
         }
       ],
       "server_arrays": []
@@ -85,10 +87,12 @@
           "protocol": "tcp",
           "cidr_ips": "0.0.0.0\/0",
           "source_type": "cidr_ips",
-          "protocol_details": {
-            "end_port": "22",
-            "start_port": "22"
-          }
+          "protocol_details": [
+            {
+              "end_port": "22",
+              "start_port": "22"
+            }
+          ]
         },
         {
           "id": "HttpIngressSecurityGroupRule",
@@ -96,10 +100,12 @@
           "protocol": "tcp",
           "cidr_ips": "0.0.0.0\/0",
           "source_type": "cidr_ips",
-          "protocol_details": {
-            "end_port": "80",
-            "start_port": "80"
-          }
+          "protocol_details": [
+            {
+              "end_port": "80",
+              "start_port": "80"
+            }
+          ]
         }
       ]
     },

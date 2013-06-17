@@ -18,8 +18,7 @@
         "type": "object",
         "anyOf": [
           { "$ref": "#/definitions/deployment" },
-          { "$ref": "#/definitions/security_group" },
-          { "$ref": "#/definitions/server_template" }
+          { "$ref": "#/definitions/security_group" }
         ]
       }
     }
@@ -175,7 +174,7 @@
     },
     "instance": {
       "type": "object",
-      "required": ["resource_type","cloud_href","server_template_href"],
+      "required": ["resource_type","cloud_href","server_template"],
       "properties": {
         "resource_type": { "enum": ["instance"] },
         "cloud_href": {
@@ -198,13 +197,7 @@
             ]
           }
         },
-        "server_template_href": {
-          "description": "Can contain either a server template href, or a reference to a server template definition which must be found or imported and the resultant href used.",
-          "oneOf": [
-            { "type": "string" },
-            { "$ref": "#/definitions/server_template_relationship" }
-          ]
-        },
+        "server_template": { "$ref": "#/definitions/server_template" },
         "ssh_key_href": { "type": "string" },
         "subnet_hrefs": {
           "type": "array",
@@ -270,14 +263,6 @@
         "source_type": {
           "enum": ["cidr_ips","group"]
         }
-      }
-    },
-    "server_template_relationship": {
-      "type":"object",
-      "required": ["id", "ref"],
-      "properties":{
-        "id": { "type":"string" },
-        "ref": { "enum": ["server_template"] }
       }
     },
     "security_group_relationship": {

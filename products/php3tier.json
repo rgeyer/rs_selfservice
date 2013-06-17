@@ -243,18 +243,20 @@
           "description": "Apache/HAProxy Load Balancer",
           "optimized": false,
           "count": "1",
-          "instance": {
-            "id": "LbInstance",
-            "resource_type": "instance",
-            "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
-            "datacenter_href": { "ref": "datacenter_product_input", "id": "datacenter" },
-            "instance_type_href": { "ref": "instance_type_product_input", "id": "lb_instance_type" },
-            "security_groups": [
-              { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
-              { "ref": "security_group", "id": "PhpLbSecurityGroup" }
-            ],
-            "server_template": { "ref": "server_template", "id": "PhpLbServerTemplate" }
-          }
+          "instance": [
+            {
+              "id": "LbInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+              "datacenter_href": { "ref": "datacenter_product_input", "id": "datacenter" },
+              "instance_type_href": { "ref": "instance_type_product_input", "id": "lb_instance_type" },
+              "security_groups": [
+                { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
+                { "ref": "security_group", "id": "PhpLbSecurityGroup" }
+              ],
+              "server_template": [ { "ref": "server_template", "id": "PhpLbServerTemplate" } ]
+            }
+          ]
         },
         {
           "id": "DbServer",
@@ -263,18 +265,20 @@
           "description": "MySQL 5.5 Database Server",
           "optimized": false,
           "count": "2",
-          "instance": {
-            "id": "DbInstance",
-            "resource_type": "instance",
-            "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
-            "datacenter_href": { "ref": "datacenter_product_input", "id": "datacenter" },
-            "instance_type_href": { "ref": "instance_type_product_input", "id": "db_instance_type" },
-            "security_groups": [
-              { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
-              { "ref": "security_group", "id": "PhpMysqlSecurityGroup" }
-            ],
-            "server_template": { "ref": "server_template", "id": "PhpMysqlServerTemplate" }
-          }
+          "instance": [
+            {
+              "id": "DbInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+              "datacenter_href": { "ref": "datacenter_product_input", "id": "datacenter" },
+              "instance_type_href": { "ref": "instance_type_product_input", "id": "db_instance_type" },
+              "security_groups": [
+                { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
+                { "ref": "security_group", "id": "PhpMysqlSecurityGroup" }
+              ],
+              "server_template": [ { "ref": "server_template", "id": "PhpMysqlServerTemplate" } ]
+            }
+          ]
         }
       ],
       "server_arrays": [
@@ -285,48 +289,56 @@
           "optimized": false,
           "state": "disabled",
           "array_type": "alert",
-          "elasticity_params": {
-            "id": "ElasticityParams",
-            "resource_type": "elasticity_params",
-            "bounds": {
-              "min_count": "2",
-              "max_count": "10"
-            },
-            "pacing": {
-              "resize_calm_time": "5",
-              "resize_down_by": "1",
-              "resize_up_by": "2"
-            },
-            "alert_specific_params": {
-              "decision_threshold": "51",
-              "voters_tag_predicate": { "ref": "text_product_input", "id": "vote_tag" }
-            },
-            "schedule": [
-              {
-                "day": "Monday",
-                "min_count": "3",
-                "max_count": "10",
-                "time": "08:00",
-                "depends": {
-                  "id": "schedule_array_product_input",
-                  "ref": "text_product_input",
-                  "value": ["true"]
+          "elasticity_params": [
+            {
+              "id": "ElasticityParams",
+              "resource_type": "elasticity_params",
+              "bounds": [
+                {
+                  "min_count": "2",
+                  "max_count": "10"
                 }
-              },
-              {
-                "day": "Monday",
-                "min_count": "2",
-                "max_count": "10",
-                "time": "17:00",
-                "depends": {
-                  "id": "schedule_array_product_input",
-                  "ref": "text_product_input",
-                  "value": ["true"]
+              ],
+              "pacing": [
+                {
+                  "resize_calm_time": "5",
+                  "resize_down_by": "1",
+                  "resize_up_by": "2"
                 }
-              }
-            ]
-          },
-          "instance": { "ref": "instance", "id": "ApplicationInstance" },
+              ],
+              "alert_specific_params": [
+                {
+                  "decision_threshold": "51",
+                  "voters_tag_predicate": { "ref": "text_product_input", "id": "vote_tag" }
+                }
+              ],
+              "schedule": [
+                {
+                  "day": "Monday",
+                  "min_count": "3",
+                  "max_count": "10",
+                  "time": "08:00",
+                  "depends": {
+                    "id": "schedule_array_product_input",
+                    "ref": "text_product_input",
+                    "value": ["true"]
+                  }
+                },
+                {
+                  "day": "Monday",
+                  "min_count": "2",
+                  "max_count": "10",
+                  "time": "17:00",
+                  "depends": {
+                    "id": "schedule_array_product_input",
+                    "ref": "text_product_input",
+                    "value": ["true"]
+                  }
+                }
+              ]
+            }
+          ],
+          "instance": [ { "ref": "instance", "id": "ApplicationInstance" } ],
           "alert_specs": [
             { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
             { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
@@ -353,10 +365,12 @@
           "protocol": "tcp",
           "cidr_ips": "0.0.0.0\/0",
           "source_type": "cidr_ips",
-          "protocol_details": {
-            "end_port": "22",
-            "start_port": "22"
-          }
+          "protocol_details": [
+            {
+              "end_port": "22",
+              "start_port": "22"
+            }
+          ]
         }
       ]
     },
@@ -373,10 +387,12 @@
           "protocol": "tcp",
           "ingress_group": { "ref": "security_group", "id": "PhpLbSecurityGroup" },
           "source_type": "group",
-          "protocol_details": {
-            "end_port": "8000",
-            "start_port": "8000"
-          }
+          "protocol_details": [
+            {
+              "end_port": "8000",
+              "start_port": "8000"
+            }
+          ]
         }
       ]
     },
@@ -393,10 +409,12 @@
           "protocol": "tcp",
           "cidr_ips": "0.0.0.0\/0",
           "source_type": "cidr_ips",
-          "protocol_details": {
-            "end_port": "80",
-            "start_port": "80"
-          }
+          "protocol_details": [
+            {
+              "end_port": "80",
+              "start_port": "80"
+            }
+          ]
         }
       ]
     },
@@ -413,10 +431,12 @@
           "protocol": "tcp",
           "ingress_group": { "ref": "security_group", "id": "PhpAppSecurityGroup" },
           "source_type": "group",
-          "protocol_details": {
-            "end_port": "3306",
-            "start_port": "3306"
-          }
+          "protocol_details": [
+            {
+              "end_port": "3306",
+              "start_port": "3306"
+            }
+          ]
         },
         {
           "id": "DbSelfIngressSecurityGroupRule",
@@ -424,10 +444,12 @@
           "protocol": "tcp",
           "ingress_group": { "ref": "security_group", "id": "PhpMysqlSecurityGroup" },
           "source_type": "group",
-          "protocol_details": {
-            "end_port": "3306",
-            "start_port": "3306"
-          }
+          "protocol_details": [
+            {
+              "end_port": "3306",
+              "start_port": "3306"
+            }
+          ]
         }
       ]
     },
@@ -438,7 +460,7 @@
       "description": "PHP Application Server",
       "optimized": false,
       "count": "1",
-      "instance": { "ref": "instance", "id": "ApplicationInstance" },
+      "instance": [ { "ref": "instance", "id": "ApplicationInstance" } ],
       "alert_specs": [
         { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
         { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
@@ -461,7 +483,7 @@
         { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
         { "ref": "security_group", "id": "PhpAppSecurityGroup" }
       ],
-      "server_template": { "ref": "server_template", "id": "PhpAppServerTemplate" }
+      "server_template": [ { "ref": "server_template", "id": "PhpAppServerTemplate" } ]
     },
     {
       "id": "PhpAppServerTemplate",
