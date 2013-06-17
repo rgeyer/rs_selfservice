@@ -64,6 +64,35 @@ Add products from definition files (TODO: Document the description file format) 
 
 ```php /public/index.php product add php3tier```
 
+# Developers
+
+## Dependencies
+
+A lot of the json that gets exchanged with (or through) the vending machine has json-schema.org
+schema definitions.  Unfortunately the PHP validation tools don't support anywhere near all of
+the schema options used in these schemas.
+
+As a result, I wrote a simple python wrapper that is in the bin/ directory.  It accepts two
+params.  The first is the schema file you want to validate against and the second is the file
+you want to validate.
+
+On OSX you can easily install thusly
+
+```
+easy_install pip
+sudo pip install jsonschema
+```
+
+A TODO item here is to include the use of this validation in unit tests, and make sure that
+Travis CI can run python in the PHP test VM.
+
+## Testing
+
+```
+cd module/SelfService/test
+phpunit
+```
+
 # Extending
 
 The RightScale SelfService Vending Machine can be extended in three key ways.
