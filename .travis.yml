@@ -12,4 +12,6 @@ before_script:
   - touch logs/application.log
   - mkdir -p data/DoctrineMongoODMModule/Hydrator
   - mkdir -p data/SmartyModule/templates_c
+  - easy_install pip
+  - pip install jsonschema
 script: phpunit -d memory_limit=1024M --coverage-text -c module/SelfService/test/phpunit.xml
