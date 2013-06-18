@@ -92,10 +92,9 @@ return array(
       'metainput' => array(
         'type' => 'Segment',
         'options' => array(
-          'route' => '/metainput[/:action][/:id]',
+          'route' => '/metainput[/:action]',
           'constraints' => array(
-            'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-            'id' => '[0-9]+'
+            'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
           ),
           'defaults' => array(
             '__NAMESPACE__' => 'SelfService\Controller',

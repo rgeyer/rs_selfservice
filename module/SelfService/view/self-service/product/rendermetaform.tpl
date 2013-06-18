@@ -4,7 +4,7 @@
         {if preg_match('/CloudProductInput$/', get_class($meta_input))}
         <select name="{$meta_input->input_name}" id="{$meta_input->id}" class="cloud_meta">
           {foreach $clouds as $cloud_name => $cloud_id}
-          <option value="{$cloud_id}"{if "/api/clouds/$cloud_id" == $meta_input->default_value} selected{/if}>{$cloud_name}</option>
+          <option value="/api/clouds/{$cloud_id}"{if "/api/clouds/$cloud_id" == $meta_input->default_value} selected{/if}>{$cloud_name}</option>
           {/foreach}
         </select>
         {elseif preg_match('/SelectProductInput$/', get_class($meta_input))}
@@ -129,7 +129,7 @@ $(function() {
 
   $('.cloud_meta').change(function(evt) {
     $("#product_{$id}_submit").attr('disabled', 'disabled');
-    cloud_id = $(this).val();
+    cloud_href = $(this).val();
 
     instance_type_selects = $(this).data('instance_type_selects');
     instance_type_select_ids = [];
@@ -145,12 +145,12 @@ $(function() {
       datacenter_select_ids.push($(element).attr('id'));
     });
 
-    $.post('{$this->url('metainput', ['action' => 'instancetypes'])}/'+cloud_id, {literal}{'instance_type_ids':instance_type_select_ids}{/literal}, function(data, status, jqXHR) {
+    $.post('{$this->url('metainput', ['action' => 'instancetypes'])}/',
+        {literal}{'instance_type_ids':instance_type_select_ids,'cloud_href':cloud_href}{/literal}, function(data, status, jqXHR) {
       $(data.instance_type_ids).each(function(index, instance_type_id) {
         defaults = $.parseJSON($("#"+instance_type_id).attr('data-defaults'));
         default_instance_type = "";
         $(defaults).each(function(idx, def) {
-          cloud_href = "/api/clouds/"+cloud_id;
           if(def.cloud_href == cloud_href) {
             default_instance_type = def.resource_hrefs.pop();
           }
@@ -166,12 +166,12 @@ $(function() {
       $("#product_{$id}_submit").removeAttr('disabled');
     });
 
-    $.post('{$this->url('metainput', ['action' => 'datacenters'])}/'+cloud_id, {literal}{'datacenter_ids':datacenter_select_ids}{/literal}, function(data, status, jqXHR) {
+    $.post('{$this->url('metainput', ['action' => 'datacenters'])}/',
+        {literal}{'datacenter_ids':datacenter_select_ids,'cloud_href':cloud_href}{/literal}, function(data, status, jqXHR) {
       $(data.datacenter_ids).each(function(index, datacenter_id) {
         defaults = $.parseJSON($("#"+datacenter_id).attr('data-defaults'));
         default_datacenters = [];
         $(defaults).each(function(idx, def) {
-          cloud_href = "/api/clouds/"+cloud_id;
           if(def.cloud_href == cloud_href) {
             default_datacenters = default_datacenters.concat(def.resource_hrefs);
           }

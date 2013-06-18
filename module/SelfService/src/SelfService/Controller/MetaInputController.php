@@ -37,7 +37,9 @@ class MetaInputController extends BaseController {
 
   public function instancetypesAction() {
     $client = $this->getRightScaleApiCache();
-    $instance_types = $client->getInstanceTypes($this->params('id'));
+    $url_parts = explode("/", $this->params()->fromPost('cloud_href'));
+    $cloud_id = array_pop($url_parts);
+    $instance_types = $client->getInstanceTypes($cloud_id);
     $retval = array();
     foreach($instance_types as $itype) {
       $thisclass = new \stdClass();
@@ -51,7 +53,9 @@ class MetaInputController extends BaseController {
 
   public function datacentersAction() {
     $client = $this->getRightScaleApiCache();
-    $datacenters = $client->getDatacenters($this->params('id'));
+    $url_parts = explode("/", $this->params()->fromPost('cloud_href'));
+    $cloud_id = array_pop($url_parts);
+    $datacenters = $client->getDatacenters($cloud_id);
     $retval = array();
     foreach($datacenters as $dc) {
       $thisclass = new \stdClass();

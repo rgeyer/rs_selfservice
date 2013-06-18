@@ -19,7 +19,7 @@ class MetaInputControllerTest extends AbstractHttpControllerTestCase {
 
     $instance_types = array();
     $type1 = new \stdClass();
-    $type1->href = '/api/cloud/1/instance_types/ABC123';
+    $type1->href = '/api/clouds/1/instance_types/ABC123';
     $type1->name = 'm1.small';
     $instance_types[] = $type1;
 
@@ -33,7 +33,8 @@ class MetaInputControllerTest extends AbstractHttpControllerTestCase {
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $cachemock);
 
-    $this->dispatch('/metainput/instancetypes/1');
+    $this->dispatch('/metainput/instancetypes',
+      HttpRequest::METHOD_POST, array('cloud_href' => '/api/clouds/1'));
 
     $this->assertActionName('instancetypes');
     $this->assertControllerName('selfservice\controller\metainput');
@@ -59,7 +60,8 @@ class MetaInputControllerTest extends AbstractHttpControllerTestCase {
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $cachemock);
 
-    $this->dispatch('/metainput/instancetypes/1');
+    $this->dispatch('/metainput/instancetypes',
+          HttpRequest::METHOD_POST, array('cloud_href' => '/api/clouds/1'));
 
     $response = strval($this->getResponse());
 
@@ -88,7 +90,8 @@ class MetaInputControllerTest extends AbstractHttpControllerTestCase {
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $cachemock);
 
-    $this->dispatch('/metainput/instancetypes/1',HttpRequest::METHOD_POST, array('instance_type_ids' => array('1', '2')));
+    $this->dispatch('/metainput/instancetypes',
+      HttpRequest::METHOD_POST, array('instance_type_ids' => array('1', '2'), 'cloud_href' => '/api/clouds/1'));
 
     $response = strval($this->getResponse());
 
@@ -112,12 +115,13 @@ class MetaInputControllerTest extends AbstractHttpControllerTestCase {
       ->getMock();
     $cachemock->expects($this->once())
       ->method('getDatacenters')
-      ->will($this->returnValue($instance_types));
+      ->will($this->returnValue($datacenters));
 
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $cachemock);
 
-    $this->dispatch('/metainput/datacenters/1');
+    $this->dispatch('/metainput/datacenters',
+          HttpRequest::METHOD_POST, array('cloud_href' => '/api/clouds/1'));
 
     $this->assertActionName('datacenters');
     $this->assertControllerName('selfservice\controller\metainput');
@@ -143,7 +147,8 @@ class MetaInputControllerTest extends AbstractHttpControllerTestCase {
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $cachemock);
 
-    $this->dispatch('/metainput/datacenters/1');
+    $this->dispatch('/metainput/datacenters',
+          HttpRequest::METHOD_POST, array('cloud_href' => '/api/clouds/1'));
 
     $response = strval($this->getResponse());
 
@@ -172,7 +177,8 @@ class MetaInputControllerTest extends AbstractHttpControllerTestCase {
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $cachemock);
 
-    $this->dispatch('/metainput/datacenters/1',HttpRequest::METHOD_POST, array('datacenter_ids' => array('1', '2')));
+    $this->dispatch('/metainput/datacenters',
+      HttpRequest::METHOD_POST, array('datacenter_ids' => array('1', '2'),'cloud_href' => '/api/clouds/1'));
 
     $response = strval($this->getResponse());
 
