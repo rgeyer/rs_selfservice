@@ -43,7 +43,7 @@ class ElasticityParamsQueueSpecificParams extends CanDepend {
    * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
    * that only one of these values should be present in the output
    * @ODM\EmbedMany(targetDocument="ElasticityParamsQueueSpecificParamsItemAge")
-   * @var \SelfService\Document\ElasticityParamsQueueSpecificParamsItemAge
+   * @var \SelfService\Document\ElasticityParamsQueueSpecificParamsItemAge[]
    */
   public $item_age;
 
@@ -51,7 +51,7 @@ class ElasticityParamsQueueSpecificParams extends CanDepend {
    * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
    * that only one of these values should be present in the output
    * @ODM\EmbedMany(targetDocument="ElasticityParamsQueueSpecificParamsQueueSize")
-   * @var \SelfService\Document\ElasticityParamsQueueSpecificParamsQueueSize
+   * @var \SelfService\Document\ElasticityParamsQueueSpecificParamsQueueSize[]
    */
   public $queue_size;
 }

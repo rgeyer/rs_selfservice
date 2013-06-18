@@ -42,7 +42,7 @@ class ElasticityParams extends AbstractResource {
    * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
    * that only one of these values should be present in the output
    * @ODM\EmbedMany(targetDocument="ElasticityParamsBounds")
-   * @var \SelfService\Document\ElasticityParamsBounds
+   * @var \SelfService\Document\ElasticityParamsBounds[]
    */
   public $bounds;
 
@@ -50,7 +50,7 @@ class ElasticityParams extends AbstractResource {
    * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
    * that only one of these values should be present in the output
    * @ODM\EmbedMany(targetDocument="ElasticityParamsPacing")
-   * @var \SelfService\Document\ElasticityParamsPacing
+   * @var \SelfService\Document\ElasticityParamsPacing[]
    */
   public $pacing;
 
@@ -58,7 +58,7 @@ class ElasticityParams extends AbstractResource {
    * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
    * that only one of these values should be present in the output
    * @ODM\EmbedMany(targetDocument="ElasticityParamsAlertSpecificParams")
-   * @var \SelfService\Document\ElasticityParamsAlertSpecificParams
+   * @var \SelfService\Document\ElasticityParamsAlertSpecificParams[]
    */
   public $alert_specific_params;
 
@@ -66,7 +66,7 @@ class ElasticityParams extends AbstractResource {
    * @OnlyOne A hint to the RSSS ODMToStdClass (and subsequently JSON) methods
    * that only one of these values should be present in the output
    * @ODM\EmbedMany(targetDocument="ElasticityParamsQueueSpecificParams")
-   * @var \SelfService\Document\ElasticityParamsQueueSpecificParams
+   * @var \SelfService\Document\ElasticityParamsQueueSpecificParams[]
    */
   public $queue_specific_params;
 

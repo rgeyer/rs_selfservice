@@ -696,6 +696,170 @@ EOF;
     $product = $productService->find($product->id);
     $product->replaceRefsWithConcreteResource(true);
 
-    $this->assertEquals(2, $product->resources->count());
+    $this->assertEquals(3, $product->resources->count());
+  }
+
+  public function testCanDedupeOnlyOneArrayOfReferenceOrNestedInTopLevelResource() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "instance",
+      "resource_type": "instance",
+      "server_template": [
+        {
+          "id": "server_template",
+          "resource_type": "server_template"
+        },
+        {
+          "id": "server_template_too",
+          "resource_type": "server_template"
+        }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->dedupeOnlyOneProperties();
+
+    $this->assertInstanceOf("SelfService\Document\ServerTemplate", $product->resources[2]->server_template);
+  }
+
+  public function testCanDedupeOnlyOneArrayOfReferenceOrNestedInNestedResource() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "server",
+      "resource_type": "server",
+      "instance": [
+        {
+          "id": "instance",
+          "resource_type": "instance",
+          "server_template": [
+            {
+              "id": "server_template",
+              "resource_type": "server_template"
+            },
+            {
+              "id": "server_template_too",
+              "resource_type": "server_template"
+            }
+          ]
+        },
+        {
+          "id": "instance_too",
+          "resource_type": "instance"
+        }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->dedupeOnlyOneProperties();
+
+    $this->assertInstanceOf("SelfService\Document\Instance", $product->resources[4]->instance);
+    $this->assertInstanceOf("SelfService\Document\ServerTemplate", $product->resources[4]->instance->server_template);
+  }
+
+  public function testCanDedupeOnlyOneArrayOfEmbeddedInTopLevelResource() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "elasticity_params",
+      "resource_type": "elasticity_params",
+      "pacing": [
+        {
+          "resize_calm_time": "10",
+          "resize_down_by": "1",
+          "resize_up_by": "2"
+        },
+        {
+          "resize_calm_time": "20",
+          "resize_down_by": "2",
+          "resize_up_by": "4"
+        }
+      ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->dedupeOnlyOneProperties();
+
+    $this->assertInstanceOf("SelfService\Document\ElasticityParams", $product->resources[0]);
+    $this->assertInstanceOf("SelfService\Document\ElasticityParamsPacing", $product->resources[0]->pacing);
+    $this->assertEquals("10", $product->resources[0]->pacing->resize_calm_time);
+  }
+
+  public function testCanDedupeOnlyOneArrayOfEmbeddedInNestedResource() {
+    # TODO: Use server_array -> elasticity_params -> pacing
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "server_array",
+      "resource_type": "server_array",
+      "elasticity_params": [
+        {
+          "id": "elasticity_params1",
+          "resource_type": "elasticity_params",
+          "pacing": [
+            {
+              "resize_calm_time": "10",
+              "resize_down_by": "1",
+              "resize_up_by": "2"
+            },
+            {
+              "resize_calm_time": "20",
+              "resize_down_by": "2",
+              "resize_up_by": "4"
+            }
+          ]
+        },
+        {
+          "id": "elasticity_params2",
+          "resource_type": "elasticity_params"
+        }
+      ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->dedupeOnlyOneProperties();
+
+    $this->assertInstanceOf("SelfService\Document\ElasticityParams", $product->resources[2]->elasticity_params);
+    $this->assertInstanceOf("SelfService\Document\ElasticityParamsPacing", $product->resources[2]->elasticity_params->pacing);
+    $this->assertEquals("10", $product->resources[2]->elasticity_params->pacing->resize_calm_time);
   }
 }

@@ -295,7 +295,8 @@ class Product {
 
   protected function _replaceRefsWithConcreteResource(&$object, $resources_by_id, &$resources_to_delete, $nested_only) {
     if(is_array($object) && array_key_exists("ref", $object) && strpos("product_input", $object["ref"]) === false) {
-      if(!in_array($object["ref"], $this->_protectedResourceTypes) && (($object["nested"] | $nested_only) == $nested_only)) {
+      if(!in_array($object["ref"], $this->_protectedResourceTypes)
+        && (($object["nested"] & $nested_only) | !$nested_only)) {
         $resources_to_delete[$object["id"]] = $resources_by_id[$object["id"]];
       }
       return $resources_by_id[$object["id"]];
@@ -312,5 +313,28 @@ class Product {
     }
     # TODO: This seems to work, but has a bad code smell..
     return $object;
+  }
+
+  public function dedupeOnlyOneProperties() {
+    # TODO: This dependency seems odd..
+    $this->replaceRefsWithConcreteResource();
+
+    foreach($this->resources as $resource) {
+      $this->_dedupeOnlyOneProperties($resource);
+    }
+  }
+
+  protected function _dedupeOnlyOneProperties(&$resource) {
+    $objvars = get_object_vars($resource);
+    foreach($objvars as $key => $val) {
+      if(is_array($val)) {
+        $resource->{$key} = array_shift($val);
+        $this->_dedupeOnlyOneProperties($resource->{$key});
+      } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
+        $resource->{$key} = $val->first();
+      } else {
+        $this->_dedupeOnlyOneProperties($resource->{$key});
+      }
+    }
   }
 }
