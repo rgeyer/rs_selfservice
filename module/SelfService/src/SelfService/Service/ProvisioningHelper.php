@@ -441,7 +441,9 @@ class ProvisioningHelper {
     $secGrp = null;
     $secGrp = $this->client->newModel('SecurityGroup');
     $secGrp->name = $security_group->name;
-    $secGrp->description = $security_group->description;
+    if($security_group->description) {
+      $secGrp->description = $security_group->description;
+    }
     $secGrp->cloud_id = $cloud_id;
     $secGrp->create();
     // This feels a bit hacky?
