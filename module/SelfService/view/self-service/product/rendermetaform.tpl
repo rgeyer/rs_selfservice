@@ -145,7 +145,7 @@ $(function() {
       datacenter_select_ids.push($(element).attr('id'));
     });
 
-    $.post('{$this->url('metainput', ['action' => 'instancetypes'])}/',
+    $.post('{$this->url('metainput', ['action' => 'instancetypes'])}',
         {literal}{'instance_type_ids':instance_type_select_ids,'cloud_href':cloud_href}{/literal}, function(data, status, jqXHR) {
       $(data.instance_type_ids).each(function(index, instance_type_id) {
         defaults = $.parseJSON($("#"+instance_type_id).attr('data-defaults'));
@@ -166,7 +166,7 @@ $(function() {
       $("#product_{$id}_submit").removeAttr('disabled');
     });
 
-    $.post('{$this->url('metainput', ['action' => 'datacenters'])}/',
+    $.post('{$this->url('metainput', ['action' => 'datacenters'])}',
         {literal}{'datacenter_ids':datacenter_select_ids,'cloud_href':cloud_href}{/literal}, function(data, status, jqXHR) {
       $(data.datacenter_ids).each(function(index, datacenter_id) {
         defaults = $.parseJSON($("#"+datacenter_id).attr('data-defaults'));
