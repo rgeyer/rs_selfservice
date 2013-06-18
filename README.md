@@ -17,7 +17,7 @@ Travis-CI Build Status [![Build Status](https://travis-ci.org/rgeyer/rs_selfserv
 
 5. Run the following commands which will create the schema in the DB specified in config/autoload/local.php and populate the 3 "standard" products.
 
-```vendor/bin/doctrine-module orm:schema-tool:create```
+```vendor/bin/doctrine-module odm:schema:create```
 ```php public/index.php product add```
 
 6. Enjoy.. Hopefully!
@@ -129,11 +129,7 @@ option in your applications ./confi/local.php config file.
 * Soft deletes for products, provisioned products, perhaps others?
 * Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
   * All ajax calls are actually ajax with a progress bar.  Above still needs more love. (Done)
-* Handle "cloud not supported" errors when provisioning servers or arrays
-  * Select default Datacenter when not specified and supported/required by the cloud
-* Accept (meta, not dashboard) inputs for products.  Customized form during provisioning.  Also self referencing variables
-  * Multiple Choice (dropdown)
-  * If/Else options, like MySQL 5.1 or 5.5 with logic (use one ST over another depending upon selection)
+* Accept product inputs which can customize the form during provisioning.
   * Inputs "2.0" type functionality.  When a particular cloud is chosen, ask for required inputs specific to that cloud etc.
 * Accept dashboard inputs for products.
   * As a named credential
@@ -157,18 +153,15 @@ option in your applications ./confi/local.php config file.
 * Allow launching of servers once deployment is created
   * Create launch stages (tiers), launch all LB first, then DB, then App
   * Allow execution of scripts on servers once they become operational
-  * Enforce HA best practices by putting multiples of the same server type in different datacenters
-    * Done, but would like to allow the user to define a subset of datacenters to use.
 * DNS integration to generate DB records etc.
 * Support multiple AWS/RS accounts
-* In the interest of database normalization, have only 1 record for "deployment_name" product metadata input
 * Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
 * Add Authorization functionality (admin, read_all, act_all, read_mine, act_mine, etc)
   * Partly done, users are now either authorized or not, no roles yet (Done)
   * http://opauth.org/
 * Filter cloud menu based on product ST support?
 * Make sure ServerTemplate is done importing before starting servers
-* Make the windows product work by properly passing inputs into the server or deployment.
+* (Re)add a windows product
 * Cleaner handling of failure while provisioning.  Make sure that successfully provisioned stuff gets persisted so that it can be destroyed.
   * Cleaner handling of failure while destroying, make sure that destruction can be re-run until everything is gone.
 * Add vendor dependency downloads with composer in pre_activate.php for Zend Server
@@ -176,7 +169,6 @@ option in your applications ./confi/local.php config file.
   * Provisioning action(s) hit a controller with json metadata
   * ProvisioningHelper hits controllers with json metadata on success to indicate completion, allowing the RSSS to delete DB records
 * Importing templates can be tough, and time consuming, possibly batch this when the provisionable product is added to the catalog rather than making the end user wait.
-* Seriously consider using ODM and a NoSQL store for products, provisioned products, etc.  All of them are really self contained things anyway.
 * Allow an Opt-In phone home to allow the tracking of multiple vending machines by a single person/organization
 * Integrate with PlanForCloud so that each product can be analyzed for cost forecasting! Brilliant
 * Create scheduled reports to show run rates of provisioned products in the RSSS
@@ -193,6 +185,9 @@ option in your applications ./confi/local.php config file.
   * All views should be calling API methods for form submits etc.
 * RsApiProvisioner
   * Support deployment server_tag_scope property
+* Refactor
+  * MetaInput -> ProductInput
+  * All of the odm -> stdClass -> json gyrations should not be tied to the document models.
 
 # Misc Useful stuff
 ## Icon Pack
