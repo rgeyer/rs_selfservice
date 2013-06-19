@@ -994,6 +994,76 @@ EOF;
     $this->assertInstanceOf("SelfService\Document\ServerTemplate", $product->resources[4]->instance->server_template);
   }
 
+  public function testCanDedupeOnlyOneArrayOfEmbeddedInArrayOfEmbedded() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "elasticity_params",
+      "resource_type": "elasticity_params",
+      "queue_specific_params": [
+        {
+          "item_age": [
+            {
+              "algorithm": "foo",
+              "max_age": "1",
+              "regexp": ".*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $product = $productService->find($product->id);
+    $product->dedupeOnlyOneProperties();
+
+    $this->assertInstanceOf("SelfService\Document\ElasticityParamsQueueSpecificParams", $product->resources[0]->queue_specific_params);
+    $this->assertInstanceOf("SelfService\Document\ElasticityParamsQueueSpecificParamsItemAge", $product->resources[0]->queue_specific_params->item_age);
+  }
+
+  public function testCanDedupOnlyOneArrayOfRefOrNestedInArrayOfEmbedded() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "security_group",
+      "resource_type": "security_group",
+      "security_group_rules": [
+        {
+          "id": "rule1",
+          "resource_type": "security_group_rule",
+          "protocol_details": [
+            {
+              "end_port": "22",
+              "start_port": "22"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $product = $productService->find($product->id);
+    $product->dedupeOnlyOneProperties();
+
+    $this->assertInstanceOf("SelfService\Document\SecurityGroupRuleProtocolDetail", $product->resources[1]->security_group_rules[0]->protocol_details);
+  }
+
   public function testCanDedupeOnlyOneArrayOfEmbeddedInTopLevelResource() {
     $json = <<<EOF
 {
@@ -1117,11 +1187,4 @@ EOF;
       $this->assertArrayHasKey("ref", $sg);
     }
   }
-
-  /**
-   * Mongo stores scalar values as { "scalar": "value" } which is deserialized
-   * as a PHP hash.  Need to find all arrays with the key "scalar" and set them
-   * as a scalar value.
-   */
-  public function testCanDescalarProperties() {}
 }

@@ -331,15 +331,26 @@ class Product {
     foreach($objvars as $key => $val) {
       $reflection_class = new \ReflectionClass(get_class($resource));
       $reflection_property = $reflection_class->getProperty($key);
-      if(strpos("@OnlyOne", $reflection_property->getDocComment()) !== FALSE) {
-        if(is_array($val)) {
+      if(is_array($val)) {
+        if(strpos($reflection_property->getDocComment(), "@OnlyOne") !== FALSE) {
           $resource->{$key} = array_shift($val);
           $this->_dedupeOnlyOneProperties($resource->{$key});
-        } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
-          $resource->{$key} = $val->first();
         } else {
-          $this->_dedupeOnlyOneProperties($resource->{$key});
+          foreach($val as $subval) {
+            $this->_dedupeOnlyOneProperties($subval);
+          }
         }
+      } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
+        if(strpos($reflection_property->getDocComment(), "@OnlyOne") !== FALSE) {
+          $resource->{$key} = $val->first();
+          $this->_dedupeOnlyOneProperties($resource->{$key});
+        } else {
+          foreach($val as $subval) {
+            $this->_dedupeOnlyOneProperties($subval);
+          }
+        }
+      } else {
+        $this->_dedupeOnlyOneProperties($resource->{$key});
       }
     }
   }

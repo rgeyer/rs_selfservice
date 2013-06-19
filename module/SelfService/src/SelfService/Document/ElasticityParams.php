@@ -72,7 +72,7 @@ class ElasticityParams extends AbstractResource {
 
   /**
    * @ODM\EmbedMany(targetDocument="ElasticityParamsSchedule")
-   * @var \SelfService\Document\ElasticityParamsSchedule
+   * @var \SelfService\Document\ElasticityParamsSchedule[]
    */
   public $schedule;
 }

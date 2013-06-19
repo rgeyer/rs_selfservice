@@ -715,7 +715,6 @@ EOF;
     );
 
     $jsonStr = $productService->toOutputJson($id, $params);
-    print $jsonStr;
     $this->assertTrue(preg_match('/[a-z]+_product_input/', $jsonStr) == 0, "There were input references in the output json, this is a no no");
     # TODO: Could use more validation here too
   }
