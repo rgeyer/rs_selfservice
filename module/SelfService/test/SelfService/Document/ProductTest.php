@@ -207,6 +207,38 @@ EOF;
     $this->assertEquals(0, $product->resources->count());
   }
 
+  public function testMergeMetaInputsDoesNotScheduleRemovedResourcesForOdmRemoval() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo_id",
+      "resource_type": "text_product_input",
+      "input_name": "foo",
+      "default_value": "foo"
+    },
+    {
+      "id": "desc_id",
+      "resource_type": "text_product_input",
+      "input_name": "bar",
+      "default_value": "baz"
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+
+    $product->mergeMetaInputs(array());
+    $this->assertEquals(0, $product->resources->count());
+    $this->assertFalse($product->resources->isDirty());
+  }
+
   public function testMergeMetaInputsSetsInstanceTypeHrefsToNullWhenNoValueOrDefaultSpecified() {
     $service = $this->getProductService();
 
@@ -374,6 +406,47 @@ EOF;
     $this->assertEquals(0, count($product->resources));
   }
 
+  public function testResolveDependsRemovesUnmatchedResourceFromTopLevelResourcesWithoutSchedulingForOdmRemoval() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo_id",
+      "resource_type": "text_product_input",
+      "input_name": "foo",
+      "default_value": "foo"
+    },
+    {
+      "id": "desc_id",
+      "resource_type": "text_product_input",
+      "input_name": "bar",
+      "default_value": "baz"
+    },
+    {
+      "id": "security_group",
+      "resource_type": "security_group",
+      "name": { "ref": "text_product_input", "id": "foo_id" },
+      "description": { "ref": "text_product_input", "id": "desc_id" },
+      "depends": { "ref": "text_product_input", "id": "foo_id", "value": ["baz"] }
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+
+    $params = array('foo' => 'bar');
+    $product->mergeMetaInputs($params);
+    $product->resolveDepends($params);
+    $this->assertEquals(0, count($product->resources));
+    $this->assertFalse($product->resources->isDirty());
+  }
+
   public function testResolveDependsRemovesUnmatchedResourceFromEmbedManyArrays() {
     $json = <<<EOF
 {
@@ -412,6 +485,47 @@ EOF;
     $product->mergeMetaInputs($params);
     $product->resolveDepends($params);
     $this->assertEquals(1, $product->resources[1]->schedule->count());
+  }
+
+  public function testResolveDependsRemovesUnmatchedResourceFromEmbedManyArraysWithoutSchedulingForOdmRemoval() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo_id",
+      "resource_type": "text_product_input",
+      "input_name": "foo",
+      "default_value": "10"
+    },
+    {
+      "id": "elast",
+      "resource_type": "elasticity_params",
+      "schedule": [
+        {
+          "max_count": { "ref": "text_product_input", "id": "foo_id" },
+          "depends": { "ref": "text_product_input", "id": "foo_id", "value": ["5"] }
+        },
+        {
+          "max_count": { "ref": "text_product_input", "id": "foo_id" }
+        }
+      ]
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+
+    $params = array('foo' => 'bar');
+    $product->mergeMetaInputs($params);
+    $product->resolveDepends($params);
+    $this->assertEquals(1, $product->resources[1]->schedule->count());
+    $this->assertFalse($product->resources[1]->schedule->isDirty());
   }
 
   public function testResolveDependsHandlesEmptyArrayForParams() {
@@ -560,6 +674,49 @@ EOF;
 
     $this->assertObjectHasAttribute("id", $product->resources[1]->security_group_rules[0]);
     $this->assertEquals("rule", $product->resources[1]->security_group_rules[0]->id);
+  }
+
+  public function testReplaceResourceRefsWithConcreteResourceDoesNotScheduleRemovedResourcesForOdmRemoval() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "rule",
+      "resource_type": "security_group_rule",
+      "protocol": "tcp",
+      "cidr_ips": "0.0.0.0\/0",
+      "source_type": "cidr_ips",
+      "protocol_details": [
+        {
+          "end_port": "22",
+          "start_port": "22"
+        }
+      ]
+    },
+    {
+      "id": "group",
+      "resource_type": "security_group",
+      "name": "group",
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "rule" }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->replaceRefsWithConcreteResource();
+
+    $this->assertObjectHasAttribute("id", $product->resources[1]->security_group_rules[0]);
+    $this->assertEquals("rule", $product->resources[1]->security_group_rules[0]->id);
+    $this->assertFalse($product->resources->isDirty());
   }
 
   public function testReplaceResourceRefsWithConcreteResourceRemovesResolvedResource() {

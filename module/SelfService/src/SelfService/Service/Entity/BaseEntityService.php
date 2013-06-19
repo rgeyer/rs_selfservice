@@ -131,6 +131,15 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
     return $entity;
   }
 
+  public function detach($doc) {
+    $this->getDocumentManager()->detach($doc);
+    foreach(get_object_vars($doc) as $key => $val) {
+      if(strpos(get_class($val), "SelfService\Document") === 0) {
+        $this->detach($val);
+      }
+    }
+  }
+
   /**
    * @return \Doctrine\ODM\MongoDB\Query\Builder
    */

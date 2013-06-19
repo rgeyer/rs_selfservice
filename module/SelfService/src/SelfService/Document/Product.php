@@ -187,7 +187,7 @@ class Product {
 
     foreach($this->resources as $idx => $resource) {
       if(!$this->hasDependsMatch($resource, $valuesByInputId)) {
-        $this->resources->removeElement($resource);
+        $this->resources->unwrap()->removeElement($resource);
       }
     }
   }
@@ -210,7 +210,7 @@ class Product {
       } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
         foreach($val as $idx => $subresource) {
           if(!$this->hasDependsMatch($subresource, $params)) {
-            $resource->{$key}->removeElement($subresource);
+            $resource->{$key}->unwrap()->removeElement($subresource);
           }
         }
       }
@@ -231,7 +231,7 @@ class Product {
 
     foreach($this->resources as $resource) {
       if(strpos($resource->resource_type, "product_input") > 0) {
-        $this->resources->removeElement($resource);
+        $this->resources->unwrap()->removeElement($resource);
       }
       $this->replaceInputRefsWithScalar($resource, $valuesByInputId);
     }
@@ -285,7 +285,7 @@ class Product {
     }
 
     foreach($resources_to_delete as $resource_to_delete) {
-      $this->resources->removeElement($resource_to_delete);
+      $this->resources->unwrap()->removeElement($resource_to_delete);
     }
   }
 

@@ -124,6 +124,7 @@ class GoogleAuthAdapter implements AdapterInterface {
 			} else {
         $this->getUserEntityService()->update($user, $user_params);
       }
+      $this->getUserEntityService()->detach($user);
 			return new Result(Result::SUCCESS, $user);
 		} else {
 			return new Result(Result::FAILURE_CREDENTIAL_INVALID, $this->_oid);

@@ -555,13 +555,13 @@ class ProductService extends BaseEntityService {
 
   public function toOutputJson($id, array $params = array()) {
     $product = $this->find($id);
-    $this->getDocumentManager()->detach($product);
+    $this->detach($product);
     $product->mergeMetaInputs($params);
     $product->resolveDepends($params);
     $product->pruneBrokenRefs();
     $product->replaceRefsWithConcreteResource();
+    $product->dedupeOnlyOneProperties();
     $stdClass = $this->odmToStdClass($product);
-    # TODO: Dedupe the "only one" properties
     return json_encode($stdClass);
   }
 
