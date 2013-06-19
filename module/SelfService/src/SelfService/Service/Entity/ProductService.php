@@ -526,7 +526,14 @@ class ProductService extends BaseEntityService {
       if(is_array($val)) {
         $stdClass->{$key} = array();
         foreach($val as $aryval) {
-          $stdClass->{$key}[] = is_scalar($aryval) ? $aryval : $this->odmToStdClass($aryval);
+          if(array_key_exists('ref', $aryval)) {
+            # By the time we get here, we should have resolved all the nested-ness and we need
+            # to remove that decoration
+            unset($aryval['nested']);
+            $stdClass->{$key}[] = $aryval;
+          } else {
+            $stdClass->{$key}[] = is_scalar($aryval) ? $aryval : $this->odmToStdClass($aryval);
+          }
         }
       } else if (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
         $stdClass->{$key} = array();
@@ -536,9 +543,7 @@ class ProductService extends BaseEntityService {
       } else if (strpos(get_class($val), "SelfService\Document") === 0) {
         $stdClass->{$key} = $this->odmToStdClass($val);
       } else if ($val !== null) {
-        if(property_exists($val, "nested")) {
-          unset($val->nested);
-        }
+        # TODO: Does this ever get reached?
         $stdClass->{$key} = is_scalar($val) ? $val : $this->odmToStdClass($val);
       }
     }
