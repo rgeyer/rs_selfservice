@@ -298,8 +298,10 @@ class Product {
       if(!in_array($object["ref"], $this->_protectedResourceTypes)
         && (($object["nested"] & $nested_only) | !$nested_only)) {
         $resources_to_delete[$object["id"]] = $resources_by_id[$object["id"]];
+        return $resources_by_id[$object["id"]];
+      } else {
+        return $object;
       }
-      return $resources_by_id[$object["id"]];
     }
     $objvars = get_object_vars($object);
     foreach($objvars as $key => $val) {
@@ -327,13 +329,17 @@ class Product {
   protected function _dedupeOnlyOneProperties(&$resource) {
     $objvars = get_object_vars($resource);
     foreach($objvars as $key => $val) {
-      if(is_array($val)) {
-        $resource->{$key} = array_shift($val);
-        $this->_dedupeOnlyOneProperties($resource->{$key});
-      } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
-        $resource->{$key} = $val->first();
-      } else {
-        $this->_dedupeOnlyOneProperties($resource->{$key});
+      $reflection_class = new \ReflectionClass(get_class($resource));
+      $reflection_property = $reflection_class->getProperty($key);
+      if(strpos("@OnlyOne", $reflection_property->getDocComment()) !== FALSE) {
+        if(is_array($val)) {
+          $resource->{$key} = array_shift($val);
+          $this->_dedupeOnlyOneProperties($resource->{$key});
+        } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
+          $resource->{$key} = $val->first();
+        } else {
+          $this->_dedupeOnlyOneProperties($resource->{$key});
+        }
       }
     }
   }

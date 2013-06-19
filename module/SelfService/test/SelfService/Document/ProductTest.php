@@ -809,6 +809,58 @@ EOF;
     $this->assertEquals("security_group", $product->resources[1]->security_group_rules[0]->ingress_group["ref"]);
   }
 
+  public function testReplaceResourceRefsWithConcreteResourceDoesNotReplaceProtectedTypeRefs() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "rule",
+      "resource_type": "security_group_rule",
+      "protocol": "tcp",
+      "ingress_group": { "ref": "security_group", "id": "group" }
+    },
+    {
+      "id": "group",
+      "resource_type": "security_group",
+      "name": "group",
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "rule" }
+      ]
+    },
+    {
+      "id": "server_template",
+      "resource_type": "server_template"
+    },
+    {
+      "id": "instance",
+      "resource_type": "instance",
+      "security_groups": [
+        { "ref": "security_group", "id": "group" }
+      ],
+      "server_template": [
+        { "ref": "server_template", "id": "server_template" }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->replaceRefsWithConcreteResource();
+
+    $this->assertEquals(2, $product->resources->count());
+    $this->assertTrue(is_array($product->resources[3]->security_groups), "Expected instance security groups property to be an array");
+    $this->assertEquals(1, count($product->resources[3]->security_groups));
+    $this->assertTrue(is_array($product->resources[3]->security_groups[0]), "Expected first instance security group record to be a ref array");
+    $this->assertArrayHasKey("ref", $product->resources[3]->security_groups[0]);
+  }
+
   public function testReplaceResourceRefsWithConcreteResourceCanLimitToNested() {
     $json = <<<EOF
 {
@@ -973,7 +1025,6 @@ EOF;
   }
 
   public function testCanDedupeOnlyOneArrayOfEmbeddedInNestedResource() {
-    # TODO: Use server_array -> elasticity_params -> pacing
     $json = <<<EOF
 {
   "version": "1.0.0",
@@ -1019,4 +1070,51 @@ EOF;
     $this->assertInstanceOf("SelfService\Document\ElasticityParamsPacing", $product->resources[2]->elasticity_params->pacing);
     $this->assertEquals("10", $product->resources[2]->elasticity_params->pacing->resize_calm_time);
   }
+
+  public function testDedupeDoesNotClobberThingsWhichShouldBeArrays() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "instance",
+      "resource_type": "instance",
+      "security_groups": [
+        {
+          "id": "security_group",
+          "resource_type": "security_group"
+        },
+        {
+          "id": "security_group_too",
+          "resource_type": "security_group"
+        }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+
+    $product = $productService->find($product->id);
+    $product->dedupeOnlyOneProperties();
+
+    $this->assertTrue(is_array($product->resources[2]->security_groups));
+    $this->assertEquals(2, count($product->resources[2]->security_groups));
+    $this->assertArrayNotHasKey("ref", $product->resources[2]->security_groups);
+    foreach($product->resources[2]->security_groups as $sg) {
+      $this->assertTrue(is_array($sg), "Security Group was expected to be an array");
+      $this->assertArrayHasKey("ref", $sg);
+    }
+  }
+
+  /**
+   * Mongo stores scalar values as { "scalar": "value" } which is deserialized
+   * as a PHP hash.  Need to find all arrays with the key "scalar" and set them
+   * as a scalar value.
+   */
+  public function testCanDescalarProperties() {}
 }
