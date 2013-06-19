@@ -44,7 +44,7 @@ class ProvisionedProductService extends BaseEntityService {
    */
   public function create(array $params) {
     $authSvc = $this->getServiceLocator()->get('AuthenticationService');
-    $params['createdate'] = new MongoDate();
+    $params['createdate'] = new \DateTime();
     $params['owner'] = $authSvc->getIdentity();
     return parent::create($params);
   }

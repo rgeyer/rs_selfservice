@@ -54,7 +54,7 @@ class ProvisionedProduct {
 	
 	/**
 	 * @ODM\Date
-	 * @var \MongoDate
+	 * @var \DateTime
 	 */
 	public $createdate;
 	
