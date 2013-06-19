@@ -30,12 +30,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @ODM\MappedSuperclass
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-abstract class AbstractResource extends CanDepend {
-  /**
-   * @ODM\String
-   * @var string
-   */
-  public $id;
+abstract class AbstractDocument {
 
   /**
    * @ODM\PostLoad

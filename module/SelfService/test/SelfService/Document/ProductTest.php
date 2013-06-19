@@ -33,6 +33,13 @@ class ProductTest extends AbstractHttpControllerTestCase {
   }
 
   /**
+   * @return \Doctrine\ODM\MongoDB\DocumentManager
+   */
+  protected function getDocumentManager() {
+    return $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
+  }
+
+  /**
    * Tests that resources in the product/resources array get product inputs replaced
    * properly.  In actual fact all resources will be "top level" since the import
    * process places them all there and the references get decorated with the "nested"
@@ -68,7 +75,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $product->mergeMetaInputs(array('foo' => 'bar'));
@@ -106,7 +113,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $product->mergeMetaInputs(array('foo' => '5'));
@@ -139,7 +146,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $params = array('foo' => 'bar');
@@ -169,7 +176,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $product->mergeMetaInputs(array('foo' => 'bar'));
@@ -200,7 +207,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $product->mergeMetaInputs(array());
@@ -231,7 +238,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $product->mergeMetaInputs(array());
@@ -397,7 +404,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $params = array('foo' => 'bar');
@@ -437,7 +444,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $params = array('foo' => 'bar');
@@ -478,7 +485,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $params = array('foo' => 'bar');
@@ -518,7 +525,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $params = array('foo' => 'bar');
@@ -559,7 +566,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $params = array();
@@ -594,7 +601,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $product->pruneBrokenRefs();
@@ -627,7 +634,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
 
     $product->pruneBrokenRefs();
@@ -668,7 +675,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->replaceRefsWithConcreteResource();
 
@@ -710,7 +717,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->replaceRefsWithConcreteResource();
 
@@ -753,7 +760,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->replaceRefsWithConcreteResource();
 
@@ -801,7 +808,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->replaceRefsWithConcreteResource();
 
@@ -850,7 +857,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->replaceRefsWithConcreteResource();
 
@@ -901,7 +908,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->replaceRefsWithConcreteResource(true);
 
@@ -935,7 +942,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->dedupeOnlyOneProperties();
 
@@ -979,7 +986,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->dedupeOnlyOneProperties();
 
@@ -1015,7 +1022,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->dedupeOnlyOneProperties();
 
@@ -1062,7 +1069,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->dedupeOnlyOneProperties();
 
@@ -1098,7 +1105,7 @@ EOF;
 
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $product->dedupeOnlyOneProperties();
 

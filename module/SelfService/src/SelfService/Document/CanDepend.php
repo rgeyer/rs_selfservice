@@ -30,7 +30,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @ODM\MappedSuperclass
  * @author Ryan J. Geyer <me@ryangeyer.com>
  */
-abstract class CanDepend {
+abstract class CanDepend extends AbstractDocument {
 
   /**
    * @ODM\Hash

@@ -531,6 +531,7 @@ EOF;
     $productService->update($product->id, array('name' => 'foobar'));
 
     $product = $productService->find($product->id);
+    $this->getDocumentManager()->clear();
     $this->assertEquals('foobar', $product->name);
   }
 
@@ -550,7 +551,7 @@ EOF;
     }
 
     $productService->update($product->id, array('icon_filename' => 'foobar.png'));
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $this->assertEquals('foobar.png', $product->icon_filename);
   }
@@ -571,7 +572,7 @@ EOF;
     }
 
     $productService->update($product->id, array('launch_servers' => true));
-
+    $this->getDocumentManager()->clear();
     $product = $productService->find($product->id);
     $this->assertTrue($product->launch_servers);
   }
@@ -682,6 +683,15 @@ EOF;
     # cover all of the declarations I use.
   }
 
+
+
+  /**
+   * @return \Doctrine\ODM\MongoDB\DocumentManager
+   */
+  protected function getDocumentManager() {
+    return $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
+  }
+
   /**
    * @group odm_to_json
    */
@@ -689,20 +699,65 @@ EOF;
     $path = realpath(__DIR__.'/../../../../../../products/baselinux.json');
     $str = file_get_contents($path);
 
+    $old_dm = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
     $productService = $this->getProductService();
-
     $product = $productService->createFromJson($str);
+
+    # Make sure that we don't fetch a cached copy of the document!
+    $id = $product->id;
+    $old_dm->clear();
 
     $params = array(
       "deployment_name" => "Base",
-      "cloud" => "1",
+      "cloud" => "/api/clouds/1",
       "instance_count" => "1",
       "instance_type" => "/api/clouds/1/instance_types/CQQV62T389R32"
     );
 
-    $jsonStr = $productService->toOutputJson($product->id, $params);
+    $jsonStr = $productService->toOutputJson($id, $params);
+    print $jsonStr;
     $this->assertTrue(preg_match('/[a-z]+_product_input/', $jsonStr) == 0, "There were input references in the output json, this is a no no");
     # TODO: Could use more validation here too
+  }
+
+  public function testOdmToStdClassRetainsResourceRefsWithoutNestedKey() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "instance",
+      "resource_type": "instance",
+      "security_groups": [
+        {
+          "id": "security_group",
+          "resource_type": "security_group"
+        },
+        {
+          "id": "security_group_too",
+          "resource_type": "security_group"
+        }
+      ]
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $product = $productService->find($product->id);
+    $product = $productService->odmToStdClass($product);
+
+    $this->assertTrue(is_array($product->resources[2]->security_groups));
+    $this->assertEquals(2, count($product->resources[2]->security_groups));
+    $this->assertArrayNotHasKey("ref", $product->resources[2]->security_groups);
+    foreach($product->resources[2]->security_groups as $sg) {
+      $this->assertTrue(is_array($sg), "Security Group was expected to be an array");
+      $this->assertArrayHasKey("ref", $sg);
+    }
   }
 
 }
