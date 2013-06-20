@@ -8,7 +8,7 @@ class RsApiProvisionerTest extends AbstractHttpControllerTestCase {
 
   public function setUp() {
     $this->setApplicationConfig(
-      include __DIR__ . '/../../../../../../config/application.config.php'
+      include __DIR__ . '/../../../../../config/application.config.php'
     );
     parent::setUp();
 
@@ -26,8 +26,8 @@ class RsApiProvisionerTest extends AbstractHttpControllerTestCase {
     );
   }
 
-  public function testProvisionPersistsProvisionedProductDocumentWhenSuccessful() {}
-
-  public function testProvisionPersistsProvisionedProductDocumentWhenException() {}
+  public function testPlaceholder() {
+    $this->markTestSkipped("Not sure what to test for the RsApiProvisioner, it mostly consumes other services and classes");
+  }
 
 }
