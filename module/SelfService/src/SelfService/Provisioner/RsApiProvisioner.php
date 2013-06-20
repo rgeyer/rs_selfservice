@@ -137,6 +137,9 @@ class RsApiProvisioner extends AbstractProvisioner {
       throw $e;
     }
 
+    $this->getDocumentManager()->persist($prov_prod);
+    $this->getDocumentManager()->flush();
+
 //    if(count($product) == 1) {
 //      try {
 //
