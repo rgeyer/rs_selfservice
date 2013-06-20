@@ -27,7 +27,7 @@ return array(
   'doctrine' => array(
     'connection' => array(
       'odm_default' => array(
-        'server' => '<% @db_host %>',
+        'server' => '<%= @db_host %>',
         'port' => '27017',
         <% if @db_user %>'user' => '<%= @db_user %>',<% end %>
         <% if @db_pass %>'password' => '<%= @db_pass %>',<% end %>
