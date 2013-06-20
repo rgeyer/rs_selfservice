@@ -80,4 +80,29 @@ class ProvisionedProductServiceTest extends AbstractHttpControllerTestCase {
     $this->assertInstanceOf('\SelfService\Document\User', $provisionedProduct->owner);
   }
 
+  public function testCanAddProvisionedObject() {
+    # To handle all the mocking of caches etc.
+    \SelfServiceTest\Helpers::authenticateAsAdmin($this->getApplicationServiceLocator());
+    $service = $this->getProvisionedProductService();
+
+    # Create a product
+    $pp = $service->create(array());
+    $this->getDocumentManager()->clear();
+
+    # Fetch the product
+    $pp = $service->find($pp->id);
+    $this->assertEquals(0, count($pp->provisioned_objects));
+    $this->getDocumentManager()->clear();
+
+    # Add a provisioned object
+    $service->addProvisionedObject($pp->id, array('href' => '/api/object/1', 'type' => 'foo'));
+    $this->getDocumentManager()->clear();
+
+    # Fetch it again after adding
+    $pp = $service->find($pp->id);
+    $this->assertEquals(1, count($pp->provisioned_objects));
+
+    $this->assertEquals('/api/object/1', $pp->provisioned_objects[0]->href);
+  }
+
 }

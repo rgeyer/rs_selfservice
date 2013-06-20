@@ -58,4 +58,17 @@ class ProvisionedProductService extends BaseEntityService {
   public function find($id, $lockMode = LockMode::NONE, $lockVersion = null) {
     return parent::find($id, $lockMode, $lockVersion);
   }
+
+  /**
+   * @param $id
+   * @param array $params An associative array with the keys "href", "cloud_id", and "type".  "cloud_id" is optional
+   *
+   * @see \SelfService\Document\ProvisionedObject::__construct
+   */
+  public function addProvisionedObject($id, array $params) {
+    $product = $this->find($id);
+    $product->provisioned_objects[] = new \SelfService\Document\ProvisionedObject($params);
+    $this->getDocumentManager()->persist($product);
+    $this->getDocumentManager()->flush();
+  }
 }
