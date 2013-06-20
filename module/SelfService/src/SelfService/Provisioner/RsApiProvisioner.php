@@ -34,10 +34,10 @@ class RsApiProvisioner extends AbstractProvisioner {
   }
 
   /**
-   * @return \SelfService\Service\Entity\ProvisionedProductService
+   * @return \SelfService\Service\CleanupHelper
    */
-  protected function getProvisionedProductService() {
-    return $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
+  protected function getCleanupHelper() {
+    return $this->getServiceLocator()->get('rs_cleanup_helper');
   }
 
   /**
@@ -50,128 +50,102 @@ class RsApiProvisioner extends AbstractProvisioner {
   /**
    * {@inheritdoc}
    */
-  public function provision($json) {
+  public function provision($provisioned_product_id, $json) {
     $this->getLogger()->debug("RsApiProvisioner::provision called with the following json \n".$json);
     // TODO: When I can, validate the json against the schema.
     $product = json_decode($json);
     $prov_helper = $this->getProvisioningHelper();
-    $prov_prod = $this->getProvisionedProductService()->create(array());
-    $prov_prod->provisioned_objects = array();
+    $prov_prod_service = $this->getProvisionedProductService();
     $now = time();
 
-    $prov_helper->setTags(array('rsss:provisioned_product_id='.$prov_prod->id));
+    $prov_helper->setTags(array('rsss:provisioned_product_id='.$provisioned_product_id));
 
-    try {
-      // Security Groups are always first
-      foreach($product->resources as $resource) {
-        if($resource->resource_type == 'security_group') {
-          $resource->name = sprintf("%s-%s", $resource->name, $now);
-          $sg = $prov_helper->provisionSecurityGroup($resource);
-          $prov_prod->provisioned_objects[] =
-            new \SelfService\Document\ProvisionedObject(
-              array(
-                'href' => $sg->href,
-                'cloud_id' => $sg->cloud_id,
-                'type' => 'security_group'
-              )
-            );
-        }
+    // Security Groups are always first
+    foreach($product->resources as $resource) {
+      if($resource->resource_type == 'security_group') {
+        $resource->name = sprintf("%s-%s", $resource->name, $now);
+        $sg = $prov_helper->provisionSecurityGroup($resource);
+        $prov_prod_service->addProvisionedObject(
+          array(
+            'href' => $sg->href,
+            'cloud_id' => $sg->cloud_id,
+            'type' => 'security_group'
+          )
+        );
       }
-
-      // Then the Security Group Rules
-      foreach($product->resources as $resource) {
-        if($resource->resource_type == 'security_group') {
-          $prov_helper->provisionSecurityGroupRules($resource);
-        }
-      }
-
-      // Now deployments and all their sub resources
-      foreach($product->resources as $resource) {
-        if($resource->resource_type == 'deployment') {
-          $inputs = array();
-          foreach($resource->inputs as $input) {
-            $inputs[$input->name] = $inputs->value;
-          }
-          $depldesc = sprintf("Created by rs_selfservice for the '%s' product", $product->name);
-          $deployment = $prov_helper->provisionDeployment($resource->name, $depldesc, $inputs);
-          $prov_prod->provisioned_objects[] =
-            new \SelfService\Document\ProvisionedObject(
-              array(
-                'href' => $deployment->href,
-                'type' => 'deployment'
-              )
-            );
-
-          foreach($resource->servers as $server) {
-            $provisioned_objects = $prov_helper->provisionServer($server, $deployment);
-            foreach($provisioned_objects as $provisioned_object) {
-              $prov_prod->provisioned_objects[] =
-                new \SelfService\Document\ProvisionedObject(
-                  array(
-                    'href' => $provisioned_object->href,
-                    'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server'
-                  )
-                );
-            }
-          }
-
-          foreach($resource->server_arrays as $array) {
-            $provisioned_objects = $prov_helper->provisionServerArray($array, $deployment);
-            foreach($provisioned_objects as $provisioned_object) {
-              $prov_prod->provisioned_objects[] =
-                new \SelfService\Document\ProvisionedObject(
-                  array(
-                    'href' => $provisioned_object->href,
-                    'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server_array'
-                  )
-                );
-            }
-          }
-        }
-      }
-    } catch (\Exception $e) {
-      // Just ensuring that we (at least try to) store the provisioned objects
-      $this->getDocumentManager()->persist($prov_prod);
-      $this->getDocumentManager()->flush();
-      // Bubble up to the caller
-      throw $e;
     }
 
-    $this->getDocumentManager()->persist($prov_prod);
-    $this->getDocumentManager()->flush();
+    // Then the Security Group Rules
+    foreach($product->resources as $resource) {
+      if($resource->resource_type == 'security_group') {
+        $prov_helper->provisionSecurityGroupRules($resource);
+      }
+    }
 
-//    if(count($product) == 1) {
-//      try {
-//
-//        # Provision and record alert specs
-//        $this->getLogger()->info(sprintf("About to provision %d alert specs", count($product->alerts)));
-//        foreach($product->alerts as $alert) {
-//          $prov_helper->provisionAlertSpec($alert);
-//        }
-//
-//        # Start yer engines
-//        if($product->launch_servers) {
-//          $prov_helper->launchServers();
-//        }
-//      } catch (\Exception $e) {
-//        $response['result'] = 'error';
-//        $response['error'] = $e->getMessage();
-//        $this->getLogger()->err("An error occurred provisioning the product. Error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
-//      }
-//
-//      # All provisioned, time to store all the provisioned hrefs in the DB
-//      try {
-//        $this->getEntityManager()->persist($prov_prod);
-//        $this->getEntityManager()->flush();
-//      } catch (\Exception $e) {
-//        $response['result'] = 'error';
-//        $response['error'] = $e->getMessage();
-//        $this->getLogger()->err("An error occurred persisting the provisioned product to the DB. Error " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
-//      }
-//    }
+    // Now deployments and all their sub resources
+    foreach($product->resources as $resource) {
+      if($resource->resource_type == 'deployment') {
+        $inputs = array();
+        foreach($resource->inputs as $input) {
+          $inputs[$input->name] = $inputs->value;
+        }
+        $depldesc = sprintf("Created by rs_selfservice for the '%s' product", $product->name);
+        $deployment = $prov_helper->provisionDeployment($resource->name, $depldesc, $inputs);
+        $prov_prod_service->addProvisionedObject(
+          array(
+            'href' => $deployment->href,
+            'type' => 'deployment'
+          )
+        );
+
+        foreach($resource->servers as $server) {
+          $provisioned_objects = $prov_helper->provisionServer($server, $deployment);
+          foreach($provisioned_objects as $provisioned_object) {
+            $prov_prod_service->addProvisionedObject(
+              array(
+                'href' => $provisioned_object->href,
+                'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server'
+              )
+            );
+          }
+        }
+
+        foreach($resource->server_arrays as $array) {
+          $provisioned_objects = $prov_helper->provisionServerArray($array, $deployment);
+          foreach($provisioned_objects as $provisioned_object) {
+            $prov_prod_service->addProvisionedObject(
+              array(
+                'href' => $provisioned_object->href,
+                'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server_array'
+              )
+            );
+          }
+        }
+      }
+    }
   }
 
-  public function cleanup($json) {
+  /**
+   * {@inheritdoc}
+   */
+  public function cleanup($provisioned_product_id, $json) {
+    $this->getLogger()->debug("RsApiProvisioner::cleanup called with the following json \n".$json);
+    // TODO: When I can, validate the json against the schema.
+    $provisioned_objects = json_decode($json);
+    $clean_helper = $this->getCleanupHelper();
+    $prov_prod = $this->getProvisionedProductService()->find($provisioned_product_id);
+    foreach($provisioned_objects as $object) {
+      if($object->type == "security_group") {
+        $clean_helper->cleanupSecurityGroupRules($object);
+      }
+    }
+
+    foreach($provisioned_objects as $object) {
+      if($object->type == "security_group") {
+        $clean_helper->cleanupSecurityGroup($object);
+      }
+    }
+
 //    $em = $this->getEntityManager();
 //    $cleanup_helper = $this->getServiceLocator()->get('rs_cleanup_helper');
 //    $prov_product = $em->getRepository('SelfService\Entity\ProvisionedProduct')->find($product_id);

@@ -34,15 +34,24 @@ use SelfService\Entity\ProvisionedSecurityGroup;
 
 class ProvisionedProductController extends AbstractRestfulController {
 
-    /**
-     * Get response object
-     *
-     * @return \Zend\Http\Response
-     */
-    public function getResponse()
-    {
-      return parent::getResponse();
-    }
+
+
+  /**
+   * @return \SelfService\Service\Entity\ProvisionedProductService
+   */
+  protected function getProvisionedProductService() {
+    return $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
+  }
+
+  /**
+   * Get response object
+   *
+   * @return \Zend\Http\Response
+   */
+  public function getResponse()
+  {
+    return parent::getResponse();
+  }
 
   /**
    * Create a new resource
@@ -130,23 +139,20 @@ class ProvisionedProductController extends AbstractRestfulController {
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         $retval['message'] = 'Missing required fields: '.join(',', $missing_required_params);
       } else {
-        # TODO: Validate the types and throw an error for unknown types
-        $object = null;
-        switch($post_params['type']) {
-          case "rs.deployments":
-            $object = new ProvisionedDeployment(array('href'=>$post_params['href']));
-            break;
-          case "rs.security_groups":
-            $object = new ProvisionedSecurityGroup(array('href'=>$post_params['href'],'cloud_id'=>$post_params['cloud_id']));
-            break;
-        }
-        if($object != null) {
-          $provisionedProductService = $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
-          $product = $provisionedProductService->find($this->params('id'));
-          $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
-          $product->provisioned_objects[] = $object;
-          $em->persist($product);
-          $em->flush();
+        $matches = array();
+        if(preg_match('/rs\.([a-z_]+)/', $post_params['type'], $matches)) {
+          $plural = $matches[1];
+          $type = rtrim($plural, 's');
+          # TODO: Validate the types and throw an error for unknown types
+          $params = array(
+            'type' => $type,
+            'href' => $post_params['href']
+          );
+          if(array_key_exists('cloud_id', $post_params)) {
+            $params['cloud_id'] = $post_params['cloud_id'];
+          }
+          $service = $this->getProvisionedProductService();
+          $service->addProvisionedObject($this->params('id'), $params);
         }
       }
     }

@@ -84,7 +84,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
     $this->getRequest()->setContent(
       json_encode(
         array(
-          'type' => 'rs.deployment',
+          'type' => 'rs.deployments',
           'href' => 'http://foo.bar.baz'
         )
       )
@@ -122,7 +122,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
     $this->getRequest()->setContent(
       json_encode(
         array(
-          'type' => 'rs.deployment'
+          'type' => 'rs.deployments'
         )
       )
     );

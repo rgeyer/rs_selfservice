@@ -69,7 +69,11 @@ class ProvisionedProductController extends BaseController {
       $provisioning_adapter = $this->getServiceLocator()->get('Provisioner');
       try {
         $provisioned_product = $this->getProvisionedProductEntityService()->find($product_id);
-        $provisioning_adapter->cleanup(json_encode($provisioned_product->provisioned_objects));
+        $provisioned_products = array();
+        foreach($provisioned_product->provisioned_objects as $object) {
+          $provisioned_products[] = $object;
+        }
+        $provisioning_adapter->cleanup($product_id, json_encode($provisioned_products));
       } catch (NotFoundException $e) {
         $response['result'] = 'error';
         $response['error'] = 'A provisioned product with id '.$product_id.' was not found.';

@@ -24,7 +24,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Service\Entity;
 
-use \MongoDate;
 use Doctrine\ODM\MongoDB\LockMode;
 
 class ProvisionedProductService extends BaseEntityService {

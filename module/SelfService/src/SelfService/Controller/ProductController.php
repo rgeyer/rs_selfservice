@@ -120,14 +120,19 @@ class ProductController extends BaseController {
     if(isset($product_id)) {
       $provisioning_adapter = $this->getServiceLocator()->get('Provisioner');
       try {
+        # TODO: Need better exceptions for this which can be explicitly
+        # caught below, and provide a more useful error message
+        $prov_prod_service = $this->getProvisionedProductEntityService();
+        $prov_prod = $prov_prod_service->create(array());
+
         $this->getLogger()->debug("Calling toOutputJson with the following params ".print_r($this->params()->fromPost(), true));
         $output_json = $this->getProductEntityService()->toOutputJson($product_id, $this->params()->fromPost());
 
         $response['messages'][] = sprintf(
           "View your provisioned product in the admin panel <a href='%s'>here</a>.",
-          $this->url()->fromRoute('provisionedproducts', array('action' => 'show', 'id' => "foo"))
+          $this->url()->fromRoute('provisionedproducts', array('action' => 'show', 'id' => $prov_prod->id))
         );
-        $provisioning_adapter->provision($output_json);
+        $provisioning_adapter->provision($prov_prod->id, $output_json);
       } catch (NotFoundException $e) {
         $response['result'] = 'error';
         $response['error'] = 'A product with id '.$product_id.' was not found.';

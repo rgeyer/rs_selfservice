@@ -27,6 +27,10 @@ namespace SelfService\Provisioner;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 
+/**
+ * Class AbstractProvisioner
+ * @package SelfService\Provisioner
+ */
 abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
 
   /**
@@ -57,15 +61,33 @@ abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
   }
 
   /**
+   * @return \SelfService\Service\Entity\ProvisionedProductService
+   */
+  protected function getProvisionedProductService() {
+    return $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
+  }
+
+  /**
+   * Concrete classes implementing this are expected to record provisioned objects under the provisioned product
+   * with the ID passed in as $provisioned_product_id.  Implementers may either use the ProvisionedProduct service
+   * or the API to add provisioned objects.
+   *
    * = Provisioner best practices
    *
-   * * provide unique names for security groups since clouds do not allow duplicates. I.E. <productname>-<timestamp>
+   * * provide unique names for security groups since duplicates are not allowed. I.E. <productname>-<timestamp>
    * * tag created items with the provisioned product id
    *
    * @abstract
-   * @param $json
+   * @param $provisioned_product_id The unique ID of a provisioned product
+   * @param $json A json string which is compliant with the json/output/schema.json schema, used to describe
+   *  a product to be provisioned.
    */
-  public abstract function provision($json);
+  public abstract function provision($provisioned_product_id, $json);
 
-  public abstract function cleanup($json);
+  /**
+   * @abstract
+   * @param $provisioned_product_id The unique ID of a provisioned product
+   * @param $json A json string which represents an array of \SelfService\Document\ProvisionedObject
+   */
+  public abstract function cleanup($provisioned_product_id, $json);
 }

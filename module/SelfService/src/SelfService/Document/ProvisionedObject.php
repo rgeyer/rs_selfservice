@@ -72,7 +72,7 @@ class ProvisionedObject {
     }
 
     if(array_key_exists('type', $params)) {
-      $this->cloud_id = $params['type'];
+      $this->type = $params['type'];
     }
   }
 }
