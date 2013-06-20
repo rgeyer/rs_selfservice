@@ -15,21 +15,6 @@
       }
     }
   },
-  "db": {
-    "admin": {
-      "user": "user",
-      "password": "password"
-    },
-    "application": {
-      "user": "user",
-      "password": "password"
-    },
-    "dns": {
-      "master": {
-        "fqdn": "localhost"
-      }
-    }
-  },
   "repo": {
     "default": {
       "repository": "git://github.com/rgeyer/rs_selfservice.git",
@@ -91,17 +76,13 @@
     "recipe[rightscale::install_tools]",
     "recipe[block_device::setup_ephemeral]",
     "recipe[sys::setup_swap]",
-    "recipe[db_mysql::setup_server_5_5]",
-    "recipe[db::install_server]",
     "recipe[repo::default]",
     "recipe[web_apache::default]",
     "recipe[app_php::setup_server_5_3]",
     "recipe[app::install_server]",
-    "recipe[lamp::default]",
     "recipe[app::do_update_code]",
     "recipe[app::setup_vhost]",
     "recipe[web_apache::setup_monitoring]",
-    "recipe[db::setup_monitoring]",
     "recipe[memcached::install_server]",
     "recipe[rsss::setup_rsss_aio]"
   ]

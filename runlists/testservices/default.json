@@ -2,6 +2,7 @@
   "cloud": { "provider": "vagrant", "public_ips": [], "private_ips": [] },
   "rightscale": { "instance_uuid": "uuid-default" },
   "run_list": [
-    "recipe[rsss::setup_mongodb_aio]"
+    "recipe[resolver]",
+    "recipe[rsss::setup_rsss_aio]"
   ]
 }
