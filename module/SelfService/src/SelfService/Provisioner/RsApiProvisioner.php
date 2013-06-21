@@ -88,7 +88,7 @@ class RsApiProvisioner extends AbstractProvisioner {
       if($resource->resource_type == 'deployment') {
         $inputs = array();
         foreach($resource->inputs as $input) {
-          $inputs[$input->name] = $inputs->value;
+          $inputs[$input->name] = $input->value;
         }
         $depldesc = sprintf("Created by rs_selfservice for the '%s' product", $product->name);
         $deployment = $prov_helper->provisionDeployment($resource->name, $depldesc, $inputs);
