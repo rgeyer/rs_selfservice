@@ -32,12 +32,12 @@ class CleanupHelper {
   /**
    * A RightScale 1.5 API client.  This is public to allow mocking for unit testing. Likely
    * won't want to muck with this much
-   * @var RGeyer\Guzzle\Rs\RightScaleClient
+   * @var \RGeyer\Guzzle\Rs\RightScaleClient
    */
   public $client;
 
   /**
-   * @var Zend_Log
+   * @var \Zend\Log\Logger
    */
   protected $log;
 
@@ -45,7 +45,7 @@ class CleanupHelper {
    * @param $rs_account
    * @param $rs_email
    * @param $rs_password
-   * @param Zend_Log $log
+   * @param \Zend\Log\Logger $log
    */
   public function __construct($rs_account, $rs_email, $rs_password, $log) {
     $this->log = $log;
@@ -54,7 +54,7 @@ class CleanupHelper {
   }
 
   /**
-   * @param stdClass $array A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
+   * @param \stdClass $array A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
    * @return bool True if the array had no running instances and was destroyed.  False if the array had running instances, and the multi_terminate method was called
    */
   public function cleanupServerArray($array) {
@@ -70,7 +70,7 @@ class CleanupHelper {
   }
 
   /**
-   * @param stdClass $server A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
+   * @param \stdClass $server A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
    * @return bool True if the array had no running instances and was destroyed.  False if the server was running, and the servers_terminate method was called
    */
   public function cleanupServer($server){
@@ -88,7 +88,7 @@ class CleanupHelper {
   }
 
   /**
-   * @param stdClass $deployment A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
+   * @param \stdClass $deployment A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
    * @return bool Always true, throws exceptions if an error occurred
    */
   public function cleanupDeployment($deployment) {
@@ -99,7 +99,7 @@ class CleanupHelper {
   }
 
   /**
-   * @param stdClass $ssh_key A json representation of a \SelfService\Document\ProvisionedObject for a provisioned ssh key, used only for it's ->href and ->cloud_id params
+   * @param \stdClass $ssh_key A json representation of a \SelfService\Document\ProvisionedObject for a provisioned ssh key, used only for it's ->href and ->cloud_id params
    * @return bool Always true, throws exceptions if an error occurred
    */
   public function cleanupSshKey($ssh_key) {
@@ -112,7 +112,7 @@ class CleanupHelper {
 
 
   /**
-   * @param stdClass $sec_grp A json representation of a \SelfService\Document\ProvisionedObject for a provisioned security group, used only for it's ->href param
+   * @param \stdClass $sec_grp A json representation of a \SelfService\Document\ProvisionedObject for a provisioned security group, used only for it's ->href param
    * @return bool Always true, throws exceptions if an error occurred
    */
   public function cleanupSecurityGroupRules($sec_grp) {
@@ -130,7 +130,7 @@ class CleanupHelper {
 
 
   /**
-   * @param stdClass $sec_grp A json representation of a \SelfService\Document\ProvisionedObject for a provisioned security group, used only for it's ->href and ->cloud_id params
+   * @param \stdClass $sec_grp A json representation of a \SelfService\Document\ProvisionedObject for a provisioned security group, used only for it's ->href and ->cloud_id params
    * @return bool Always true, throws exceptions if an error occurred
    */
   public function cleanupSecurityGroup($sec_grp) {

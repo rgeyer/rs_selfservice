@@ -25,6 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Service\Entity;
 
 use Doctrine\ODM\MongoDB\LockMode;
+use SelfService\Document\Exception\NotFoundException;
 
 class ProvisionedProductService extends BaseEntityService {
 
@@ -49,9 +50,7 @@ class ProvisionedProductService extends BaseEntityService {
   }
 
   /**
-   * @param $id
-   * @param int $lockMode
-   * @param null $lockVersion
+   * {@inheritdoc}
    * @return \SelfService\Document\ProvisionedProduct
    */
   public function find($id, $lockMode = LockMode::NONE, $lockVersion = null) {
@@ -63,11 +62,36 @@ class ProvisionedProductService extends BaseEntityService {
    * @param array $params An associative array with the keys "href", "cloud_id", and "type".  "cloud_id" is optional
    *
    * @see \SelfService\Document\ProvisionedObject::__construct
+   * @throws \SelfService\Document\Exception\NotFoundException When the specified document
+   *  does not exist.
    */
   public function addProvisionedObject($id, array $params) {
     $product = $this->find($id);
     $product->provisioned_objects[] = new \SelfService\Document\ProvisionedObject($params);
     $this->getDocumentManager()->persist($product);
     $this->getDocumentManager()->flush();
+  }
+
+  /**
+   * @param $provisioned_product_id
+   * @param $provisioned_object_id
+   * @throws \SelfService\Document\Exception\NotFoundException When the specified document
+   *  does not exist.
+   */
+  public function removeProvisionedObject($provisioned_product_id, $provisioned_object_id) {
+    $product = $this->find($provisioned_product_id);
+    foreach($product->provisioned_objects as $provisioned_object) {
+      if($provisioned_object->id == $provisioned_object_id) {
+        $product->provisioned_objects->removeElement($provisioned_object);
+      }
+    }
+    if($product->provisioned_objects->isDirty()) {
+      $this->getDocumentManager()->persist($product);
+      $this->getDocumentManager()->flush();
+    } else {
+      throw new NotFoundException("SelfService\Document\ProvisionedObject", $provisioned_object_id,
+        $this->entityClass, $provisioned_product_id
+      );
+    }
   }
 }

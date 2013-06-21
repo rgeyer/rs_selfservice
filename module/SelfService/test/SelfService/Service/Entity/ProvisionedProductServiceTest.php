@@ -40,6 +40,14 @@ class ProvisionedProductServiceTest extends AbstractHttpControllerTestCase {
     return $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
   }
 
+  /**
+   * @expectedException \SelfService\Document\Exception\NotFoundException
+   * @expectedExceptionMessage SelfService\Document\ProvisionedProduct with id abc123 not found
+   */
+  public function testFindThrowsNotFoundExceptionWhenProvisionedProductDoesNotExist() {
+    $this->getProvisionedProductService()->find('abc123');
+  }
+
   # TODO: This is the only test for BaseEntityService::create, need to refactor and have a test
   # for the abstract base class
   public function testCanCreateProvisionedProduct() {
@@ -105,4 +113,52 @@ class ProvisionedProductServiceTest extends AbstractHttpControllerTestCase {
     $this->assertEquals('/api/object/1', $pp->provisioned_objects[0]->href);
   }
 
+  public function testCanRemoveProvisionedObject() {
+    # To handle all the mocking of caches etc.
+    \SelfServiceTest\Helpers::authenticateAsAdmin($this->getApplicationServiceLocator());
+    $service = $this->getProvisionedProductService();
+
+    # Create a product
+    $pp = $service->create(array());
+    $this->getDocumentManager()->clear();
+
+    # Fetch the product
+    $pp = $service->find($pp->id);
+    $this->assertEquals(0, count($pp->provisioned_objects));
+    $this->getDocumentManager()->clear();
+
+    # Add a provisioned object
+    $service->addProvisionedObject($pp->id, array('href' => '/api/object/1', 'type' => 'foo'));
+    $this->getDocumentManager()->clear();
+
+    # Fetch it again after adding
+    $pp = $service->find($pp->id);
+    $this->assertEquals(1, count($pp->provisioned_objects));
+    $this->assertEquals('/api/object/1', $pp->provisioned_objects[0]->href);
+    $this->getDocumentManager()->clear();
+
+    # Remove a provisioned object
+    $service->removeProvisionedObject($pp->id, $pp->provisioned_objects[0]->id);
+    $this->getDocumentManager()->clear();
+
+    # Fetch it yet again
+    $pp = $service->find($pp->id);
+    $this->assertEquals(0, count($pp->provisioned_objects));
+  }
+
+  /**
+   * @expectedException \SelfService\Document\Exception\NotFoundException
+   * @expectedExceptionMessage SelfService\Document\ProvisionedObject with id abc123 not found as a child of SelfService\Document\ProvisionedObject with id abc123
+   */
+  public function testRemoveProvisionedObjectThrowsNotFoundExceptionWhenObjectIsNotFound() {
+    # To handle all the mocking of caches etc.
+    \SelfServiceTest\Helpers::authenticateAsAdmin($this->getApplicationServiceLocator());
+    $service = $this->getProvisionedProductService();
+
+    # Create a product
+    $pp = $service->create(array());
+    $this->getDocumentManager()->clear();
+
+    $service->removeProvisionedObject($pp->id, 'abc123');
+  }
 }

@@ -73,7 +73,8 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
   }
 
   /**
-   * @throws \SelfService\Document\Exception\NotFoundException
+   * @throws \SelfService\Document\Exception\NotFoundException When the specified document
+   *  does not exist.
    * @param $id
    * @param int $lockMode
    * @param null $lockVersion
@@ -83,7 +84,7 @@ class BaseEntityService implements ServiceLocatorAwareInterface {
     $dm = $this->getDocumentManager();
     $doc = $dm->getRepository($this->entityClass)->find($id, $lockMode, $lockVersion);
     if(!$doc) {
-      throw new NotFoundException();
+      throw new NotFoundException($this->entityClass, $id);
     }
     return $doc;
   }

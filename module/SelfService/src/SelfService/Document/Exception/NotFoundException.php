@@ -25,5 +25,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace SelfService\Document\Exception;
 
 class NotFoundException extends \Exception {
-
+  public function __construct($documentClass, $id, $parentDocumentClass = null, $parentId = null) {
+    $this->message = sprintf("%s with id %s not found", $documentClass, $id);
+    if($parentDocumentClass && $parentId) {
+      $this->message .= sprintf(" as a child of %s with id %s", $documentClass, $id);
+    }
+  }
 }

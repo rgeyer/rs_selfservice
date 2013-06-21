@@ -66,6 +66,7 @@ class RsApiProvisioner extends AbstractProvisioner {
         $resource->name = sprintf("%s-%s", $resource->name, $now);
         $sg = $prov_helper->provisionSecurityGroup($resource);
         $prov_prod_service->addProvisionedObject(
+          $provisioned_product_id,
           array(
             'href' => $sg->href,
             'cloud_id' => $sg->cloud_id,
@@ -92,6 +93,7 @@ class RsApiProvisioner extends AbstractProvisioner {
         $depldesc = sprintf("Created by rs_selfservice for the '%s' product", $product->name);
         $deployment = $prov_helper->provisionDeployment($resource->name, $depldesc, $inputs);
         $prov_prod_service->addProvisionedObject(
+          $provisioned_product_id,
           array(
             'href' => $deployment->href,
             'type' => 'deployment'
@@ -101,24 +103,30 @@ class RsApiProvisioner extends AbstractProvisioner {
         foreach($resource->servers as $server) {
           $provisioned_objects = $prov_helper->provisionServer($server, $deployment);
           foreach($provisioned_objects as $provisioned_object) {
-            $prov_prod_service->addProvisionedObject(
-              array(
-                'href' => $provisioned_object->href,
-                'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server'
-              )
+            $params = array(
+              'href' => $provisioned_object->href,
+              'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server'
             );
+            if($provisioned_object->cloud_id)
+            {
+              $params['cloud_id'] = $provisioned_object->cloud_id;
+            }
+            $prov_prod_service->addProvisionedObject($provisioned_product_id, $params);
           }
         }
 
         foreach($resource->server_arrays as $array) {
           $provisioned_objects = $prov_helper->provisionServerArray($array, $deployment);
           foreach($provisioned_objects as $provisioned_object) {
-            $prov_prod_service->addProvisionedObject(
-              array(
-                'href' => $provisioned_object->href,
-                'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server_array'
-              )
+            $params = array(
+              'href' => $provisioned_object->href,
+              'type' => ($provisioned_object instanceof \RGeyer\Guzzle\Rs\Model\Mc\SshKey) ? 'ssh_key' : 'server_array'
             );
+            if($provisioned_object->cloud_id)
+            {
+              $params['cloud_id'] = $provisioned_object->cloud_id;
+            }
+            $prov_prod_service->addProvisionedObject($provisioned_product_id, $params);
           }
         }
       }
@@ -133,7 +141,58 @@ class RsApiProvisioner extends AbstractProvisioner {
     // TODO: When I can, validate the json against the schema.
     $provisioned_objects = json_decode($json);
     $clean_helper = $this->getCleanupHelper();
-    $prov_prod = $this->getProvisionedProductService()->find($provisioned_product_id);
+    $prov_prod_service = $this->getProvisionedProductService();
+    $waiting_arrays = 0;
+    $waiting_servers = 0;
+
+    # Arrays and servers first since they may be running, and we don't
+    # want to remove resources they're consuming.
+    foreach($provisioned_objects as $object) {
+      if($object->type == "server_array") {
+        if($clean_helper->cleanupServerArray($object)) {
+          $prov_prod_service->removeProvisionedObject($provisioned_product_id, $object->id);
+        } else {
+          $waiting_arrays++;
+        }
+      }
+    }
+
+    foreach($provisioned_objects as $object) {
+      if($object->type == "server") {
+        if($clean_helper->cleanupServer($object)) {
+          $prov_prod_service->removeProvisionedObject($provisioned_product_id, $object->id);
+        } else {
+          $waiting_servers++;
+        }
+      }
+    }
+
+    # Wait up if we're waiting on servers or array instances
+    if(($waiting_arrays + $waiting_servers) > 0) {
+      $this->addMessage(
+        sprintf(
+          "There were %d servers still running and %d arrays with running instances.  A terminate request has been sent.  When the servers have been terminated, you can try to delete the product again",
+          $waiting_servers,
+          $waiting_arrays
+        )
+      );
+      return;
+    }
+
+    foreach($provisioned_objects as $object) {
+      if($object->type == "deployment") {
+        $clean_helper->cleanupDeployment($object);
+        $prov_prod_service->removeProvisionedObject($provisioned_product_id, $object->id);
+      }
+    }
+
+    foreach($provisioned_objects as $object) {
+      if($object->type == "ssh_key") {
+        $clean_helper->cleanupSshKey($object);
+        $prov_prod_service->removeProvisionedObject($provisioned_product_id, $object->id);
+      }
+    }
+
     foreach($provisioned_objects as $object) {
       if($object->type == "security_group") {
         $clean_helper->cleanupSecurityGroupRules($object);
@@ -143,112 +202,12 @@ class RsApiProvisioner extends AbstractProvisioner {
     foreach($provisioned_objects as $object) {
       if($object->type == "security_group") {
         $clean_helper->cleanupSecurityGroup($object);
+        $prov_prod_service->removeProvisionedObject($provisioned_product_id, $object->id);
       }
     }
 
-//    $em = $this->getEntityManager();
-//    $cleanup_helper = $this->getServiceLocator()->get('rs_cleanup_helper');
-//    $prov_product = $em->getRepository('SelfService\Entity\ProvisionedProduct')->find($product_id);
-//    if(count($prov_product) == 1) {
-//      $keep_going = false;
-//      do {
-//        $prov_arrays = array();
-//        $prov_severs = array();
-//        $prov_depl = null;
-//        $prov_sshkeys = array();
-//        $prov_secgrps = array();
-//        foreach($prov_product->provisioned_objects as $provisioned_obj) {
-//          if(is_a($provisioned_obj, 'SelfService\Entity\ProvisionedDeployment')) {
-//            $prov_depl = $provisioned_obj;
-//          }
-//          if(is_a($provisioned_obj, 'SelfService\Entity\ProvisionedServer')) {
-//            $prov_servers[] = $provisioned_obj;
-//          }
-//          if(is_a($provisioned_obj, 'SelfService\Entity\ProvisionedArray')) {
-//            $prov_arrays[] = $provisioned_obj;
-//          }
-//          if(is_a($provisioned_obj, 'SelfService\Entity\ProvisionedSshKey')) {
-//            $prov_sshkeys[] = $provisioned_obj;
-//          }
-//          if(is_a($provisioned_obj, 'SelfService\Entity\ProvisionedSecurityGroup')) {
-//            $prov_secgrps[] = $provisioned_obj;
-//          }
-//        }
-//
-//        # Stop and destroy arrays
-//        if(count($prov_arrays) > 0) {
-//          foreach($prov_arrays as $prov_array) {
-//            if($cleanup_helper->cleanupServerArray($prov_array)) {
-//              $prov_product->provisioned_objects->removeElement($prov_array);
-//              $em->remove($prov_array);
-//              $em->flush();
-//            } else {
-//              $response['wait_for_decom']['arrays'][] = $prov_array->href;
-//            }
-//          }
-//        }
-//
-//        # Stop and destroy the servers
-//        if(count($prov_servers) > 0) {
-//          foreach($prov_servers as $prov_server) {
-//            if($cleanup_helper->cleanupServer($prov_server)) {
-//              $prov_product->provisioned_objects->removeElement($prov_server);
-//              $em->remove($prov_server);
-//              $em->flush();
-//            } else {
-//              $response['wait_for_decom']['servers'][] = $prov_server->href;
-//            }
-//          }
-//        }
-//
-//        # Wait up if we're waiting on servers or array instances
-//        if(	array_key_exists('wait_for_decom', $response) && count($response['wait_for_decom']) > 0) {
-//          $response['messages'][] = sprintf(
-//            "There were %d servers still running and %d arrays with running instances.  A terminate request has been sent.  When the servers have been terminated, you can try to delete the product again",
-//            count($response['wait_for_decom']['servers']),
-//            count($response['wait_for_decom']['arrays'])
-//          );
-//          $keep_going = true;
-//          break;
-//        }
-//
-//        # Destroy the deployment
-//        if($prov_depl) {
-//          $cleanup_helper->cleanupDeployment($prov_depl);
-//          $prov_product->provisioned_objects->removeElement($prov_depl);
-//          $em->remove($prov_depl);
-//          $em->flush();
-//        }
-//
-//        # Destroy SSH key
-//        if(count($prov_sshkeys) > 0) {
-//          foreach($prov_sshkeys as $prov_sshkey) {
-//            $cleanup_helper->cleanupSshKey($prov_sshkey);
-//            $prov_product->provisioned_objects->removeElement($prov_sshkey);
-//            $em->remove($prov_sshkey);
-//            $em->flush();
-//          }
-//        }
-//
-//        # Destroy SecurityGroups
-//        if(count($prov_secgrps) > 0) {
-//          foreach($prov_secgrps as $prov_secgrp) {
-//            $cleanup_helper->cleanupSecurityGroupRules($prov_secgrp);
-//          }
-//
-//          foreach($prov_secgrps as $prov_secgrp) {
-//            $cleanup_helper->cleanupSecurityGroup($prov_secgrp);
-//            $prov_product->provisioned_objects->removeElement($prov_secgrp);
-//            $em->remove($prov_secgrp);
-//            $em->flush();
-//          }
-//        }
-//      } while ($keep_going);
-//      if(!$keep_going) {
-//        $em->remove($prov_product);
-//        $em->flush();
-//      }
-//    }
+    # If we got this far, the provisioned object may be deleted.
+    $prov_prod_service->remove($provisioned_product_id);
   }
 
 }

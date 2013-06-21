@@ -132,10 +132,12 @@ class ProductController extends BaseController {
           "View your provisioned product in the admin panel <a href='%s'>here</a>.",
           $this->url()->fromRoute('provisionedproducts', array('action' => 'show', 'id' => $prov_prod->id))
         );
-        $provisioning_adapter->provision($prov_prod->id, $output_json);
+
+        $messages = $provisioning_adapter->provision($prov_prod->id, $output_json);
+        $response['messages'] = array_merge($response['messages'], $messages);
       } catch (NotFoundException $e) {
         $response['result'] = 'error';
-        $response['error'] = 'A product with id '.$product_id.' was not found.';
+        $response['error'] = $e->getMessage();
         $this->getLogger()->err($response['error']);
       } catch (\Exception $e) {
         $response['result'] = 'error';

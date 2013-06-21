@@ -63,7 +63,7 @@ class ProvisionedProductController extends BaseController {
 	}
 	
 	public function cleanupAction() {
-    $response = array('result' => 'success');
+    $response = array('result' => 'success', 'messages' => array());
     $product_id = $this->params('id');
     if(isset($product_id)) {
       $provisioning_adapter = $this->getServiceLocator()->get('Provisioner');
@@ -73,10 +73,11 @@ class ProvisionedProductController extends BaseController {
         foreach($provisioned_product->provisioned_objects as $object) {
           $provisioned_products[] = $object;
         }
-        $provisioning_adapter->cleanup($product_id, json_encode($provisioned_products));
+        $messages = $provisioning_adapter->cleanup($product_id, json_encode($provisioned_products));
+        $response['messages'] = array_merge($response['messages'], $messages);
       } catch (NotFoundException $e) {
         $response['result'] = 'error';
-        $response['error'] = 'A provisioned product with id '.$product_id.' was not found.';
+        $response['error'] = $e->getMessage();
         $this->getLogger()->err($response['error']);
       }
     } else {

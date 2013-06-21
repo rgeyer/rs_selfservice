@@ -34,6 +34,12 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
 
   /**
+   * An array of messages generated during either the provision or cleanup actions
+   * @var String[]
+   */
+  protected $messages = array();
+
+  /**
    * @var ServiceLocatorInterface
    */
   protected $serviceLocator;
@@ -65,6 +71,31 @@ abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
    */
   protected function getProvisionedProductService() {
     return $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
+  }
+
+  /**
+   * @param $message A message to be displayed to the API caller or UI user
+   */
+  protected function addMessage($message) {
+    $this->messages[] = $message;
+  }
+
+  /**
+   * @param bool $clear If set the messages will be fetched and cleared.
+   * @return String[] An array of messages created during either provision or cleanup
+   * to be displayed to the API caller or UI user
+   */
+  public function getMessages($clear = false) {
+    if($clear) { $this->clearMessages(); }
+    return $this->messages;
+  }
+
+  /**
+   * Removes all current messages
+   */
+  public function clearMessages() {
+    unset($this->messages);
+    $this->messages = array();
   }
 
   /**
