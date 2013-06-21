@@ -35,9 +35,10 @@ return array(
       'provisionedproducts' => array(
         'type' => 'Segment',
         'options' => array(
-          'route' => '/provisionedproducts[/:action][/:id]',
+          'route' => '/provisionedproducts[/:id][/:action][/:provisioned_object_id]',
           'constraints' => array(
             'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            'provisioned_object_id' => '[a-z0-9]+',
             'id' => '[a-z0-9]+'
           ),
           'defaults' => array(

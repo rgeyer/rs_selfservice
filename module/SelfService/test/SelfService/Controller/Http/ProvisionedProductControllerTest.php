@@ -42,10 +42,24 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
     $this->assertResponseStatusCode(200);
   }
 
+  public function testIndexActionHasCorrectActionsForProvisionedProducts() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $service = $this->getProvisionedProductEntityService();
+    $pp = $service->create(array());
+
+    $this->dispatch('/provisionedproducts');
+
+    $this->assertActionName('index');
+    $this->assertControllerName('selfservice\controller\provisionedproduct');
+    $this->assertResponseStatusCode(200);
+    $this->assertXpathQuery("//a[@href='/provisionedproducts/$pp->id/show']");
+    $this->assertXpathQuery("//a[@href='/provisionedproducts/$pp->id/cleanup']");
+  }
+
   public function testCleanupActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $provisionedProduct = $this->getProvisionedProductEntityService()->create(array());
-    $this->dispatch('/provisionedproducts/cleanup/'.$provisionedProduct->id);
+    $this->dispatch('/provisionedproducts/'.$provisionedProduct->id.'/cleanup');
 
     $response = strval($this->getResponse());
 
@@ -57,13 +71,59 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testShowActionCanBeAccessed() {
-//    $this->dispatch('/provisionedproducts/show');
-//
-//    $response = strval($this->getResponse());
-//
-//    $this->assertActionName('show');
-//    $this->assertControllerName('selfservice\controller\provisionedproduct');
-//    $this->assertResponseStatusCode(200);
+    $this->markTestSkipped("Show is unecessarily complex to mock and test.  Need to refactor a lot of the internal goodies into services, the controller shouldn't be doing this much work");
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+
+    $mockservers = array();
+    $mockserver = array(
+      'name' => 'name',
+      'state' => 'inactive',
+      'created_at' => new \DateTime(),
+      'href' => '/api/foo/123'
+    );
+    $mockservers[] = (object)$mockserver;
+    $apiServerModel = $this->getMock("ServerModel");
+    $apiServerModel->expects($this->once())
+      ->method('index')
+      ->will($this->returnValue($mockservers));
+    $clientMock = $this->getMockBuilder("\RGeyer\Guzzle\Rs\RightScaleApiClient")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $clientMock->expects($this->once())
+      ->method('newModel')
+      ->will($this->returnValue($apiServerModel));
+    $this->getApplicationServiceLocator()->setService('RightScaleAPIClient', $clientMock);
+
+    $prov_prod = new \SelfService\Document\ProvisionedProduct();
+    $prov_prod->id = 'abc123';
+    $prov_prod->provisioned_objects[] = new \SelfService\Document\ProvisionedObject(
+      array(
+        'type' => 'server',
+        'href' => '/api/foo/123'
+      )
+    );
+
+    $provprodservicemock = $this->getMockBuilder("\SelfService\Service\Entity\ProvisionedProductService")
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $provprodservicemock->expects($this->once())
+      ->method('find')
+      ->will($this->returnValue($prov_prod));
+
+    $this->getApplicationServiceLocator()->setService("SelfService\Service\Entity\ProvisionedProductService", $provprodservicemock);
+
+
+
+    $this->dispatch('/provisionedproducts/abc123/show');
+
+    $response = strval($this->getResponse());
+    print $response;
+
+    $this->assertActionName('show');
+    $this->assertControllerName('selfservice\controller\provisionedproduct');
+    $this->assertResponseStatusCode(200);
   }
 
   public function testServerStartActionCanBeAccessed() {

@@ -49,12 +49,12 @@ class ProvisionedProductController extends BaseController {
 
     $actions = array(
       'del' => array(
-        'uri_prefix' => $this->url()->fromRoute('provisionedproducts', array('action' => 'cleanup')),
+        'url_parts' => array('controller' => 'provisionedproducts', 'action' => 'cleanup'),
         'img_path' => 'images/delete.png',
         'is_ajax' => true
       ),
       'show' => array(
-        'uri_prefix' => $this->url()->fromRoute('provisionedproducts', array('action' => 'show')),
+        'url_parts' => array('controller' => 'provisionedproducts', 'action' => 'show'),
         'img_path' => 'images/info.png'
       )
     );
@@ -111,6 +111,7 @@ class ProvisionedProductController extends BaseController {
         $mc_srv_model = $client->newModel('Server');
         foreach($mc_srv_model->index($prov_depl->href) as $server) {
           $stdServer = new \stdClass();
+          $stdServer->provisioned_product_id = $product_id;
           $stdServer->name = $server->name;
           $stdServer->state = $server->state;
           $stdServer->created_at = $server->created_at;
@@ -137,14 +138,14 @@ class ProvisionedProductController extends BaseController {
           }
           if(in_array($server->state, array('inactive', 'stopped'))) {
             $server->actions['start'] = array(
-              'uri_prefix' => $this->url()->fromRoute('provisionedproducts', array('action' => 'serverstart')),
+              'url_parts' => array('controller' => 'provisionedproducts', 'action' => 'serverstart'),
               'img_path' => 'images/plus.png',
               'is_ajax' => true
             );
           }
           if($server->state == 'operational') {
             $server->actions['stop'] = array(
-              'uri_prefix' => $this->url()->fromRoute('provisionedproducts', array('action' => 'serverstop')),
+              'url_parts' => array('controller' => 'provisionedproducts', 'action' => 'serverstop'),
               'img_path' => 'images/delete.png',
               'is_ajax' => true
             );
@@ -162,11 +163,14 @@ class ProvisionedProductController extends BaseController {
     if(isset($server_id)) {
       $client = $this->getServiceLocator()->get('RightScaleAPIClient');
       $service = $this->getProvisionedProductEntityService();
-      $prov_server = $service->find($server_id);
-      if(count($prov_server) == 1) {
-        $server = $client->newModel('Server');
-        $server->find_by_href($prov_server->href);
-        $server->launch();
+      $prov_prod = $service->find($server_id);
+      $prov_prod_object_id = $this->params('provisioned_object_id');
+      foreach($prov_prod->provisioned_objects as $object) {
+        if($object->id == $prov_prod_object_id) {
+          $server = $client->newModel('Server');
+          $server->find_by_href($object->href);
+          $server->launch();
+        }
       }
     }
 
@@ -179,11 +183,14 @@ class ProvisionedProductController extends BaseController {
     if(isset($server_id)) {
       $client = $this->getServiceLocator()->get('RightScaleAPIClient');
       $service = $this->getProvisionedProductEntityService();
-      $prov_server = $service->find($server_id);
-      if(count($prov_server) == 1) {
-        $server = $client->newModel('Server');
-        $server->find_by_href($prov_server->href);
-        $server->terminate();
+      $prov_prod = $service->find($server_id);
+      $prov_prod_object_id = $this->params('provisioned_object_id');
+      foreach($prov_prod->provisioned_objects as $object) {
+        if($object->id == $prov_prod_object_id) {
+          $server = $client->newModel('Server');
+          $server->find_by_href($object->href);
+          $server->terminate();
+        }
       }
     }
 
