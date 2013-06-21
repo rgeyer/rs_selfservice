@@ -131,6 +131,10 @@ class RsApiProvisioner extends AbstractProvisioner {
         }
       }
     }
+
+    if($product->launch_servers) {
+      $prov_helper->launchServers();
+    }
   }
 
   /**
