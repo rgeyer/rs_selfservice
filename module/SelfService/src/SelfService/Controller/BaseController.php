@@ -28,20 +28,6 @@ use Zend\Mvc\Controller\AbstractActionController;
 
 abstract class BaseController extends AbstractActionController {
 
-	/**
-	 *
-	 * @var \Doctrine\ORM\EntityManager
-	 */
-	protected $em;
-
-  public function getEntityManager()
-  {
-      if (null === $this->em) {
-          $this->em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
-      }
-      return $this->em;
-  }
-
   public function getLogger() {
     return $this->getServiceLocator()->get('logger');
   }

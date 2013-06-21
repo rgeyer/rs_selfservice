@@ -94,16 +94,16 @@ class ProvisionedProductController extends BaseController {
     $servers = array();
     if(isset($product_id)) {
       $client = $this->getServiceLocator()->get('RightScaleAPIClient');
-      $em = $this->getEntityManager();
-      $prov_product = $em->getRepository('SelfService\Entity\ProvisionedProduct')->find($product_id);
+      $service = $this->getProvisionedProductEntityService();
+      $prov_product = $service->find($product_id);
       if(count($prov_product) == 1) {
         $prov_servers = array();
         $prov_depl = null;
         foreach($prov_product->provisioned_objects as $provisioned_obj) {
-          if(is_a($provisioned_obj, 'SelfService\Entity\ProvisionedDeployment')) {
+          if($provisioned_obj->type == "deployment") {
             $prov_depl = $provisioned_obj;
           }
-          if(is_a($provisioned_obj, 'SelfService\Entity\ProvisionedServer')) {
+          if($provisioned_obj->type == "server") {
             $prov_servers[] = $provisioned_obj;
           }
         }
@@ -161,8 +161,8 @@ class ProvisionedProductController extends BaseController {
     $server_id = $this->params('id');
     if(isset($server_id)) {
       $client = $this->getServiceLocator()->get('RightScaleAPIClient');
-      $em = $this->getEntityManager();
-      $prov_server = $em->getRepository('SelfService\Entity\ProvisionedServer')->find($server_id);
+      $service = $this->getProvisionedProductEntityService();
+      $prov_server = $service->find($server_id);
       if(count($prov_server) == 1) {
         $server = $client->newModel('Server');
         $server->find_by_href($prov_server->href);
@@ -178,8 +178,8 @@ class ProvisionedProductController extends BaseController {
     $server_id = $this->params('id');
     if(isset($server_id)) {
       $client = $this->getServiceLocator()->get('RightScaleAPIClient');
-      $em = $this->getEntityManager();
-      $prov_server = $em->getRepository('SelfService\Entity\ProvisionedServer')->find($server_id);
+      $service = $this->getProvisionedProductEntityService();
+      $prov_server = $service->find($server_id);
       if(count($prov_server) == 1) {
         $server = $client->newModel('Server');
         $server->find_by_href($prov_server->href);
