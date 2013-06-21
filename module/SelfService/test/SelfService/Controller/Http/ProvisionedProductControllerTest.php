@@ -127,7 +127,9 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testServerStartActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/provisionedproducts/serverstart');
+    $service = $this->getProvisionedProductEntityService();
+    $pp = $service->create(array());
+    $this->dispatch('/provisionedproducts/'.$pp->id.'/serverstart');
 
     $response = strval($this->getResponse());
 
@@ -139,7 +141,9 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testServerStopActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/provisionedproducts/serverstop');
+    $service = $this->getProvisionedProductEntityService();
+    $pp = $service->create(array());
+    $this->dispatch('/provisionedproducts/'.$pp->id.'/serverstop');
 
     $response = strval($this->getResponse());
 
