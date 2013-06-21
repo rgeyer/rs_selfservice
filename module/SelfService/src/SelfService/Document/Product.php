@@ -238,7 +238,7 @@ class Product {
   }
 
   /**
-   * @param $object An object who's properties will be iterated over.  Where a
+   * @param \stdClass $object An object who's properties will be iterated over.  Where a
    * property is a reference, it will be replaced by the value from the $params param
    * @param array $params An associative array of key/value pairs.  The key is the
    * id of the *_product_input ref, and the value will replace the reference.
@@ -294,7 +294,7 @@ class Product {
   );
 
   protected function _replaceRefsWithConcreteResource(&$object, $resources_by_id, &$resources_to_delete, $nested_only) {
-    if(is_array($object) && array_key_exists("ref", $object) && strpos("product_input", $object["ref"]) === false) {
+    if(is_array($object) && array_key_exists("ref", $object) && strpos($object["ref"], "product_input") === false) {
       if(!in_array($object["ref"], $this->_protectedResourceTypes)
         && (($object["nested"] & $nested_only) | !$nested_only)) {
         $resources_to_delete[$object["id"]] = $resources_by_id[$object["id"]];
