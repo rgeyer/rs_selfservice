@@ -74,7 +74,7 @@ abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
   }
 
   /**
-   * @param $message A message to be displayed to the API caller or UI user
+   * @param $message String A message to be displayed to the API caller or UI user
    */
   protected function addMessage($message) {
     $this->messages[] = $message;
@@ -86,8 +86,9 @@ abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
    * to be displayed to the API caller or UI user
    */
   public function getMessages($clear = false) {
+    $retval = $this->messages;
     if($clear) { $this->clearMessages(); }
-    return $this->messages;
+    return $retval;
   }
 
   /**
@@ -109,16 +110,16 @@ abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
    * * tag created items with the provisioned product id
    *
    * @abstract
-   * @param $provisioned_product_id The unique ID of a provisioned product
-   * @param $json A json string which is compliant with the json/output/schema.json schema, used to describe
+   * @param $provisioned_product_id String The unique ID of a provisioned product
+   * @param $json String A json string which is compliant with the json/output/schema.json schema, used to describe
    *  a product to be provisioned.
    */
   public abstract function provision($provisioned_product_id, $json);
 
   /**
    * @abstract
-   * @param $provisioned_product_id The unique ID of a provisioned product
-   * @param $json A json string which represents an array of \SelfService\Document\ProvisionedObject
+   * @param $provisioned_product_id String The unique ID of a provisioned product
+   * @param $json String A json string which represents an array of \SelfService\Document\ProvisionedObject
    */
   public abstract function cleanup($provisioned_product_id, $json);
 }
