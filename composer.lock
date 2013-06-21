@@ -850,12 +850,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rgeyer/rs_guzzle_client.git",
-                "reference": "3b548dbcd8d7464b43433e2b89864d8dbf6622d0"
+                "reference": "f90fd1fb3f1a1ad3f7a9e152530495e22ce8f1cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rgeyer/rs_guzzle_client/zipball/3b548dbcd8d7464b43433e2b89864d8dbf6622d0",
-                "reference": "3b548dbcd8d7464b43433e2b89864d8dbf6622d0",
+                "url": "https://api.github.com/repos/rgeyer/rs_guzzle_client/zipball/f90fd1fb3f1a1ad3f7a9e152530495e22ce8f1cd",
+                "reference": "f90fd1fb3f1a1ad3f7a9e152530495e22ce8f1cd",
                 "shasum": ""
             },
             "require": {
@@ -889,7 +889,7 @@
                 "api",
                 "client"
             ],
-            "time": "2013-05-01 20:34:12"
+            "time": "2013-06-21 16:11:28"
         },
         {
             "name": "smarty/smarty",
@@ -1088,12 +1088,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendDeveloperTools.git",
-                "reference": "d5ec47c8e916a083fe2ef8a5711b859e8864b042"
+                "reference": "8e04c24099ac4b843d101522fda17457765332ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/d5ec47c8e916a083fe2ef8a5711b859e8864b042",
-                "reference": "d5ec47c8e916a083fe2ef8a5711b859e8864b042",
+                "url": "https://api.github.com/repos/zendframework/ZendDeveloperTools/zipball/8e04c24099ac4b843d101522fda17457765332ce",
+                "reference": "8e04c24099ac4b843d101522fda17457765332ce",
                 "shasum": ""
             },
             "require": {
@@ -1139,7 +1139,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2013-06-07 08:49:48"
+            "time": "2013-06-15 07:41:17"
         },
         {
             "name": "zendframework/zendframework",
