@@ -119,7 +119,6 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
     $this->dispatch('/provisionedproducts/abc123/show');
 
     $response = strval($this->getResponse());
-    print $response;
 
     $this->assertActionName('show');
     $this->assertControllerName('selfservice\controller\provisionedproduct');
