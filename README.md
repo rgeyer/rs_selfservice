@@ -15,29 +15,13 @@ Travis-CI Build Status [![Build Status](https://travis-ci.org/rgeyer/rs_selfserv
 
 4. Copy config/autoload/local.php.dist to config/autoload/local.php, and enter your values.
 
-5. Run the following commands which will create the schema in the DB specified in config/autoload/local.php and populate the 3 "standard" products.
+5. Run the following commands which will create the schema in the DB specified in config/autoload/local.php and populate the 2 "standard" products.
 
 ```vendor/bin/doctrine-module odm:schema:create```
-```php public/index.php product add```
+```php public/index.php product add baselinux```
+```php public/index.php product add php3tier```
 
 6. Enjoy.. Hopefully!
-
-## For Zend Server (Temporarily deprecated/untested)
-1. Download and install Composer:
-
-```curl -s http://getcomposer.org/installer | php```
-
-2. Install the composer managed dependencies:
-
-```php composer.phar install```
-
-3. Create a Zend Deployment package
-
-```zdpack --src-dir=. pack```
-
-4. Deploy using Zend Server/Cluster mechanism of choice
-
-5. Change the vhost for your application to allow overrides, either manually or by changing the templates at /usr/local/zend/share/
 
 # Usage
 
@@ -56,7 +40,7 @@ Authorize a user
 ```php /public/index.php users deauthorize foo@bar.baz```
 
 
-Update Memcached data for RightScale Resources (ServerTemplates, Clouds, InstanceTypes, etc)
+Update Memcached data for RightScale Resources (ServerTemplates, Clouds, InstanceTypes, Datacenters etc)
 
 ```php /public/index.php cache update rightscale```
 
@@ -83,8 +67,7 @@ easy_install pip
 sudo pip install jsonschema
 ```
 
-A TODO item here is to include the use of this validation in unit tests, and make sure that
-Travis CI can run python in the PHP test VM.
+A TODO item here is to include the use of this validation in unit tests, and the actual app
 
 ## Testing
 
@@ -126,68 +109,8 @@ SelfService\Provisioner\AbstractProvisioner and change the rsss/provisioner conf
 option in your applications ./confi/local.php config file.
 
 # TODO
-* Soft deletes for products, provisioned products, perhaps others?
-* Fully async provisioning operations. Main page should make ajax call to provision, which should spawn a new process which can be checked in on later, perhaps providing step by step log lines visible to the user.
-  * All ajax calls are actually ajax with a progress bar.  Above still needs more love. (Done)
-* Accept product inputs which can customize the form during provisioning.
-  * Inputs "2.0" type functionality.  When a particular cloud is chosen, ask for required inputs specific to that cloud etc.
-* Accept dashboard inputs for products.
-  * As a named credential
-  * As a named credential (only in absence of a same named credential)
-* Shared sessions - Horizontal Scalability
-  * Sorta implemented, the authentication bits are stored in memcached, but other session data still stored in "sessions"
-  * Refactoring is in order here.  The session management and authentication is scattered across several classes and methods.  Need to create a single service which aggregates and simplifies
-* Cache commonly read data (user profiles/oauth uris, etc)
-  * Implemented caching for all RS API GET and HEAD calls, but should create a service which smartly (as in can be invalidated when new records are imported etc) caches
-    * Clouds (Done, could use an "as index" option)
-    * Instance Types (Done)
-    * DataCenters (Done)
-    * ServerTemplates (Done)
-    * MultiCloudImages & Settings?
-  * Frequently query the RS API and cache status for provisioned product show screen(s)
-  * Create a cache controller to show;
-    * Stats
-    * Namespaces
-    * Objects/keys
-    * Clear/invalidate namespaces (Done, in CacheController)
-* Allow launching of servers once deployment is created
-  * Create launch stages (tiers), launch all LB first, then DB, then App
-  * Allow execution of scripts on servers once they become operational
-* DNS integration to generate DB records etc.
-* Support multiple AWS/RS accounts
-* Create a "Product Persister" which persists things in the correct order. SSH Keys -> Security Groups -> Security Group Rules -> Servers -> Arrays Etc.
-* Add Authorization functionality (admin, read_all, act_all, read_mine, act_mine, etc)
-  * Partly done, users are now either authorized or not, no roles yet (Done)
-  * http://opauth.org/
-* Filter cloud menu based on product ST support?
-* Make sure ServerTemplate is done importing before starting servers
-* (Re)add a windows product
-* Cleaner handling of failure while provisioning.  Make sure that successfully provisioned stuff gets persisted so that it can be destroyed.
-  * Cleaner handling of failure while destroying, make sure that destruction can be re-run until everything is gone.
-* Add vendor dependency downloads with composer in pre_activate.php for Zend Server
-* Instrument *as though* it will consume CF
-  * Provisioning action(s) hit a controller with json metadata
-  * ProvisioningHelper hits controllers with json metadata on success to indicate completion, allowing the RSSS to delete DB records
-* Importing templates can be tough, and time consuming, possibly batch this when the provisionable product is added to the catalog rather than making the end user wait.
-* Allow an Opt-In phone home to allow the tracking of multiple vending machines by a single person/organization
-* Integrate with PlanForCloud so that each product can be analyzed for cost forecasting! Brilliant
-* Create scheduled reports to show run rates of provisioned products in the RSSS
-* CF for generating json from running/created deployment
-* CF for performing callbacks to RSSS (async)
-* On Products Admin, allow changes to ServerTemplate and revision, which metainputs are requested and their default values.
-* Support Queue based arrays
-* Support schedules on arrays - Dependency upon rs_guzzle_client being able to make the call with the correct params.
-* Support datacenter policy on sarrays - Dependency upon rs_guzzle_client being able to make the call with the correct params.
-* Support optimized - Dependency upon rs_guzzle_client to consider this a valid param.
-* Implement "subnet" product input
-* "API First" Approach
-  * API authentication (probably 2-legged OAuth)
-  * All views should be calling API methods for form submits etc.
-* RsApiProvisioner
-  * Support deployment server_tag_scope property
-* Refactor
-  * MetaInput -> ProductInput
-  * All of the odm -> stdClass -> json gyrations should not be tied to the document models.
+
+https://github.com/rgeyer/rs_selfservice/issues
 
 # Misc Useful stuff
 ## Icon Pack
