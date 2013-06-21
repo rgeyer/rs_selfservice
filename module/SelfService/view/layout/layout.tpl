@@ -62,7 +62,7 @@
                 "Error",
                 "<p>"+data.error+"</p>"
               );
-            } else if (data.messages != undefined) {
+            } else if (data.messages != undefined && data.messages.length > 0) {
               $('#message-dialog').dialog({
                 close: function( event, ui ) {
                   location.reload();
