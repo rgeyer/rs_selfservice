@@ -73,8 +73,8 @@ class ProvisionedProductController extends BaseController {
         foreach($provisioned_product->provisioned_objects as $object) {
           $provisioned_products[] = $object;
         }
-        $messages = $provisioning_adapter->cleanup($product_id, json_encode($provisioned_products));
-        $response['messages'] = array_merge($response['messages'], $messages);
+        $provisioning_adapter->cleanup($product_id, json_encode($provisioned_products));
+        $response['messages'] = array_merge($response['messages'], $provisioning_adapter->getMessages(true));
       } catch (NotFoundException $e) {
         $response['result'] = 'error';
         $response['error'] = $e->getMessage();

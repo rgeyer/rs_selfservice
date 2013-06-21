@@ -133,8 +133,8 @@ class ProductController extends BaseController {
           $this->url()->fromRoute('provisionedproducts', array('action' => 'show', 'id' => $prov_prod->id))
         );
 
-        $messages = $provisioning_adapter->provision($prov_prod->id, $output_json);
-        $response['messages'] = array_merge($response['messages'], $messages);
+        $provisioning_adapter->provision($prov_prod->id, $output_json);
+        $response['messages'] = array_merge($response['messages'], $provisioning_adapter->getMessages(true));
       } catch (NotFoundException $e) {
         $response['result'] = 'error';
         $response['error'] = $e->getMessage();
