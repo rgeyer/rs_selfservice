@@ -293,9 +293,11 @@ class ProvisioningHelper {
    * @throws \InvalidArgumentException if there are ServerTemplate discovery or import issues.
    * @param stdClass $server The server representation as defined in the output json schema
    * @param \RGeyer\Guzzle\Rs\Model\Mc\Deployment $deployment The previously provisioned deployment the server(s) should be created in
+   * @param array $inputs An associative array of inputs specified for the server
+   * where the key is the name of the input and the value is the value of the input.
    * @return array A mix of RGeyer\Guzzle\Rs\Model\Mc\Server and RGeyer\Guzzle\Rs\Model\Mc\SshKey objects which were created during the process
    */
-  public function provisionServer($server, Deployment $deployment) {
+  public function provisionServer($server, Deployment $deployment, array $inputs = array()) {
     $result = array();
     $cloud_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($server->instance->cloud_href);
 
@@ -359,6 +361,27 @@ class ProvisioningHelper {
       $api_server->create($params);
       $api_server->addTags($this->_tags);
 
+
+      if(count($inputs) > 0) {
+        $api_server->find_by_href($api_server->href);
+        $next_instance_href = null;
+        foreach($api_server->links as $link) {
+          if($link->rel == "next_instance") {
+            $next_instance_href = $link->href;
+          }
+        }
+        if($next_instance_href) {
+          $command = $this->client->getCommand('inputs_multi_update',
+            array(
+              'path' => str_replace('/api/', '', $next_instance_href).'/inputs/multi_update',
+              'inputs' => $inputs
+            )
+          );
+          $command->execute();
+          $command->getResult();
+        }
+      }
+
       $result[] = $api_server;
       $this->_servers[strval($server->id)][] = $api_server;
 
@@ -381,7 +404,7 @@ class ProvisioningHelper {
    * where the key is the name of the input and the value is the value of the input.
    * @return \RGeyer\Guzzle\Rs\Model\Mc\Deployment The newly created deployment
    */
-  public function provisionDeployment($name, $description = null, $inputs = array()) {
+  public function provisionDeployment($name, $description = null, array $inputs = array()) {
     $deployment = $this->client->newModel('Deployment');
     $deployment->name = $name;
     if($description) {
@@ -537,7 +560,7 @@ class ProvisioningHelper {
     return true;
   }
 
-  public function provisionServerArray($array, Deployment $deployment) {
+  public function provisionServerArray($array, Deployment $deployment, array $inputs = array()) {
     $result = array();
     $cloud_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($array->instance->cloud_href);
 
@@ -614,6 +637,26 @@ class ProvisioningHelper {
     );
     $command->execute();
     $command->getResult();
+
+    if(count($inputs) > 0) {
+      $api_array->find_by_href($api_array->href);
+      $next_instance_href = null;
+      foreach($api_array->links as $link) {
+        if($link->rel == "next_instance") {
+          $next_instance_href = $link->href;
+        }
+      }
+      if($next_instance_href) {
+        $command = $this->client->getCommand('inputs_multi_update',
+          array(
+            'path' => str_replace('/api/', '', $next_instance_href).'/inputs/multi_update',
+            'inputs' => $inputs
+          )
+        );
+        $command->execute();
+        $command->getResult();
+      }
+    }
 
     $result[] = $api_array;
     $this->_arrays[strval($array->id)] = $api_array;

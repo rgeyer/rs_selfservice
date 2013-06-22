@@ -101,7 +101,11 @@ class RsApiProvisioner extends AbstractProvisioner {
         );
 
         foreach($resource->servers as $server) {
-          $provisioned_objects = $prov_helper->provisionServer($server, $deployment);
+          $inputs = array();
+          foreach($server->instance->inputs as $input) {
+            $inputs[$input->name] = $input->value;
+          }
+          $provisioned_objects = $prov_helper->provisionServer($server, $deployment, $inputs);
           foreach($provisioned_objects as $provisioned_object) {
             $params = array(
               'href' => $provisioned_object->href,
@@ -116,7 +120,11 @@ class RsApiProvisioner extends AbstractProvisioner {
         }
 
         foreach($resource->server_arrays as $array) {
-          $provisioned_objects = $prov_helper->provisionServerArray($array, $deployment);
+          $inputs = array();
+          foreach($array->instance->inputs as $input) {
+            $inputs[$input->name] = $input->value;
+          }
+          $provisioned_objects = $prov_helper->provisionServerArray($array, $deployment, $inputs);
           foreach($provisioned_objects as $provisioned_object) {
             $params = array(
               'href' => $provisioned_object->href,
