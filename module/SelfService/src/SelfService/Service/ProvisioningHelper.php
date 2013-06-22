@@ -155,12 +155,13 @@ class ProvisioningHelper {
   /**
    * Fetches or JIT creates an SSH key for the specified cloud.
    *
-   * @param $cloud_id The integer ID of the cloud
-   * @param $name The desred name for a new key if it must be created
-   * @param $prov_prod A reference to an array which will have an RGeyer\Guzzle\Rs\Model\Mc\SshKey appended to it if this method creates a new key.  # TODO: This is super naughty and should be stopped
-   * @return bool|RGeyer\Guzzle\Rs\Model\Mc\SshKey Boolean false if the cloud does not support SSH keys, an RGeyer\Guzzle\Rs\Model\Mc\SshKey otherwise
+   * @param String $cloud_id The integer ID of the cloud
+   * @param String $name The desired name for a new key if it must be created
+   * @param array $prov_prod A reference to an array which will have an RGeyer\Guzzle\Rs\Model\Mc\SshKey appended to it if this method creates a new key.  # TODO: This is super naughty and should be stopped
+   * @return bool|\RGeyer\Guzzle\Rs\Model\Mc\SshKey Boolean false if the cloud does not support SSH keys, an RGeyer\Guzzle\Rs\Model\Mc\SshKey otherwise
    */
 	protected function _getSshKey($cloud_id, $name, &$prov_prod) {
+    $name = sprintf("%s-%s", $name, $this->_now_ts);
     if($this->_clouds[$cloud_id]->supportsCloudFeature('ssh_keys')) {
       if(!array_key_exists($cloud_id, $this->_ssh_keys)) {
         $newkey = $this->client->newModel('SshKey');
@@ -454,6 +455,7 @@ class ProvisioningHelper {
    * @return bool|\RGeyer\Guzzle\Rs\Model\Mc\SecurityGroup False if no group was created, a created security group if successful
    */
   public function provisionSecurityGroup($security_group) {
+    $security_group->name = sprintf("%s-%s", $security_group->name, $this->_now_ts);
     $cloud_id = RightScaleClient::getIdFromRelativeHref($security_group->cloud_href);
     // Check if this cloud supports security groups first!
     if(!$this->_clouds[$cloud_id]->supportsCloudFeature('security_groups')) {

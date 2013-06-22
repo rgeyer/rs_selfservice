@@ -63,7 +63,6 @@ class RsApiProvisioner extends AbstractProvisioner {
     // Security Groups are always first
     foreach($product->resources as $resource) {
       if($resource->resource_type == 'security_group') {
-        $resource->name = sprintf("%s-%s", $resource->name, $now);
         $sg = $prov_helper->provisionSecurityGroup($resource);
         $prov_prod_service->addProvisionedObject(
           $provisioned_product_id,

@@ -107,6 +107,7 @@ abstract class AbstractProvisioner implements ServiceLocatorAwareInterface {
    * = Provisioner best practices
    *
    * * provide unique names for security groups since duplicates are not allowed. I.E. <productname>-<timestamp>
+   * * provide unique names for ssh keys since duplicates are not allowed I.E. <productname>-<timestamp>
    * * tag created items with the provisioned product id
    *
    * @abstract
