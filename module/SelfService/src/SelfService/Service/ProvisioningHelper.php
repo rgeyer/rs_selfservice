@@ -402,12 +402,14 @@ class ProvisioningHelper {
    * @param string $name The name for the deployment
    * @param string|null $description A description for the deployment, or null
    * @param array $inputs An associative array of inputs specified for the deployment
+   * @param string $server_tag_scope Either "deployment" or "account". Default is "deployment"
    * where the key is the name of the input and the value is the value of the input.
    * @return \RGeyer\Guzzle\Rs\Model\Mc\Deployment The newly created deployment
    */
-  public function provisionDeployment($name, $description = null, array $inputs = array()) {
+  public function provisionDeployment($name, $description = null, array $inputs = array(), $server_tag_scope = 'deployment') {
     $deployment = $this->client->newModel('Deployment');
     $deployment->name = $name;
+    $deployment->server_tag_scope = $server_tag_scope;
     if($description) {
       $deployment->description = $description;
     }

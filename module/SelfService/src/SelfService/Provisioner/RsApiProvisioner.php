@@ -90,7 +90,8 @@ class RsApiProvisioner extends AbstractProvisioner {
           $inputs[$input->name] = $input->value;
         }
         $depldesc = sprintf("Created by rs_selfservice for the '%s' product", $product->name);
-        $deployment = $prov_helper->provisionDeployment($resource->name, $depldesc, $inputs);
+        $tag_scope = $resource->server_tag_scope ? : 'deployment';
+        $deployment = $prov_helper->provisionDeployment($resource->name, $depldesc, $inputs, $tag_scope);
         $prov_prod_service->addProvisionedObject(
           $provisioned_product_id,
           array(

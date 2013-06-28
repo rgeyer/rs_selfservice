@@ -47,6 +47,48 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $this->assertInstanceOf('RGeyer\Guzzle\Rs\Model\Mc\Deployment', $deployment);
   }
 
+  public function testProvisionDeploymentSetsServerTagScopeWhenSpecified() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
+      array(
+        '1.5/clouds/json/response',
+        '1.5/server_templates/json/response',
+        '1.5/deployments_create/response',
+        '1.5/tags_multi_add/response'
+      )
+    );
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $helper->setTags(array('foo', 'bar', 'baz'));
+    $deployment = $helper->provisionDeployment('name', 'description', array(), 'account');
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertContains('deployment[description]=description', strval($requests[2]));
+    $this->assertContains('deployment[name]=name', strval($requests[2]));
+    $this->assertContains('deployment[server_tag_scope]=account', strval($requests[2]));
+    $this->assertContains('resource_hrefs[]=%2Fapi%2Fdeployments%2F12345&tags[]=foo&tags[]=bar&tags[]=baz', strval($requests[3]));
+    $this->assertInstanceOf('RGeyer\Guzzle\Rs\Model\Mc\Deployment', $deployment);
+  }
+
+  public function testProvisionDeploymentSetsServerTagScopeToDeploymentWhenNotDefined() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
+      array(
+        '1.5/clouds/json/response',
+        '1.5/server_templates/json/response',
+        '1.5/deployments_create/response',
+        '1.5/tags_multi_add/response'
+      )
+    );
+    $helper = new ProvisioningHelper($this->getApplicationServiceLocator(), $log, array());
+    $helper->setTags(array('foo', 'bar', 'baz'));
+    $deployment = $helper->provisionDeployment('name', 'description');
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertContains('deployment[description]=description', strval($requests[2]));
+    $this->assertContains('deployment[name]=name', strval($requests[2]));
+    $this->assertContains('deployment[server_tag_scope]=deployment', strval($requests[2]));
+    $this->assertContains('resource_hrefs[]=%2Fapi%2Fdeployments%2F12345&tags[]=foo&tags[]=bar&tags[]=baz', strval($requests[3]));
+    $this->assertInstanceOf('RGeyer\Guzzle\Rs\Model\Mc\Deployment', $deployment);
+  }
+
   public function testCanUpdateDeploymentWithInputs() {
     $log = $this->getMock('Zend\Log\Logger');
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
@@ -181,8 +223,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
   public function testProvisionSecurityGroupRulesErrorsWhenOwnerNotKnown() {
     $log = $this->getMock('Zend\Log\Logger');
     $log->expects($this->exactly(1))
-      ->method('info')
-      ->with("Created Security Group - Name: foo ID: 12345I8FG7HTFVJ");
+      ->method('info');
     $log->expects($this->exactly(1))
       ->method('warn')
       ->with("Could not determine the 'owner' for cloud id 11111.");
@@ -225,12 +266,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     # ProvisioningHelper line 343
     $log = $this->getMock('Zend\Log\Logger');
     $log->expects($this->exactly(2))
-      ->method('info')
-      ->with($this->logicalOr(
-        "Created Security Group - Name: foo ID: 12345I8FG7HTFVJ",
-        "About to provision 1 rules for Security Group foo"
-      )
-    );
+      ->method('info');
     $log->expects($this->exactly(1))
       ->method('warn')
       ->with("No concrete security group was provisioned for security group doctrine model ID 2.  Skipping rule creation");
