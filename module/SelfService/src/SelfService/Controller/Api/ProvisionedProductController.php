@@ -143,7 +143,6 @@ class ProvisionedProductController extends AbstractRestfulController {
         if(preg_match('/rs\.([a-z_]+)/', $post_params['type'], $matches)) {
           $plural = $matches[1];
           $type = rtrim($plural, 's');
-          # TODO: Validate the types and throw an error for unknown types
           $params = array(
             'type' => $type,
             'href' => $post_params['href']

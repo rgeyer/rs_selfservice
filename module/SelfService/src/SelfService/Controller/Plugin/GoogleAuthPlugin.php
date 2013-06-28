@@ -70,7 +70,6 @@ class GoogleAuthPlugin extends AbstractPlugin {
 		if ($controller == 'selfservice\controller\login') {
 			return;
 		}
-		# TODO: Look up the user in the DB. If they're not there, still force a login.
 		$redirect_to_auth = false;
 		$auth = $serviceManager->get('AuthenticationService');
     $user = null;
