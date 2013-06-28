@@ -242,7 +242,7 @@
           "name_prefix": "LB",
           "description": "Apache/HAProxy Load Balancer",
           "optimized": false,
-          "count": "1",
+          "count": "2",
           "instance": [
             {
               "id": "LbInstance",
@@ -483,7 +483,8 @@
         { "ref": "security_group", "id": "PhpDefaultSecurityGroup" },
         { "ref": "security_group", "id": "PhpAppSecurityGroup" }
       ],
-      "server_template": [ { "ref": "server_template", "id": "PhpAppServerTemplate" } ]
+      "server_template": [ { "ref": "server_template", "id": "PhpAppServerTemplate" } ],
+      "datacenter_href": { "ref": "datacenter_product_input", "id": "datacenter" }
     },
     {
       "id": "PhpAppServerTemplate",

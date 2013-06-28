@@ -314,8 +314,8 @@ class ProvisioningHelper {
 
     $datacenter_hrefs = array();
     if($this->_clouds[$cloud_id]->supportsCloudFeature('datacenters')) {
-      if($server->instance->datacenter_hrefs) {
-        $datacenter_hrefs = $server->instance->datacenter_hrefs;
+      if($server->instance->datacenter_href) {
+        $datacenter_hrefs = $server->instance->datacenter_href;
       } else {
         $datacenters = $this->api_cache->getDatacenters($cloud_id);
         foreach($datacenters as $datacenter) {
@@ -615,23 +615,28 @@ class ProvisioningHelper {
     if($ssh_key) {
       $params['server_array[instance][ssh_key_href]'] = $ssh_key->href;
     }
-    /* TODO: When this parameter type is properly supported in rs_guzzle_client
-     * reimplement this.
-     * https://github.com/rgeyer/rs_guzzle_client/issues/6
-    if($array->instance->datacenter_hrefs &&
-       count($array->instance->datacenter_hrefs) > 0) {
-      $datacenter_count = count($array->instance->datacenter_hrefs);
+    /* TODO: Duplicating the UI behavior here, in that if DC hrefs are specified
+     * but there is only one, we ignore it since it's not allowed.  This is pending
+     * some research and response from product
+     */
+    if($array->instance->datacenter_href &&
+       count($array->instance->datacenter_href) > 1) {
+      $datacenter_count = count($array->instance->datacenter_href);
       $each = intval(100/$datacenter_count);
       $remainder = intval(100%$datacenter_count);
-      foreach($array->instance->datacenter_hrefs as $idx => $dc_href) {
-        $params['server_array[datacenter_policy]['.$idx.'][datacenter_href]'] = $dc_href;
-        $params['server_array[datacenter_policy]['.$idx.'][max]'] = 0;
-        $params['server_array[datacenter_policy]['.$idx.'][weight]'] = $each;
+      $params['server_array[datacenter_policy]'] = array();
+      foreach($array->instance->datacenter_href as $idx => $dc_href) {
+        $this_dc_policy = array(
+          'datacenter_href' => $dc_href,
+          'max' => 0,
+          'weight' => $each
+        );
         if($idx == 0 && $remainder != 0) {
-          $params['server_array[datacenter_policy]['.$idx.'][weight]'] = $each+$remainder;
+          $this_dc_policy['weight'] = $each+$remainder;
         }
+        $params['server_array[datacenter_policy]'][] = $this_dc_policy;
       }
-    }*/
+    }
 
     $api_array = $this->client->newModel('ServerArray');
     $api_array->create($params);
