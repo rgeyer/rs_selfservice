@@ -357,6 +357,9 @@ class ProvisioningHelper {
       if($ssh_key) {
         $params['server[instance][ssh_key_href]'] = $ssh_key->href;
       }
+      if(property_exists($server, 'optimized')) {
+        $params['server[optimized]'] = $server->optimized ? 'true' : 'false';
+      }
 
       $api_server->cloud_id = $cloud_id;
       $api_server->create($params);
@@ -578,7 +581,7 @@ class ProvisioningHelper {
     $instance_type_href = null;
     $this->_selectMciAndInstanceType($st, $cloud_id, $mci_href, $instance_type_href);
 
-    $secgrps = $this->_getProvisionedSecurityGroupHrefs($array->security_groups);
+    $secgrps = $this->_getProvisionedSecurityGroupHrefs($array->instance->security_groups);
 
     # TODO: Handle queue or alert based arrays. Only alert at the moment
     $params = array(
@@ -596,10 +599,9 @@ class ProvisioningHelper {
       'server_array[instance][multi_cloud_image_href]' => $mci_href,
       'server_array[instance][instance_type_href]' => $instance_type_href,
     );
-    /* TODO: rs_guzzle_client doesn't consider this a valid parameter
-     * if($array->optimized) {
-      $params['server_array[optimized]'] = strval($array->optimized);
-    }*/
+    if(property_exists($array, 'optimized')) {
+      $params['server_array[optimized]'] = $array->optimized ? 'true' : 'false';
+    }
     if($array->array_type == "alert") {
       $params = array_merge($params, array(
         'server_array[elasticity_params][alert_specific_params][decision_threshold]' => strval($array->elasticity_params->alert_specific_params->decision_threshold) ?: '51',
