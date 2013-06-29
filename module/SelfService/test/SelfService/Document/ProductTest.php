@@ -408,8 +408,8 @@ EOF;
     $product = $productService->find($product->id);
 
     $params = array('foo' => 'bar');
-    $product->mergeMetaInputs($params);
     $product->resolveDepends($params);
+    $product->mergeMetaInputs($params);
     $this->assertEquals(0, count($product->resources));
   }
 

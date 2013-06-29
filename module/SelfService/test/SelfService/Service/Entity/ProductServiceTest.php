@@ -719,6 +719,51 @@ EOF;
     # TODO: Could use more validation here too
   }
 
+  /**
+   * TODO: Effectively test to make sure that resolve depends is done before merge meta inputs
+   */
+  public function testConvertToOutputJsonDoesNotBreakResolveDepends() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "input",
+      "resource_type": "text_product_input",
+      "input_name": "input"
+    },
+    {
+      "id": "is_here",
+      "resource_type": "instance",
+      "depends": {
+        "id": "input",
+        "ref": "text_product_input",
+        "value": "true"
+      }
+    },
+    {
+      "id": "is_not",
+      "resource_type": "instance",
+      "depends": {
+        "id": "input",
+        "ref": "text_product_input",
+        "value": "false"
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $json = $productService->toOutputJson($product->id, array('input' => 'true'));
+    $this->assertContains('is_here', $json);
+    $this->assertNotContains('is_not', $json);
+  }
+
   public function testOdmToStdClassRetainsResourceRefsWithoutNestedKey() {
     $json = <<<EOF
 {

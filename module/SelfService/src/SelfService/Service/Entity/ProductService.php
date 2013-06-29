@@ -561,8 +561,8 @@ class ProductService extends BaseEntityService {
   public function toOutputJson($id, array $params = array()) {
     $product = $this->find($id);
     $this->detach($product);
-    $product->mergeMetaInputs($params);
     $product->resolveDepends($params);
+    $product->mergeMetaInputs($params);
     $product->pruneBrokenRefs();
     $product->replaceRefsWithConcreteResource();
     $product->dedupeOnlyOneProperties();

@@ -638,6 +638,19 @@ class ProvisioningHelper {
       }
     }
 
+    if($array->elasticity_params->schedule && count($array->elasticity_params->schedule) > 0) {
+      $params['server_array[elasticity_params][schedule]'] = array();
+      foreach($array->elasticity_params->schedule as $schedule) {
+        $this_schedule = array(
+          'day' => $schedule->day,
+          'max_count' => $schedule->max_count,
+          'min_count' => $schedule->min_count,
+          'time' => $schedule->time
+        );
+        $params['server_array[elasticity_params][schedule]'][] = $this_schedule;
+      }
+    }
+
     $api_array = $this->client->newModel('ServerArray');
     $api_array->create($params);
     $command = $this->client->getCommand('tags_multi_add',
