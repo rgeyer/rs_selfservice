@@ -720,7 +720,7 @@ EOF;
   }
 
   /**
-   * TODO: Effectively test to make sure that resolve depends is done before merge meta inputs
+   * @group odm_to_json
    */
   public function testConvertToOutputJsonDoesNotBreakResolveDepends() {
     $json = <<<EOF

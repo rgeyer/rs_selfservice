@@ -576,7 +576,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $instance_model = new \stdClass();
     $instance_model->cloud_href = "/api/clouds/11111";
     $instance_model->server_template = $server_template_model;
-    $instance_model->datacenter_hrefs = array("/api/clouds/11111/datacenters/12345");
+    $instance_model->datacenter_href = array("/api/clouds/11111/datacenters/12345");
     $instance_model->security_groups = array();
     $server_model->instance = $instance_model;
 
@@ -1069,7 +1069,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $instance_model = new \stdClass();
     $instance_model->cloud_href = "/api/clouds/11111";
     $instance_model->server_template = $server_template_model;
-    $instance_model->datacenter_hrefs = array("/api/clouds/11111/datacenters/11111");
+    $instance_model->datacenter_href = array("/api/clouds/11111/datacenters/11111");
     $instance_model->security_groups = array();
     $array_model->instance = $instance_model;
     $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
