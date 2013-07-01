@@ -81,6 +81,24 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     # found running.
   }
 
+  public function testCanCleanupServerArrayThatWasDeletedExternally() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
+      array(
+        '1.5/422response'
+      )
+    );
+    $api_model = new ServerArray();
+    $api_model->href = "/api/server_arrays/1234";
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
+    $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
+    $response = $helper->cleanupServerArray($orm_model);
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertTrue($response);
+    $this->assertEquals(1, count($requests));
+  }
+
   public function testCanCleanupInactiveServer() {
     $log = $this->getMock('Zend\Log\Logger');
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
@@ -145,6 +163,24 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     $this->assertEquals(1, count($requests));
   }
 
+  public function testCanCleanupServerThatWasDeletedExternally() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
+      array(
+        '1.5/422response'
+      )
+    );
+    $api_model = new Server();
+    $api_model->href = "/api/servers/1234";
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
+    $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
+    $response = $helper->cleanupServer($orm_model);
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertTrue($response);
+    $this->assertEquals(1, count($requests));
+  }
+
   public function testCanCleanupDeployment() {
     $log = $this->getMock('Zend\Log\Logger');
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
@@ -186,6 +222,25 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     $this->assertContains('DELETE /api/clouds/12345/ssh_keys/', strval($requests[1]));
   }
 
+  public function testCanCleanupSshKeyThatWasDeletedExternally() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
+      array(
+        '1.5/422response'
+      )
+    );
+    $api_model = new SshKey();
+    $api_model->href = "/api/cloud/12345/ssh_keys/1234";
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
+    $orm_model->cloud_id = '12345';
+    $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
+    $response = $helper->cleanupSshKey($orm_model);
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertTrue($response);
+    $this->assertEquals(1, count($requests));
+  }
+
   public function testCanCleanupSecurityGroupRules() {
     $log = $this->getMock('Zend\Log\Logger');
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
@@ -209,6 +264,24 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     $this->assertContains('DELETE /api/clouds/12345/security_groups/ABC123/security_group_rules/12345', strval($requests[3]));
   }
 
+  public function testCanCleanupSecurityGroupRulesForSecurityGroupThatWasDeletedExternally() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
+      array(
+        '1.5/422response'
+      )
+    );
+    $api_model = new SecurityGroup();
+    $api_model->href = "/api/clouds/12345/security_groups/ABC123";
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
+    $orm_model->cloud_id = '12345';
+    $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
+    $helper->cleanupSecurityGroupRules($orm_model);
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(1, count($requests));
+  }
+
   public function testCanCleanupSecurityGroup() {
     $log = $this->getMock('Zend\Log\Logger');
     $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
@@ -227,5 +300,23 @@ class CleanupHelperTest extends AbstractHttpControllerTestCase {
     $requests = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(2, count($requests));
     $this->assertContains('DELETE /api/clouds/12345/security_groups/', strval($requests[1]));
+  }
+
+  public function testCanCleanupSecurityGroupThatWasDeletedExternally() {
+    $log = $this->getMock('Zend\Log\Logger');
+    $this->_guzzletestcase->setMockResponse(ClientFactory::getClient("1.5"),
+      array(
+        '1.5/422response'
+      )
+    );
+    $api_model = new SecurityGroup();
+    $api_model->href = "/api/clouds/12345/security_groups/ABC123";
+    $orm_model = new \stdClass();
+    $orm_model->href = $api_model->href;
+    $orm_model->cloud_id = '12345';
+    $helper = new CleanupHelper('123', 'foo@bar.baz', 'password', $log);
+    $helper->cleanupSecurityGroup($orm_model);
+    $requests = $this->_guzzletestcase->getMockedRequests();
+    $this->assertEquals(1, count($requests));
   }
 }

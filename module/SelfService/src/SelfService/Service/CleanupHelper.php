@@ -24,6 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Service;
 
+use Guzzle\Http\Exception\ClientErrorResponseException;
 use RGeyer\Guzzle\Rs\Common\ClientFactory;
 use RGeyer\Guzzle\Rs\Model\Mc\ServerArray;
 
@@ -54,40 +55,61 @@ class CleanupHelper {
   }
 
   /**
+   * Deleting an already deleted object results in 422
    * @param \stdClass $array A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
+   * @throws \Exception|\Guzzle\Http\Exception\ClientErrorResponseException If an error occurs while making the API call.
    * @return bool True if the array had no running instances and was destroyed.  False if the array had running instances, and the multi_terminate method was called
    */
   public function cleanupServerArray($array) {
-    $api_array = $this->client->newModel('ServerArray');
-    $api_array->find_by_href($array->href);
-    if($api_array->instances_count > 0) {
-      $api_array->multi_terminate();
-      return false;
-    } else {
-      $api_array->destroy();
-      return true;
+    try {
+      $api_array = $this->client->newModel('ServerArray');
+      $api_array->find_by_href($array->href);
+      if($api_array->instances_count > 0) {
+        $api_array->multi_terminate();
+        return false;
+      } else {
+        $api_array->destroy();
+        return true;
+      }
+    } catch (ClientErrorResponseException $e) {
+      if($e->getResponse()->getStatusCode() == 422) {
+        return true;
+      } else {
+        throw $e;
+      }
     }
   }
 
   /**
+   * Deleting an already deleted object results in 422
    * @param \stdClass $server A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
+   * @throws \Exception|\Guzzle\Http\Exception\ClientErrorResponseException If an error occurs while making the API call.
    * @return bool True if the array had no running instances and was destroyed.  False if the server was running, and the servers_terminate method was called
    */
   public function cleanupServer($server){
-    $api_server = $this->client->newModel('Server');
-    $api_server->find_by_href($server->href);
-    if(!in_array($api_server->state, array('inactive','stopped','decommissioning'))) {
-      $api_server->terminate();
-      return false;
-    } else if($api_server->state == "decommissioning") {
-      return false;
-    } else {
-      $api_server->destroy();
-      return true;
+    try {
+      $api_server = $this->client->newModel('Server');
+      $api_server->find_by_href($server->href);
+      if(!in_array($api_server->state, array('inactive','stopped','decommissioning'))) {
+        $api_server->terminate();
+        return false;
+      } else if($api_server->state == "decommissioning") {
+        return false;
+      } else {
+        $api_server->destroy();
+        return true;
+      }
+    } catch (ClientErrorResponseException $e) {
+      if($e->getResponse()->getStatusCode() == 422) {
+        return true;
+      } else {
+        throw $e;
+      }
     }
   }
 
   /**
+   * Deleting an already deleted object results in no error.
    * @param \stdClass $deployment A json representation of a \SelfService\Document\ProvisionedObject for a provisioned array, used only for it's ->href param
    * @return bool Always true, throws exceptions if an error occurred
    */
@@ -99,23 +121,35 @@ class CleanupHelper {
   }
 
   /**
+   * Deleting an already deleted object results in 422
    * @param \stdClass $ssh_key A json representation of a \SelfService\Document\ProvisionedObject for a provisioned ssh key, used only for it's ->href and ->cloud_id params
+   * @throws \Exception|\Guzzle\Http\Exception\ClientErrorResponseException If an error occurs while making the API call.
    * @return bool Always true, throws exceptions if an error occurred
    */
   public function cleanupSshKey($ssh_key) {
-    $api_ssh_key = $this->client->newModel('SshKey');
-    $api_ssh_key->cloud_id = $ssh_key->cloud_id;
-    $api_ssh_key->find_by_href($ssh_key->href);
-    $api_ssh_key->destroy();
-    return true;
+    try {
+      $api_ssh_key = $this->client->newModel('SshKey');
+      $api_ssh_key->cloud_id = $ssh_key->cloud_id;
+      $api_ssh_key->find_by_href($ssh_key->href);
+      $api_ssh_key->destroy();
+      return true;
+    } catch (ClientErrorResponseException $e) {
+      if($e->getResponse()->getStatusCode() == 422) {
+        return true;
+      } else {
+        throw $e;
+      }
+    }
   }
 
 
   /**
    * @param \stdClass $sec_grp A json representation of a \SelfService\Document\ProvisionedObject for a provisioned security group, used only for it's ->href param
+   * @throws \Exception|\Guzzle\Http\Exception\ClientErrorResponseException If an error occurs while making the API call.
    * @return bool Always true, throws exceptions if an error occurred
    */
   public function cleanupSecurityGroupRules($sec_grp) {
+    try {
     $api_sec_grp = $this->client->newModel('SecurityGroup');
     $api_sec_grp->cloud_id = $sec_grp->cloud_id;
     $api_sec_grp->find_by_href($sec_grp->href);
@@ -126,18 +160,35 @@ class CleanupHelper {
       $rule->destroy(array('path' => $long_href));
     }
     return true;
+    } catch (ClientErrorResponseException $e) {
+      if($e->getResponse()->getStatusCode() == 422) {
+        return true;
+      } else {
+        throw $e;
+      }
+    }
   }
 
 
   /**
+   * Deleting an already deleted object results in 422
    * @param \stdClass $sec_grp A json representation of a \SelfService\Document\ProvisionedObject for a provisioned security group, used only for it's ->href and ->cloud_id params
+   * @throws \Exception|\Guzzle\Http\Exception\ClientErrorResponseException If an error occurs while making the API call.
    * @return bool Always true, throws exceptions if an error occurred
    */
   public function cleanupSecurityGroup($sec_grp) {
+    try {
     $api_sec_grp = $this->client->newModel('SecurityGroup');
     $api_sec_grp->cloud_id = $sec_grp->cloud_id;
     $api_sec_grp->find_by_href($sec_grp->href);
     $api_sec_grp->destroy();
     return true;
+    } catch (ClientErrorResponseException $e) {
+      if($e->getResponse()->getStatusCode() == 422) {
+        return true;
+      } else {
+        throw $e;
+      }
+    }
   }
 }
