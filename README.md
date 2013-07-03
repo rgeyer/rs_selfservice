@@ -108,6 +108,14 @@ To create your own provisioner, create a PHP class which extends
 SelfService\Provisioner\AbstractProvisioner and change the rsss/provisioner config
 option in your applications ./confi/local.php config file.
 
+# Changelog
+
+## Input Schema
+
+* [46913d1] Bumped version from 1.0 to 1.1.  Removed subnets and added "depends" to prudct inputs. This *would* be a
+breaking change for anyone who was consuming 1.0 because all references to "subnet" were removed.  However since I'm
+the only consumer at this point I chose to increment the minor version rather than the major.
+
 # TODO
 
 https://github.com/rgeyer/rs_selfservice/issues
