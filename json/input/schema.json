@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema",
-  "title": "RightScale Self Service Vending Machine Product Input v1.0.0",
+  "title": "RightScale Self Service Vending Machine Product Input v1.1.0",
   "type":"object",
   "required": ["name", "resources"],
   "properties":{
@@ -40,7 +40,6 @@
           { "$ref": "#/definitions/cloud_product_input" },
           { "$ref": "#/definitions/instance_type_product_input" },
           { "$ref": "#/definitions/datacenter_product_input" },
-          { "$ref": "#/definitions/subnet_product_input" },
           { "$ref": "#/definitions/alert_spec" }
         ]
       }
@@ -446,7 +445,6 @@
             ]
           }
         },
-        "subnet_hrefs": { "$ref": "#/definitions/subnet_product_input_relationship" },
         "depends": {
           "type": "object",
           "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
@@ -573,7 +571,14 @@
         "display_name": { "type":"string" },
         "description": { "type":"string" },
         "display": { "type": "boolean", "default": true },
-        "advanced": { "type": "boolean", "default": false }
+        "advanced": { "type": "boolean", "default": false },
+        "depends": {
+          "type": "object",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "oneOf": [
+            { "$ref": "#/definitions/depends" }
+          ]
+        }
       }
     },
     "select_product_input" : {
@@ -600,7 +605,14 @@
         "description": { "type":"string" },
         "display": { "type": "boolean", "default": true },
         "advanced": { "type": "boolean", "default": false },
-        "multiselect": { "type": "boolean", "default": false }
+        "multiselect": { "type": "boolean", "default": false },
+        "depends": {
+          "type": "object",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "oneOf": [
+            { "$ref": "#/definitions/depends" }
+          ]
+        }
       }
     },
     "cloud_product_input" : {
@@ -614,7 +626,14 @@
         "display_name": { "type":"string" },
         "description": { "type":"string" },
         "display": { "type": "boolean", "default": true },
-        "advanced": { "type": "boolean", "default": false }
+        "advanced": { "type": "boolean", "default": false },
+        "depends": {
+          "type": "object",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "oneOf": [
+            { "$ref": "#/definitions/depends" }
+          ]
+        }
       }
     },
     "instance_type_product_input" : {
@@ -637,7 +656,14 @@
         "display_name": { "type":"string" },
         "description": { "type":"string" },
         "display": { "type": "boolean", "default": true },
-        "advanced": { "type": "boolean", "default": false }
+        "advanced": { "type": "boolean", "default": false },
+        "depends": {
+          "type": "object",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "oneOf": [
+            { "$ref": "#/definitions/depends" }
+          ]
+        }
       }
     },
     "datacenter_product_input" : {
@@ -661,31 +687,14 @@
         "description": { "type":"string" },
         "display": { "type": "boolean", "default": true },
         "advanced": { "type": "boolean", "default": false },
-        "multiselect": { "type": "boolean", "default": true }
-      }
-    },
-    "subnet_product_input" : {
-      "type":"object",
-      "required":["id","resource_type","cloud_product_input","input_name","display_name"],
-      "properties":{
-        "id": { "type":"string" },
-        "resource_type": { "enum": ["subnet_product_input"] },
-        "cloud_product_input": { "$ref": "#/definitions/cloud_product_input_relationship" },
-        "default_value": {
-          "type":"array",
-          "items": {
-            "type":"object",
-            "oneOf": [
-              { "$ref": "#/definitions/cloud_to_resource_href_hash" }
-            ]
-          }
-        },
-        "input_name": { "type":"string" },
-        "display_name": { "type":"string" },
-        "description": { "type":"string" },
-        "display": { "type": "boolean", "default": true },
-        "advanced": { "type": "boolean", "default": false },
-        "multiselect": { "type": "boolean", "default": true }
+        "multiselect": { "type": "boolean", "default": true },
+        "depends": {
+          "type": "object",
+          "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",
+          "oneOf": [
+            { "$ref": "#/definitions/depends" }
+          ]
+        }
       }
     },
     "cloud_to_resource_href_hash": {
@@ -710,8 +719,7 @@
         { "$ref": "#/definitions/select_product_input_relationship" },
         { "$ref": "#/definitions/cloud_product_input_relationship" },
         { "$ref": "#/definitions/instance_type_product_input_relationship" },
-        { "$ref": "#/definitions/datacenter_product_input_relationship" },
-        { "$ref": "#/definitions/subnet_product_input_relationship" }
+        { "$ref": "#/definitions/datacenter_product_input_relationship" }
       ]
     },
     "input_relationship": {
@@ -792,14 +800,6 @@
       "properties":{
         "id": { "type":"string" },
         "ref": { "enum": ["datacenter_product_input"] }
-      }
-    },
-    "subnet_product_input_relationship": {
-      "type":"object",
-      "required": ["id", "ref"],
-      "properties":{
-        "id": { "type":"string" },
-        "ref": { "enum": ["subnet_product_input"] }
       }
     },
     "text_product_input_relationship": {
