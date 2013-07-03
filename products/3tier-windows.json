@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "name": "Windows 3-Tier",
+  "icon_filename": "windows.png",
+  "launch_servers": false,
+  "resources": [
+    {
+      "id": "haz_logging",
+      "resource_type": "select_product_input",
+      "options": ["true","false"],
+      "default_value": ["true"],
+      "input_name": "haz_logging",
+      "display_name": "Log to rsyslog?",
+      "description": "",
+      "advanced": true
+    },
+    {
+      "id": "mssql_witness_template",
+      "resource_type": "server_template",
+      "name": "Microsoft SQL Server Witness - Beta (v13.4)",
+      "revision": "16",
+      "publication_id": "53470"
+    },
+    {
+      "id": "mssql_db_template",
+      "resource_type": "server_template",
+      "name": "Database Manager for Microsoft SQL Server (v13.4)",
+      "revision": "93",
+      "publication_id": "53469",
+      "depends": {
+        "ref": "text_product_input",
+        "id": "db_tier_type",
+        "value": ["mssql"]
+      }
+    },
+    {
+      "id": "iis_app_template",
+      "resource_type": "server_template",
+      "name": "Microsoft IIS App Server (v13.4)",
+      "revision": "76",
+      "publication_id": "52637"
+    },
+    {
+      "id": "ad_template",
+      "resource_type": "server_template",
+      "name": "Microsoft Active Directory (v13.4)",
+      "revision": "62",
+      "publication_id": "52660"
+    }
+  ]
+}
