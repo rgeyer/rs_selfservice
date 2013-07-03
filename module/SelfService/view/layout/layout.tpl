@@ -49,10 +49,27 @@
       $('a.ajaxaction').click(function(evt) {
         $('#progress-dialog').dialog('open');
         timeout_func();
+        data = {};
         href = $(this).attr('href');
+        method = 'GET';
+        nexthop = $(this).attr('data-nexthop');
+        if($(this).attr('data-method')) {
+          method = $(this).attr('data-method');
+        }
+        closest_form = $(this).closest('form');
+        if(closest_form.length > 0) {
+          serialized_ary = closest_form.serializeArray();
+          normalized = {};
+          $(serialized_ary).each(function(k,v) {
+            normalized[v.name] = v.value;
+          });
+          data = JSON.stringify(normalized);
+        }
         $.ajax({
           url: href,
           dataType: 'json',
+          type: method,
+          data: data,
           success: function(data, status, jqXHR) {
             $('#progress-dialog').dialog('close');
             if (data.result == 'error') {
@@ -65,7 +82,11 @@
             } else if (data.messages != undefined && data.messages.length > 0) {
               $('#message-dialog').dialog({
                 close: function( event, ui ) {
-                  location.reload();
+                  if(nexthop) {
+                    window.location.href = nexthop
+                  } else {
+                    location.reload();
+                  }
                 }
               });
               content = response_messages_to_content(data.messages);
@@ -76,7 +97,11 @@
                 content
               );
             } else {
-              location.reload();
+              if(nexthop) {
+                window.location.href = nexthop
+              } else {
+                location.reload();
+              }
             }
           },
           error: function(jqXHR, status, error) {
@@ -160,11 +185,13 @@
       <div class="nav-collapse collapse">
         <ul class="nav nav-tabs" id="nav">
           <li class="active"><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
-          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{$this->translate('Admin')}</a>
+          <li><a href="{$this->url('product', ['action' => 'index'])}">{$this->translate("Products")}</a></li>
+          <li><a href="{$this->url('provisionedproducts', ['action' => 'index'])}">{$this->translate('Provisioned Products')}</a></li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">{$this->translate('Users')}<b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="{$this->url('product', ['action' => 'index'])}">{$this->translate("Products")}</a></li>
-              <li><a href="{$this->url('provisionedproducts', ['action' => 'index'])}">{$this->translate('Provisioned Products')}</a></li>
-              <li><a href="{$this->url('user', ['action' => 'index'])}">{$this->translate("Users")}</a></li>
+              <li><a href="{$this->url('user', ['action' => 'index'])}">{$this->translate("List")}</a></li>
+              <li><a href="{$this->url('user', ['action' => 'apiadd'])}">{$this->translate("Add API User")}</a></li>
             </ul>
           </li>
         </ul>

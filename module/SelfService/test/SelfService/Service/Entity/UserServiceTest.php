@@ -54,6 +54,29 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
     $this->assertEquals(1, $userService->findAll()->count());
   }
 
+  public function testCanAuthorizeExistingUserById() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
+    $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
+
+    $this->assertEquals(0, $userService->findAll()->count());
+
+    $newUser = new User();
+    $newUser->email = "foo@bar.baz";
+    $em->persist($newUser);
+    $em->flush();
+
+    $users = $userService->findAll();
+
+    $this->assertEquals(1, $users->count());
+    $user = $users->getNext();
+    $this->assertFalse($user->authorized, "User was authorized before authorize action was taken");
+    $userService->authorize($user->id);
+
+    $users = $userService->findAll();
+    $user = $users->getNext();
+    $this->assertTrue($user->authorized, "User was not authorized after authorize action was taken");
+  }
+
   public function testCanAuthorizeExistingUserByEmail() {
     $em = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
     $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
@@ -107,6 +130,29 @@ class UserServiceTest extends AbstractHttpControllerTestCase {
     $users = $userService->findAll();
     $this->assertEquals(1, $users->count());
     $this->assertTrue($users->getNext()->authorized, "User was not authorized after authorize action was taken");
+  }
+
+  public function testCanDeauthorizeExistingUserById() {
+    $em = $this->getApplicationServiceLocator()->get('doctrine.documentmanager.odm_default');
+    $userService = $this->getApplicationServiceLocator()->get('SelfService\Service\Entity\UserService');
+
+    $this->assertEquals(0, $userService->findAll()->count());
+
+    $newUser = new User();
+    $newUser->email = "foo@bar.baz";
+    $newUser->authorized = true;
+    $em->persist($newUser);
+    $em->flush();
+
+    $users = $userService->findAll();
+
+    $this->assertEquals(1, $users->count());
+    $user = $users->getNext();
+    $this->assertTrue($user->authorized, "User was deauthorized before deauthorize action was taken");
+    $userService->deauthorize($user->id);
+
+    $users = $userService->findAll();
+    $this->assertFalse($users->getNext()->authorized, "User was not deauthorized after deauthorize action was taken");
   }
 
   public function testCanDeauthorizeExistingUserByEmail() {

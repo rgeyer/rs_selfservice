@@ -57,6 +57,10 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
     $this->assertXpathQueryCount("//tbody/tr", 2);
     $this->assertXpathQueryCount("//img[@class='action_deauthorize']", 1);
     $this->assertXpathQueryCount("//img[@class='action_authorize']", 1);
+    $this->assertXpathQueryCount("//a[@href='/api/user/$user1->id/authorize']", 1);
+    $this->assertXpathQueryCount("//a[@href='/api/user/$user1->id/deauthorize']", 0);
+    $this->assertXpathQueryCount("//a[@href='/api/user/$user2->id/authorize']", 0);
+    $this->assertXpathQueryCount("//a[@href='/api/user/$user2->id/deauthorize']", 1);
   }
 
   public function testUnauthorizedActionCanBeAccessed() {
@@ -64,40 +68,6 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
     $this->dispatch('/user/unauthorized');
 
     $this->assertActionName('unauthorized');
-    $this->assertControllerName('selfservice\controller\user');
-    $this->assertResponseStatusCode(200);
-  }
-
-  public function testAuthorizeActionCanBeAccessed() {
-    $userservicemock = $this->getMock('SelfService\Service\Entity\UserService');
-    $userservicemock->expects($this->once())
-      ->method('authorizeByEmail')
-      ->with('foo@bar.baz');
-
-    $this->getApplicationServiceLocator()->setAllowOverride(true);
-    $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\UserService',$userservicemock);
-
-    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/user/authorize/foo%40bar.baz');
-
-    $this->assertActionName('authorize');
-    $this->assertControllerName('selfservice\controller\user');
-    $this->assertResponseStatusCode(200);
-  }
-
-  public function testDeauthorizeActionCanBeAccessed() {
-    $userservicemock = $this->getMock('SelfService\Service\Entity\UserService');
-    $userservicemock->expects($this->once())
-      ->method('deauthorizeByEmail')
-      ->with('foo@bar.baz');
-
-    $this->getApplicationServiceLocator()->setAllowOverride(true);
-    $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\UserService',$userservicemock);
-
-    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->dispatch('/user/deauthorize/foo%40bar.baz');
-
-    $this->assertActionName('deauthorize');
     $this->assertControllerName('selfservice\controller\user');
     $this->assertResponseStatusCode(200);
   }

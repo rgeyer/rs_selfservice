@@ -130,6 +130,19 @@ return array(
           ),
         ),
       ),
+      'api-user' => array(
+        'type' => 'Segment',
+        'options' => array(
+          'route' => '/api/user[/:id][/:action]',
+          'constraints' => array(
+            'id' => '[a-z0-9]+'
+          ),
+          'defaults' => array(
+            '__NAMESPACE__' => 'SelfService\Controller\Api',
+            'controller' => 'User'
+          ),
+        ),
+      ),
       // The following is a route to simplify getting started creating
       // new controllers and actions without needing to create a new
       // module. Simply drop new controllers in, and you can access them
@@ -333,6 +346,7 @@ return array(
 
       # API
       'SelfService\Controller\Api\ProvisionedProduct' => 'SelfService\Controller\Api\ProvisionedProductController',
+      'SelfService\Controller\Api\User' => 'SelfService\Controller\Api\UserController',
     ),
   ),
   'view_manager' => array(

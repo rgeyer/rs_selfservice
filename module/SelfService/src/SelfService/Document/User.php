@@ -58,8 +58,20 @@ class User
 	public $oid_url;
 
   /**
+   * @ODM\String
+   * @var string
+   */
+  public $password;
+
+  /**
    * @ODM\Boolean
    * @var bool
    */
   public $authorized = false;
+
+  /**
+   * @ODM\Boolean
+   * @var bool
+   */
+  public $api_user = false;
 }

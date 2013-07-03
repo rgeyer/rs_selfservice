@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace SelfService\Controller;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Zend\View\Model\JsonModel;
 
 /**
@@ -43,7 +43,7 @@ class UserController extends BaseController {
     $userService = $this->getServiceLocator()->get('SelfService\Service\Entity\UserService');
     try {
       $userService->authorizeByEmail($this->params('email'));
-    } catch (ORMException $e) {
+    } catch (MongoDbException $e) {
       $response['result'] = 'error';
       $response['message'] = $e->getMessage();
     }
@@ -59,7 +59,7 @@ class UserController extends BaseController {
     $userService = $this->getServiceLocator()->get('SelfService\Service\Entity\UserService');
     try {
       $userService->deauthorizeByEmail($this->params('email'));
-    } catch (ORMException $e) {
+    } catch (MongoDBException $e) {
       $response['result'] = 'error';
       $response['message'] = $e->getMessage();
     }
@@ -79,20 +79,28 @@ class UserController extends BaseController {
         if($user->authorized) {
           $actions[$user->id] = array(
             'deauthorize' => array(
-              'uri' => $this->url()->fromRoute('user', array('action' => 'deauthorize', 'email' => urlencode($user->email))),
+              'uri' => $this->url()->fromRoute('api-user', array('action' => 'deauthorize', 'id' => $user->id)),
               'img_path' => 'images/16keyblock.png',
-              'is_ajax' => true
+              'is_ajax' => true,
+              'method' => 'POST'
             )
           );
         } else {
           $actions[$user->id] = array(
             'authorize' => array(
-              'uri' => $this->url()->fromRoute('user', array('action' => 'authorize', 'email' => urlencode($user->email))),
+              'uri' => $this->url()->fromRoute('api-user', array('action' => 'authorize', 'id' => $user->id)),
               'img_path' => 'images/16key.png',
-              'is_ajax' => true
+              'is_ajax' => true,
+              'method' => 'POST'
             )
           );
         }
+        $actions[$user->id]['delete'] = array(
+          'uri' => $this->url()->fromRoute('api-user', array('id' => $user->id)),
+          'img_path' => 'images/delete.png',
+          'is_ajax' => true,
+          'method' => 'DELETE'
+        );
       }
       return array('users' => $users, 'actions' => $actions);
     } else {
@@ -106,6 +114,10 @@ class UserController extends BaseController {
       }
       return array();
     }
+  }
+
+  public function apiaddAction() {
+    return array('use_layout' => true);
   }
 
 }

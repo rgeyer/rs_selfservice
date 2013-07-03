@@ -98,7 +98,21 @@ class UserService extends BaseEntityService {
   }
 
   /**
-   * @param $emailEmail address of the user to authorize
+   * @throws \SelfService\Document\Exception\NotFoundException When the specified document
+   *  does not exist.
+   * @param String $id DB ID of the user to authorize
+   * @return void
+   */
+  public function authorize($id) {
+    $dm = $this->getDocumentManager();
+    $user = $this->find($id);
+    $user->authorized = true;
+    $dm->persist($user);
+    $dm->flush();
+  }
+
+  /**
+   * @param String $email Email address of the user to authorize
    * @return void
    */
   public function authorizeByEmail($email) {
@@ -114,7 +128,7 @@ class UserService extends BaseEntityService {
   }
 
   /**
-   * @param $emailEmail address of the user to deauthorize
+   * @param String $email Email address of the user to deauthorize
    * @return void
    */
   public function deauthorizeByEmail($email) {
@@ -125,6 +139,20 @@ class UserService extends BaseEntityService {
       $dm->persist($user);
       $dm->flush();
     }
+  }
+
+  /**
+   * @throws \SelfService\Document\Exception\NotFoundException When the specified document
+   *  does not exist.
+   * @param String $id DB ID of the user to deauthorize
+   * @return void
+   */
+  public function deauthorize($id) {
+    $dm = $this->getDocumentManager();
+    $user = $this->find($id);
+    $user->authorized = false;
+    $dm->persist($user);
+    $dm->flush();
   }
 
 }
