@@ -186,6 +186,7 @@ class Product {
     $valuesByInputId = $this->convertInputParamsToResourceIdKeys($params);
 
     foreach($this->resources as $idx => $resource) {
+      if($resource instanceof \SelfService\Document\AbstractProductInput) { continue; }
       if(!$this->hasDependsMatch($resource, $valuesByInputId)) {
         $this->resources->unwrap()->removeElement($resource);
       }

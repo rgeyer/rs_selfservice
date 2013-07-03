@@ -575,6 +575,39 @@ EOF;
     $this->assertEquals(0, count($product->resources));
   }
 
+  public function testResolveDependsDoesNotRemoveProductInputs() {
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo_id",
+      "resource_type": "text_product_input",
+      "input_name": "foo",
+      "default_value": "foo"
+    },
+    {
+      "id": "desc_id",
+      "resource_type": "text_product_input",
+      "input_name": "bar",
+      "default_value": "baz",
+      "depends": { "ref": "text_product_input", "id": "foo_id", "value": ["baz"] }
+    }
+  ]
+}
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $product = $productService->find($product->id);
+
+    $params = array('foo' => 'bar');
+    $product->resolveDepends($params);
+    $this->assertEquals(2, count($product->resources));
+  }
+
   public function testPruneBrokenRefsFromStandardArrays() {
     $json = <<<EOF
 {
