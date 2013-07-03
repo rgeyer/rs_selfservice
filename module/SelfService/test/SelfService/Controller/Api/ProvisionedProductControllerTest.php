@@ -36,6 +36,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testCreateCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $sm = $this->getApplicationServiceLocator();
     $standin_adapter = new \Zend\Cache\Storage\Adapter\Memory();
     $sm->setAllowOverride(true);
@@ -50,30 +51,35 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testDeleteCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct/1', Request::METHOD_DELETE);
 
     $this->assertResponseStatusCode(501);
   }
 
   public function testGetCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct/1', Request::METHOD_GET);
 
     $this->assertResponseStatusCode(501);
   }
 
   public function testGetListCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct', Request::METHOD_GET);
 
     $this->assertResponseStatusCode(501);
   }
 
   public function testUpdateCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct/1', Request::METHOD_PUT);
 
     $this->assertResponseStatusCode(501);
   }
 
   public function testObjectsCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $sm = $this->getApplicationServiceLocator();
     $standin_adapter = new \Zend\Cache\Storage\Adapter\Memory();
     $sm->setAllowOverride(true);
@@ -95,12 +101,14 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testObjectsReturns405OnNonPostMethod() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->dispatch('/api/provisionedproduct/abc123/objects', Request::METHOD_PUT);
 
     $this->assertResponseStatusCode(405);
   }
 
   public function testObjectReturns400WhenTypeIsMissing() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->getRequest()->setContent(
       json_encode(
         array(
@@ -119,6 +127,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testObjectReturns400WhenHrefIsMissing() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
     $this->getRequest()->setContent(
       json_encode(
         array(

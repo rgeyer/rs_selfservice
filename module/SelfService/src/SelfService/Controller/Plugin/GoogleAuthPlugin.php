@@ -61,11 +61,12 @@ class GoogleAuthPlugin extends AbstractPlugin {
     $action = $routematch->getParam('action');
     $action = strtolower($action);
 
-    # TODO: for now, API requests need not be authenticated, want to fix
-    # this sooner rather than later.
-    if(preg_match('/api/', $controller) == 1) {
-      return;
-    }
+    # TODO: Previously exluded API calls from requiring auth. Now we need to accept
+    # an API login method that will subsequently allow authenticated and authorized
+    # requests.
+    #if(preg_match('/api/', $controller) == 1) {
+    #  return;
+    #}
 
 		if ($controller == 'selfservice\controller\login') {
 			return;
