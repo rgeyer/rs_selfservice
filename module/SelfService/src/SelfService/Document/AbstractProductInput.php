@@ -68,4 +68,15 @@ abstract class AbstractProductInput extends CanDepend {
    */
   public $advanced = false;
 
+  /**
+   * TODO: NOTE: This is really only useful for text_prodct_input and select_product_input.
+   * It is *not* used on cloud_product_input, instance_type_product_input, or
+   * datacenter_product_input since it either does not make sense, or has an
+   * implied dependency.  This is enforced by the schema rather than explicitly
+   * in the application logic.
+   * @ODM\Hash
+   * @var array
+   */
+  public $required_cloud_capability;
+
 }

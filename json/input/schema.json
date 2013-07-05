@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema",
-  "title": "RightScale Self Service Vending Machine Product Input v1.1.0",
+  "title": "RightScale Self Service Vending Machine Product Input v1.2.0",
   "type":"object",
   "required": ["name", "resources"],
   "properties":{
@@ -76,6 +76,28 @@
           "enum": ["all","any"],
           "description": "When the *_product_input value may be an array, how should the dependency be calculated.  When set to 'all' the *_product_input array must contain all of the values in the dependency set.  When set to 'any' the *_product_input array must contain any one of the values in the dependency set",
           "default": "all"
+        }
+      }
+    },
+    "required_cloud_capability": {
+      "type": "object",
+      "description": "An object which can only be applied to *_product_input resources.  When present the cloud chosen in the referenced cloud_product_input must have the specified cloud capabilities",
+      "required": ["cloud_product_id","value","match"],
+      "properties": {
+        "cloud_product_id": {
+          "type": "string",
+          "description": "The unique ID of the cloud_product_input which must have the specified cloud capabilities"
+        },
+        "value": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "match": {
+          "enum": ["all","any"],
+          "description": "If set to 'all' the specified cloud must have all the specified cloud capabilities.  If set to 'any' the cloud must have any of the specified cloud capabilities."
         }
       }
     },
@@ -578,7 +600,8 @@
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
-        }
+        },
+        "required_cloud_capability": {"$ref": "#/definitions/required_cloud_capability"}
       }
     },
     "select_product_input" : {
@@ -612,7 +635,8 @@
           "oneOf": [
             { "$ref": "#/definitions/depends" }
           ]
-        }
+        },
+        "required_cloud_capability": {"$ref": "#/definitions/required_cloud_capability"}
       }
     },
     "cloud_product_input" : {
