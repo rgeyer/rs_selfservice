@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema",
-  "title": "RightScale Self Service Vending Machine Product Input v1.2.0",
+  "title": "RightScale Self Service Vending Machine Product Input v1.3",
   "type":"object",
   "required": ["name", "resources"],
   "properties":{
@@ -96,8 +96,8 @@
           }
         },
         "match": {
-          "enum": ["all","any"],
-          "description": "If set to 'all' the specified cloud must have all the specified cloud capabilities.  If set to 'any' the cloud must have any of the specified cloud capabilities."
+          "enum": ["all","any","none"],
+          "description": "If set to 'all' the specified cloud must have all the specified cloud capabilities to match.  If set to 'any' the cloud must have any of the specified cloud capabilities to match. If set to 'non' the cloud must have none of the specified cloud capabilities to match."
         }
       }
     },
