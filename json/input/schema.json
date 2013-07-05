@@ -82,9 +82,9 @@
     "required_cloud_capability": {
       "type": "object",
       "description": "An object which can only be applied to *_product_input resources.  When present the cloud chosen in the referenced cloud_product_input must have the specified cloud capabilities",
-      "required": ["cloud_product_id","value","match"],
+      "required": ["cloud_product_input_id","value","match"],
       "properties": {
-        "cloud_product_id": {
+        "cloud_product_input_id": {
           "type": "string",
           "description": "The unique ID of the cloud_product_input which must have the specified cloud capabilities"
         },
