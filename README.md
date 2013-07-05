@@ -115,6 +115,13 @@ option in your applications ./confi/local.php config file.
 * [46913d1] Bumped version from 1.0 to 1.1.  Removed subnets and added "depends" to prudct inputs. This *would* be a
 breaking change for anyone who was consuming 1.0 because all references to "subnet" were removed.  However since I'm
 the only consumer at this point I chose to increment the minor version rather than the major.
+* [bece7ab] Bumped version from 1.1 to 1.2.  Added a "required_cloud_capability" property for text and select product
+inputs.  This allows those to be dependent upon a cloud input which is set to a cloud which supports the cloud
+capability which is required for that input.  Think of things like asking for volume size only when the cloud supports
+attachable volumes.
+* [cf4433c] Bumped version from 1.2 to 1.3.  Added "none" as an option for matching on the "required_cloud_capability" property.
+This allows those to appear only when the cloud input does not have the cloud capabilities specified. Think of things
+like setting up ROS on clouds which don't support volumes.
 
 # TODO
 
