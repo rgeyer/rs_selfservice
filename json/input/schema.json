@@ -97,7 +97,8 @@
         },
         "match": {
           "enum": ["all","any","none"],
-          "description": "If set to 'all' the specified cloud must have all the specified cloud capabilities to match.  If set to 'any' the cloud must have any of the specified cloud capabilities to match. If set to 'non' the cloud must have none of the specified cloud capabilities to match."
+          "description": "If set to 'all' the specified cloud must have all the specified cloud capabilities to match.  If set to 'any' the cloud must have any of the specified cloud capabilities to match. If set to 'non' the cloud must have none of the specified cloud capabilities to match.",
+          "default": "all"
         }
       }
     },
