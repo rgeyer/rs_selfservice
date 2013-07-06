@@ -54,6 +54,13 @@ use SelfService\Document\ElasticityParamsQueueSpecificParamsQueueSize;
 class ProductService extends BaseEntityService {
 
   /**
+   * @return \SelfService\Service\RightScaleAPICache
+   */
+  protected function getRightscaleApiCache() {
+    return $this->getServiceLocator()->get('RightScaleAPICache');
+  }
+
+  /**
    * @var string The name of the entity class for this service
    */
   protected $entityClass = 'SelfService\Document\Product';
@@ -466,7 +473,7 @@ class ProductService extends BaseEntityService {
         } else {
           $odmObject->{$key} = $ref;
         }
-      } else if(property_exists($val, "ref")) {
+      } else if(property_exists($val, "ref") | property_exists($val, "cloud_product_input_id")) {
         // Casting to array here because although json_decode creates an stdClass
         // these references get stored in mongodb as hashes, as well as rehydrated
         // by mongo-odm as hashes.  Lots of unit tests were mistakenly passing
@@ -568,6 +575,148 @@ class ProductService extends BaseEntityService {
     $product->dedupeOnlyOneProperties();
     $stdClass = $this->odmToStdClass($product);
     return json_encode($stdClass);
+  }
+
+  /**
+   * @param $id String The product ID for which to get inputs
+   * @param array $params A hash of input values where the key is the id/name
+   * of the field, and the value is the value.  The sort of key/value pairs you'd
+   * expect from, say... An HTML Form..  Default is an empty array.
+   * @return \SelfService\Document\AbstractProductInput[] The inputs which should be
+   * displayed/processed given the current $params
+   */
+  public function inputs($id, array $params = array()) {
+    $api_cache = $this->getRightscaleApiCache();
+    $clouds = $api_cache->getClouds();
+    $cloud_capabilities_by_href = array();
+    foreach($clouds as $cloud) {
+      if(!in_array($cloud->href, array_keys($cloud_capabilities_by_href))) {
+        $cloud_capabilities_by_href[$cloud->href] = array();
+      }
+      foreach($cloud->links as $link) {
+        $cloud_capabilities_by_href[$cloud->href][] = $link->rel;
+      }
+    }
+    $inputs = array();
+    $product = $this->find($id);
+    $this->detach($product);
+    $valuesByInputId = self::convertInputParamsToResourceIdKeys($product, $params);
+    foreach($product->resources as $resource) {
+      if($resource instanceof \SelfService\Document\AbstractProductInput) {
+        if(!self::hasDependsMatch($resource, $valuesByInputId)) { continue; }
+        if($resource->required_cloud_capability !== null) {
+          $match = $resource->required_cloud_capability['match'] ? : 'all';
+          $value = $resource->required_cloud_capability['value'];
+          $cloud_product_input_id = $resource->required_cloud_capability['cloud_product_input_id'];
+          $cloud_capabilities = $cloud_capabilities_by_href[$valuesByInputId[$cloud_product_input_id]];
+          switch ($match) {
+            case "any":
+              $intersect = array_intersect($cloud_capabilities, $value);
+              if(count($intersect) <= 0) { continue 2; }
+              break;
+            case "all":
+              $diff = array_diff($value, $cloud_capabilities);
+              if(count($diff) != 0) { continue 2; }
+              break;
+            case "none":
+              $intersect = array_intersect($cloud_capabilities, $value);
+              if(count($intersect) != 0) { continue 2; }
+              break;
+            default: break;
+          }
+        }
+        if(property_exists($resource, 'cloud_product_input')) {
+          $cloud = $cloud_capabilities_by_href[$valuesByInputId[$resource->cloud_product_input['id']]];
+          if(!in_array('datacenters', $cloud)) { continue; }
+        }
+
+        $inputs[] = $resource;
+      }
+    }
+    return $inputs;
+  }
+
+  /**
+   * @param $product \SelfService\Document\Product An instance of a product to operate on
+   * @param array $params An associative array of key/value pairs.  The key is
+   * the input_name of the *_product_input, and the value is what will replace
+   * all matching references.
+   * @return array An associative array of key/value pairs.  The key is
+   * the resource id of the *_product_input.  The value can be one of the following.
+   *  * scalar - The value passed in as input, or the default value
+   *  * array - Same as above, but for multi value types
+   *  * stdClass - A class with the properties "cloud_product_input_id" and "value".
+   *    This is used only for product_input types which depend upon the value of
+   *    a cloud input.  The "cloud_product_input_id" will contain the resource id
+   *    of the cloud input upon which this product_input depends.
+   */
+  public static function convertInputParamsToResourceIdKeys($product, $params) {
+    # TODO: Replace this with an abstract base class so it can be determined
+    # by "instanceof"
+    $depends_on_cloud_array = array(
+      "instance_type_product_input",
+      "datacenter_product_input"
+    );
+    // Convert the params array from input_name:value to resource_id:value pairs
+    $paramKeys = array_keys($params);
+    $valuesByInputId = array();
+    foreach($product->resources as $resource) {
+      if($resource instanceof \SelfService\Document\AbstractProductInput) {
+        if(in_array($resource->input_name, $paramKeys)) {
+          $valuesByInputId[$resource->id] = $params[$resource->input_name];
+        } else {
+          $valuesByInputId[$resource->id] = $resource->default_value;
+          // Need to include some more metadata for inputs which depend upon
+          // the cloud input.
+          if(in_array($resource->resource_type, $depends_on_cloud_array)) {
+            $detailedValue = new \stdClass();
+            $detailedValue->cloud_product_input_id = $resource->cloud_product_input["id"];
+            $detailedValue->value = $valuesByInputId[$resource->id];
+            $valuesByInputId[$resource->id] = $detailedValue;
+          }
+        }
+      }
+    }
+    return $valuesByInputId;
+  }
+
+  /**
+   * TODO: Refactoring so that product inputs do not have an "input_name" but just use
+   * their unique ID instead. - https://github.com/rgeyer/rs_selfservice/issues/36
+   *
+   * @param $resource \SelfService\Document\AbstractProductInput|\SelfService\Document\AbstractResource
+   * The resource to evaluate for a depends match
+   * @param array $params A hash where the key is the id of the product input resource,
+   * and the value is the current value of that product input.  This is in the form generated
+   * by \SelfService\Service\Entity\ProductService::convertInputParamsToResourceIdKeys
+   * @return bool
+   */
+  public static function hasDependsMatch(&$resource, array $params) {
+    $does_match = true;
+    $objvars = get_object_vars($resource);
+    foreach($objvars as $key => $val) {
+      if($key == "depends" && $val !== null) {
+        $input_value_as_array = array_key_exists($resource->depends["id"], $params) ?
+          (array)$params[$resource->depends["id"]] : array();
+        $depends_value_as_array = (array)$resource->depends["value"];
+        if($resource->depends["match"] == "any") {
+          $intersect = array_intersect($depends_value_as_array, $input_value_as_array);
+          $does_match = count($intersect) > 0;
+        } else {
+          $diff = array_diff($depends_value_as_array, $input_value_as_array);
+          $does_match = count($diff) == 0;
+        }
+      } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
+        foreach($val as $idx => $subresource) {
+          if(!self::hasDependsMatch($subresource, $params)) {
+            $resource->{$key}->unwrap()->removeElement($subresource);
+          }
+        }
+      }
+    }
+    return $does_match;
+    # TODO: Should I validate the depends['ref'] type to the input matched
+    # by the depends['id']? I don't currently have the resource_type in $params
   }
 
 }

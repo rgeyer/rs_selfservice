@@ -804,4 +804,530 @@ EOF;
     }
   }
 
+  public function testInputsReturnsAllInputsWhenNoParamsSupplied() {
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "text_product_input"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input"
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(2, count($inputs));
+  }
+
+  public function testInputsFiltersInputsBasedOnParamsAndDepends() {
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "text_product_input",
+      "input_name": "foo"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "depends": {
+        "id": "foo",
+        "ref": "text_product_input",
+        "value": "bar"
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id, array('foo' => 'baz'));
+
+    $this->assertEquals(1, count($inputs));
+    $this->assertEquals('foo', $inputs[0]->id);
+  }
+
+  public function testInputsExcludesInputsBasedOnDependentDefaultValuesWhenNoParamsSpecified() {
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "text_product_input",
+      "input_name": "foo",
+      "default_value": "baz"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "depends": {
+        "id": "foo",
+        "ref": "text_product_input",
+        "value": "bar"
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(1, count($inputs));
+  }
+
+  public function testInputsIncludesInputsBasedOnDependentDefaultValuesWhenNoParamsSpecified() {
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "text_product_input",
+      "input_name": "foo",
+      "default_value": "bar"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "depends": {
+        "id": "foo",
+        "ref": "text_product_input",
+        "value": "bar"
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(2, count($inputs));
+  }
+
+  public function testInputsExcludesCloudDependentInputsWhenCloudDoesNotSupportThem() {
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array();
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/1"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "required_cloud_capability": {
+        "cloud_product_input_id": "foo",
+        "value": ["volumes"],
+        "match": "any"
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(1, count($inputs));
+  }
+
+  public function testInputsIncludesCloudDependentInputsWhenMatchIsAnyAndCloudSupportsOneOfTheSpecifiedCapabilities() {
+    $mocklink = new \stdClass();
+    $mocklink->rel = 'volumes';
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array($mocklink);
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/1"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "required_cloud_capability": {
+        "cloud_product_input_id": "foo",
+        "value": ["volumes","ip_addresses"],
+        "match": "any"
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(2, count($inputs));
+  }
+
+  /**
+   * This also implicitly tests that "all" is the default match type
+   */
+  public function testInputsExcludesCloudDependentInputsWhenMatchIsAllAndCloudDoesNotSupportAll() {
+    $mocklink = new \stdClass();
+    $mocklink->rel = 'volumes';
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array($mocklink);
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/1"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "required_cloud_capability": {
+        "cloud_product_input_id": "foo",
+        "value": ["volumes","ip_addresses"]
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(1, count($inputs));
+  }
+
+  public function testInputsIncludesCloudDependentInputsWhenMatchIsAllAndCloudSupportsAll() {
+    $mocklink = new \stdClass();
+    $mocklink->rel = 'volumes';
+    $mocklink1 = new \stdClass();
+    $mocklink1->rel = 'ip_addresses';
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array($mocklink, $mocklink1);
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/1"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "required_cloud_capability": {
+        "cloud_product_input_id": "foo",
+        "value": ["volumes","ip_addresses"]
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(2, count($inputs));
+  }
+
+  public function testInputsExcludesCloudDependentInputsWhenMatchIsNoneAndCloudSupportsOne() {
+    $mocklink = new \stdClass();
+    $mocklink->rel = 'volumes';
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array($mocklink);
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/1"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "required_cloud_capability": {
+        "cloud_product_input_id": "foo",
+        "value": ["volumes","ip_addresses"],
+        "match": "none"
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(1, count($inputs));
+  }
+
+  public function testInputIncludesCloudDependentInputWhenMatchIsNoneAndCloudSupportsNone() {
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array();
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/1"
+    },
+    {
+      "id": "bar",
+      "resource_type": "text_product_input",
+      "required_cloud_capability": {
+        "cloud_product_input_id": "foo",
+        "value": ["volumes","ip_addresses"],
+        "match": "none"
+      }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(2, count($inputs));
+  }
+
+  public function testInputsExcludesDatacenterInputsWhenCloudDoesNotSupportThem() {
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array();
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/1"
+    },
+    {
+      "id": "bar",
+      "resource_type": "datacenter_product_input",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "foo" }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(1, count($inputs));
+  }
+
+  public function testInputsIncludesDatacenterInputsWhenCloudSupportsThem() {
+    $mocklink = new \stdClass();
+    $mocklink->rel = 'datacenters';
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array($mocklink);
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/1"
+    },
+    {
+      "id": "bar",
+      "resource_type": "datacenter_product_input",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "foo" }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(2, count($inputs));
+  }
+
 }

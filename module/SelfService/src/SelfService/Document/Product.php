@@ -93,56 +93,6 @@ class Product {
    */
   public $resources;
 
-  protected $inputtypesarray = array(
-    "text_product_input",
-    "instance_type_product_input",
-    "select_product_input",
-    "datacenter_product_input",
-    "cloud_product_input"
-  );
-
-  protected $depends_on_cloud_array = array(
-    "instance_type_product_input",
-    "datacenter_product_input"
-  );
-
-  /**
-   * @param array $params An associative array of key/value pairs.  The key is
-   * the input_name of the *_product_input, and the value is what will replace
-   * all matching references.
-   * @return array An associative array of key/value pairs.  The key is
-   * the resource id of the *_product_input.  The value can be one of the following.
-   *  * scalar - The value passed in as input, or the default value
-   *  * array - Same as above, but for multi value types
-   *  * stdClass - A class with the properties "cloud_product_input_id" and "value".
-   *    This is used only for product_input types which depend upon the value of
-   *    a cloud input.  The "cloud_product_input_id" will contain the resource id
-   *    of the cloud input upon which this product_input depends.
-   */
-  protected function convertInputParamsToResourceIdKeys($params) {
-    // Convert the params array from input_name:value to resource_id:value pairs
-    $paramKeys = array_keys($params);
-    $valuesByInputId = array();
-    foreach($this->resources as $resource) {
-      if(in_array($resource->resource_type, $this->inputtypesarray)) {
-        if(in_array($resource->input_name, $paramKeys)) {
-          $valuesByInputId[$resource->id] = $params[$resource->input_name];
-        } else {
-          $valuesByInputId[$resource->id] = $resource->default_value;
-          // Need to include some more metadata for inputs which depend upon
-          // the cloud input.
-          if(in_array($resource->resource_type, $this->depends_on_cloud_array)) {
-            $detailedValue = new \stdClass();
-            $detailedValue->cloud_product_input_id = $resource->cloud_product_input["id"];
-            $detailedValue->value = $valuesByInputId[$resource->id];
-            $valuesByInputId[$resource->id] = $detailedValue;
-          }
-        }
-      }
-    }
-    return $valuesByInputId;
-  }
-
   public function pruneBrokenRefs() {
     $topLevelResourceIds = array();
     foreach($this->resources as $resource) {
@@ -183,42 +133,14 @@ class Product {
    * @return void
    */
   public function resolveDepends(array $params) {
-    $valuesByInputId = $this->convertInputParamsToResourceIdKeys($params);
+    $valuesByInputId = \SelfService\Service\Entity\ProductService::convertInputParamsToResourceIdKeys($this, $params);
 
     foreach($this->resources as $idx => $resource) {
       if($resource instanceof \SelfService\Document\AbstractProductInput) { continue; }
-      if(!$this->hasDependsMatch($resource, $valuesByInputId)) {
+      if(!\SelfService\Service\Entity\ProductService::hasDependsMatch($resource, $valuesByInputId)) {
         $this->resources->unwrap()->removeElement($resource);
       }
     }
-  }
-
-  protected function hasDependsMatch(&$resource, array $params) {
-    $does_match = true;
-    $objvars = get_object_vars($resource);
-    foreach($objvars as $key => $val) {
-      if($key == "depends" && $val !== null) {
-        $input_value_as_array = array_key_exists($resource->depends["id"], $params) ?
-          (array)$params[$resource->depends["id"]] : array();
-        $depends_value_as_array = (array)$resource->depends["value"];
-        if($resource->depends["match"] == "any") {
-          $intersect = array_intersect($depends_value_as_array, $input_value_as_array);
-          $does_match = count($intersect) > 0;
-        } else {
-          $diff = array_diff($depends_value_as_array, $input_value_as_array);
-          $does_match = count($diff) == 0;
-        }
-      } elseif (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {
-        foreach($val as $idx => $subresource) {
-          if(!$this->hasDependsMatch($subresource, $params)) {
-            $resource->{$key}->unwrap()->removeElement($subresource);
-          }
-        }
-      }
-    }
-    return $does_match;
-    # TODO: Should I validate the depends['ref'] type to the input matched
-    # by the depends['id']? I don't currently have the resource_type in $params
   }
 
   /**
@@ -228,7 +150,7 @@ class Product {
    * all matching references.
    */
   public function mergeMetaInputs(array $params) {
-    $valuesByInputId = $this->convertInputParamsToResourceIdKeys($params);
+    $valuesByInputId = \SelfService\Service\Entity\ProductService::convertInputParamsToResourceIdKeys($this, $params);
 
     foreach($this->resources as $resource) {
       if(strpos($resource->resource_type, "product_input") > 0) {
