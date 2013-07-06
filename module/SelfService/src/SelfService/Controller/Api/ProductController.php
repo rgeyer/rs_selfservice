@@ -30,14 +30,14 @@ use Zend\Http\Response;
 use Zend\View\Model\JsonModel;
 use Zend\Mvc\Controller\AbstractRestfulController;
 
-class UserController extends AbstractRestfulController {
+class ProductController extends AbstractRestfulController {
 
 
   /**
-   * @return \SelfService\Service\Entity\UserService
+   * @return \SelfService\Service\Entity\ProductService
    */
-  protected function getUserService() {
-    return $this->getServiceLocator()->get('SelfService\Service\Entity\UserService');
+  protected function getProductService() {
+    return $this->getServiceLocator()->get('SelfService\Service\Entity\ProductService');
   }
 
   /**
@@ -58,26 +58,9 @@ class UserController extends AbstractRestfulController {
    */
   public function create($data)
   {
-    $retval = array();
-    $response =  $this->getResponse();
-    $body = strval($this->getRequest()->getContent());
-    $post_params = get_object_vars(json_decode($body));
-    if(array_key_exists('email', $post_params)) {
-      if(array_key_exists('password', $post_params)) {
-        $post_params['password'] = md5($post_params['password']);
-      }
-      $userservice = $this->getUserService();
-      $user = $userservice->create($post_params);
-      $response->setStatusCode(Response::STATUS_CODE_201);
-      $response->getHeaders()->addHeaderLine('Location',
-        $this->url()->fromRoute('api-user', array('id' => $user->id)));
-    } else {
-      $response->setStatusCode(Response::STATUS_CODE_400);
-      $retval['message'] = "An email address is required";
-    }
-    $retval['code'] = $this->getResponse()->getStatusCode();
-    $response->sendHeaders();
-    return new JsonModel($retval);
+    $this->getResponse()->setStatusCode(Response::STATUS_CODE_501);
+    $this->getResponse()->sendHeaders();
+    return new JsonModel();
   }
 
   /**
@@ -88,15 +71,9 @@ class UserController extends AbstractRestfulController {
    */
   public function delete($id)
   {
-    $retval = array();
-    $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-    try {
-      $this->getUserService()->remove($this->params('id'));
-    } catch (NotFoundException $e) {
-      $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
-    }
+    $this->getResponse()->setStatusCode(Response::STATUS_CODE_501);
     $this->getResponse()->sendHeaders();
-    return new JsonModel($retval);
+    return new JsonModel();
   }
 
   /**
@@ -138,8 +115,7 @@ class UserController extends AbstractRestfulController {
     return new JsonModel();
   }
 
-  public function authorizeAction()
-  {
+  public function inputsAction() {
     $retval = array();
     if($this->getRequest()->getMethod() != Request::METHOD_POST) {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_405);
@@ -148,31 +124,14 @@ class UserController extends AbstractRestfulController {
     } else {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
       try {
-        $this->getUserService()->authorize($this->params('id'));
+        $inputs = $this->getProductService()->inputs($this->params('id'), $this->params()->fromPost());
+        foreach($inputs as $input) {
+          $retval[] = $this->getProductService()->odmToStdClass($input);
+        }
       } catch (NotFoundException $e) {
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
       }
     }
-    $retval['code'] = $this->getResponse()->getStatusCode();
-    return new JsonModel($retval);
-  }
-
-  public function deauthorizeAction()
-  {
-    $retval = array();
-    if($this->getRequest()->getMethod() != Request::METHOD_POST) {
-      $this->getResponse()->setStatusCode(Response::STATUS_CODE_405);
-      $this->getResponse()->getHeaders()->addHeaderLine('Allow', array('POST'));
-      $retval['message'] = "Only the POST method is allowed.";
-    } else {
-      $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-      try {
-        $this->getUserService()->deauthorize($this->params('id'));
-      } catch (NotFoundException $e) {
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
-      }
-    }
-    $retval['code'] = $this->getResponse()->getStatusCode();
     return new JsonModel($retval);
   }
 }
