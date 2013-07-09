@@ -1331,12 +1331,9 @@ EOF;
   }
 
   public function testInputsSetsValuesArrayForCloudInput() {
-    $mocklink = new \stdClass();
-    $mocklink->rel = 'datacenters';
     $mockcloud = new \stdClass();
     $mockcloud->href = "/api/clouds/1";
     $mockcloud->name = "Foo";
-    $mockcloud->links = array($mocklink);
     $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
       ->disableOriginalConstructor()
       ->getMock();
@@ -1372,12 +1369,9 @@ EOF;
   }
 
   public function testInputsSetsValuesArrayForInstanceTypeInput() {
-    $mocklink = new \stdClass();
-    $mocklink->rel = 'datacenters';
     $mockcloud = new \stdClass();
     $mockcloud->href = "/api/clouds/1";
     $mockcloud->name = "Foo";
-    $mockcloud->links = array($mocklink);
     $mockInstanceType = new \stdClass();
     $mockInstanceType->href = "/api/clouds/1/instance_types/1";
     $mockInstanceType->name = "Foo";
@@ -1425,12 +1419,9 @@ EOF;
   }
 
   public function testInputsSetsCloudHrefForInstanceTypeInput() {
-    $mocklink = new \stdClass();
-    $mocklink->rel = 'datacenters';
     $mockcloud = new \stdClass();
     $mockcloud->href = "/api/clouds/1";
     $mockcloud->name = "Foo";
-    $mockcloud->links = array($mocklink);
     $mockInstanceType = new \stdClass();
     $mockInstanceType->href = "/api/clouds/1/instance_types/1";
     $mockInstanceType->name = "Foo";
@@ -1478,12 +1469,9 @@ EOF;
   }
 
   public function testInputsOverridesDefaultValuesForInstanceTypeInput() {
-    $mocklink = new \stdClass();
-    $mocklink->rel = 'datacenters';
     $mockcloud = new \stdClass();
     $mockcloud->href = "/api/clouds/1";
     $mockcloud->name = "Foo";
-    $mockcloud->links = array($mocklink);
     $mockInstanceType = new \stdClass();
     $mockInstanceType->href = "/api/clouds/1/instance_types/1";
     $mockInstanceType->name = "Foo";
@@ -1525,17 +1513,17 @@ EOF;
     $productService = $this->getProductService();
     $product = $productService->createFromJson($json);
     $this->getDocumentManager()->clear();
-    $hrefsary = array('/api/clouds/1/instance_types/1','/api/clouds/1/instance_types/2');
+    $href = '/api/clouds/1/instance_types/1';
     $inputs = $productService->inputs($product->id,
       array(
         'foo' => '/api/clouds/1',
-        'bar' => $hrefsary
+        'bar' => $href
       )
     );
 
     $this->assertEquals(1, count($inputs[1]->default_value));
     $this->assertEquals("/api/clouds/1", $inputs[1]->default_value[0]->cloud_href);
-    $this->assertEquals($hrefsary, $inputs[1]->default_value[0]->resource_hrefs);
+    $this->assertEquals($href, $inputs[1]->default_value[0]->resource_hrefs);
   }
 
   public function testInputsSetsValuesArrayForDatacenterInput() {

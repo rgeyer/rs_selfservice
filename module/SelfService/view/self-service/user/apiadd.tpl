@@ -1,4 +1,4 @@
-<form class="form-horizontal">
+<form id="api_add_user_form" class="form-horizontal">
   <input type="hidden" id="authorized" name="authorized" value="true" />
   <input type="hidden" id="api_user" name="api_user" value="true" />
   <div class="control-group">
@@ -19,6 +19,7 @@
          id="addbtn"
          href="{$this->url('api-user')}"
          data-method="POST"
+         data-form="#api_add_user_form"
          data-nexthop="{$this->url('user', ['action' => 'index'])}">Add</a>
     </div>
   </div>

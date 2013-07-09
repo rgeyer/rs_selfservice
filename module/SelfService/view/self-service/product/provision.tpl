@@ -34,7 +34,7 @@ function paintControl(input, parent) {
     markup += renderCloudInputDependentSelectOptions(input.values, input.default_value, input.cloud_href);
     markup += "    </select>";
   } else if (input.resource_type == 'datacenter_product_input') {
-    markup += "    <select name='"+input.input_name+"' multiple='multiple'>";
+    markup += "    <select name='"+input.input_name+"' multiple='multiple' data-postas='array'>";
     markup += renderCloudInputDependentSelectOptions(input.values, input.default_value, input.cloud_href);
     markup += "    </select>";
   } else if (input.resource_type == 'select_product_input') {
@@ -42,7 +42,7 @@ function paintControl(input, parent) {
     if(input.multiselect) {
       markup += " multiple='multiple'";
     }
-    markup +=">"
+    markup +=" data-postas='array'>"
     $(input.options).each(function(k,option) {
       markup += "      <option value='"+option+"'";
       if($.inArray(option, input.default_value) != -1) {
@@ -89,6 +89,9 @@ function renderCloudInputDependentSelectOptions(options, default_value, cloud_hr
     markup += "      <option value='"+v['href']+"'";
     $(default_value).each(function(k, cloud_href_hash) {
       if(cloud_href_hash['cloud_href'] == cloud_href) {
+        if(!$.isArray(cloud_href_hash['resource_hrefs'])) {
+          cloud_href_hash['resource_hrefs'] = [cloud_href_hash['resource_hrefs']];
+        }
         $(cloud_href_hash['resource_hrefs']).each(function(k,this_href) {
           if(v['href'] == this_href) {
             markup += "selected"

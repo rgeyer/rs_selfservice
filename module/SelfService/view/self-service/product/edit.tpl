@@ -1,4 +1,4 @@
-<form class="form-horizontal">
+<form id="product_edit_form" class="form-horizontal">
   <div class="control-group">
     <label for="name">Name:</label>
     <div class="controls">
@@ -29,6 +29,7 @@
       <a class="btn btn-primary ajaxaction"
          href="{$this->url('product', ['action' => 'update', 'id' => $product->id])}"
          data-method="POST"
+         data-form="#product_edit_form"
          data-nexthop="{$this->url('product', ['action' => 'index'])}">Save</a>
     </div>
   </div>

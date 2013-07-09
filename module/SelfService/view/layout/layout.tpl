@@ -51,9 +51,10 @@
         if($(this).attr('data-method')) {
           method = $(this).attr('data-method');
         }
-        closest_form = $(this).closest('form');
-        if(closest_form.length > 0) {
-          data = convertFormToKeyValuePairJson(closest_form);
+        formproperty = $(this).attr('data-form');
+        if(formproperty) {
+          form = $(formproperty);
+          data = convertFormToKeyValuePairJson(form);
         }
         $.ajax({
           url: href,
@@ -151,17 +152,15 @@
   <p>Processing your request</p>
   <div id="progressbar"></div>
 </div>
-<form>
-  <div id="message-dialog" class="modal hide fade">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h3>Header</h3>
-    </div>
-    <div class="modal-body"></div>
-    <div class="modal-footer">
-    </div>
+<div id="message-dialog" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Header</h3>
   </div>
-</form>
+  <div class="modal-body"></div>
+  <div class="modal-footer">
+  </div>
+</div>
 {$this->inlineScript()}
 </body>
 </html>

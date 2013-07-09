@@ -629,10 +629,6 @@ class ProductService extends BaseEntityService {
             default: break;
           }
         }
-        if(property_exists($resource, 'cloud_product_input')) {
-          $cloud = $cloud_capabilities_by_href[$valuesByInputId[$resource->cloud_product_input['id']]];
-          if(!in_array('datacenters', $cloud)) { continue; }
-        }
         # End opt out checks
 
         # Begin value setting
@@ -649,12 +645,16 @@ class ProductService extends BaseEntityService {
             $resource->values[] = array('name' => $instance_type->name, 'href' => $instance_type->href);
           }
           $instance_types = $valuesByInputId[$resource->id];
-          if(is_array($instance_types) && strpos($instance_types[0], $cloud_href) ===0) {
+          if($instance_types && strpos($instance_types, $cloud_href) === 0) {
             $resource->default_value = array((object)array('cloud_href' => $cloud_href, 'resource_hrefs' => $instance_types));
           }
         }
 
         if ($resource instanceof \SelfService\Document\DatacenterProductInput) {
+          if(property_exists($resource, 'cloud_product_input')) {
+            $cloud = $cloud_capabilities_by_href[$valuesByInputId[$resource->cloud_product_input['id']]];
+            if(!in_array('datacenters', $cloud)) { continue; }
+          }
           $resource->values = array();
           $cloud_href = $valuesByInputId[$resource->cloud_product_input['id']];
           $resource->cloud_href = $cloud_href;

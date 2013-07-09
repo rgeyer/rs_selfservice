@@ -49,7 +49,7 @@ function convertFormToKeyValuePairJson(selector) {
         data[field.name] = [oldval].concat(field.value);
       }
     } else {
-      multiple = $("[name='"+field.name+"']", $(selector)).attr('multiple');
+      multiple = $("[name='"+field.name+"']", $(selector)).attr('data-postas');
       if(multiple) {
         data[field.name] = [field.value];
       } else {

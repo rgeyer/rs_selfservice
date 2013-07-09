@@ -52,7 +52,8 @@ $(function() {
           {ldelim}
             value: "Submit",
             href: "{$this->url('api-product')}/"+id+"/provision",
-            'data-method': "POST"
+            'data-method': "POST",
+            'data-form': '#product_input_form'
           {rdelim}
         );
       },
