@@ -23,7 +23,7 @@
           <td>{$server->name}</td>
           <td>{$server->created_at|date_format}</td>
           <td>{$server->ip}</td>
-          <td>{foreach $server->actions as $key=>$action}<a href="{$this->url($action.url_parts.controller, ['action' => $action.url_parts.action, 'id' => $server->provisioned_product_id, 'provisioned_object_id' => $server->prov_server->id])}"{if $action.is_ajax} class="ajaxaction"{/if}><img src="{$this->basePath()}/{$action.img_path}"/></a>{/foreach}</td>
+          <td>{foreach $server->actions as $key=>$action}<a href="{$this->url($action.url_parts.controller, ['action' => $action.url_parts.action, 'id' => $server->provisioned_product_id, 'provisioned_object_id' => $server->prov_server->id])}"{if $action.is_ajax} class="ajaxaction" data-nexthop="self"{/if}><img src="{$this->basePath()}/{$action.img_path}"/></a>{/foreach}</td>
         </tr>
     {/foreach}
       </tbody>

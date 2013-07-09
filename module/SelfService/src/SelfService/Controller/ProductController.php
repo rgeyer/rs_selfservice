@@ -85,73 +85,9 @@ class ProductController extends BaseController {
     return array('actions' => $actions, 'products' => $products);
   }
 
-  public function rendermetaformAction() {
-    $client = $this->getServiceLocator()->get('RightScaleAPICache');
-    $id = $this->params('id');
-    $product = $this->getProductEntityService()->find($id);
-    $clouds = array();
-
-    foreach($client->getClouds() as $cloud) {
-      $clouds[$cloud->name] = $cloud->id;
-    }
-
-    $meta_inputs = array();
-    foreach($product->resources as $resource) {
-      if(is_a($resource, '\SelfService\Document\AbstractProductInput')) {
-        if($resource->default_value && get_class($resource->default_value) == "Doctrine\ODM\MongoDB\PersistentCollection") {
-          $ary = array();
-          foreach($resource->default_value as $value) {
-            $ary[] = $value;
-          }
-          $resource->default_value = $ary;
-        }
-        $meta_inputs[] = $resource;
-      }
-    }
-
-    return array('clouds' => $clouds,'meta_inputs' => $meta_inputs,
-                 'id' => $id, 'use_layout' => false);
-  }
-
   public function provisionAction() {
-    $response = array('result' => 'success', 'messages' => array());
-    $now = time();
-    $product_id = $this->params('id');
-    if(isset($product_id)) {
-      $provisioning_adapter = $this->getServiceLocator()->get('Provisioner');
-      try {
-        # TODO: Need better exceptions for this which can be explicitly
-        # caught below, and provide a more useful error message
-        $prov_prod_service = $this->getProvisionedProductEntityService();
-        $prov_prod = $prov_prod_service->create(array());
-
-        $this->getLogger()->debug("Calling toOutputJson with the following params ".print_r($this->params()->fromPost(), true));
-        $output_json = $this->getProductEntityService()->toOutputJson($product_id, $this->params()->fromPost());
-
-        $response['messages'][] = sprintf(
-          "View your provisioned product in the admin panel <a href='%s'>here</a>.",
-          $this->url()->fromRoute('provisionedproducts', array('action' => 'show', 'id' => $prov_prod->id))
-        );
-
-        $provisioning_adapter->provision($prov_prod->id, $output_json);
-        $response['messages'] = array_merge($response['messages'], $provisioning_adapter->getMessages(true));
-      } catch (NotFoundException $e) {
-        $response['result'] = 'error';
-        $response['error'] = $e->getMessage();
-        $this->getLogger()->err($response['error']);
-      } catch (\Exception $e) {
-        $response['result'] = 'error';
-        $response['error'] = $e->getMessage();
-        $this->getLogger()->err("An error occurred provisioning the product. Error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
-      }
-    } else {
-      $response['result'] = 'error';
-      $response['error'] = 'A product id was not supplied';
-      $this->getLogger()->err($response['error']);
-    }
-
-    return new JsonModel($response);
-	}
+    return array('use_layout' => true, 'id' => $this->params('id'));
+  }
 	
 	public function consoleaddAction() {
     $request = $this->getRequest();

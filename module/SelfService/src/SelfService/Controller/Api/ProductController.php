@@ -41,6 +41,27 @@ class ProductController extends AbstractRestfulController {
   }
 
   /**
+   * @return \SelfService\Service\Entity\ProvisionedProductService
+   */
+  protected function getProvisionedProductService() {
+    return $this->getServiceLocator()->get('SelfService\Service\Entity\ProvisionedProductService');
+  }
+
+  /**
+   * @return \SelfService\Provisioner\AbstractProvisioner
+   */
+  protected function getProvisioningAdapter() {
+    return $this->getServiceLocator()->get('Provisioner');
+  }
+
+  /**
+   * @return \Zend\Log\Logger
+   */
+  protected function getLogger() {
+    return $this->getServiceLocator()->get('logger');
+  }
+
+  /**
    * Get response object
    *
    * @return \Zend\Http\Response
@@ -115,21 +136,69 @@ class ProductController extends AbstractRestfulController {
     return new JsonModel();
   }
 
+  /**
+   * Note: When parameters are provided for instance_type or datacenter inputs the default_value
+   * is overwritten with the selection which was passed in.
+   * @return JsonModel
+   */
   public function inputsAction() {
     $retval = array();
     if($this->getRequest()->getMethod() != Request::METHOD_POST) {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_405);
       $this->getResponse()->getHeaders()->addHeaderLine('Allow', array('POST'));
-      $retval['message'] = "Only the POST method is allowed.";
+      $retval['messages'][] = "Only the POST method is allowed.";
     } else {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
       try {
         $inputs = $this->getProductService()->inputs($this->params('id'), $this->params()->fromPost());
         foreach($inputs as $input) {
-          $retval[] = $this->getProductService()->odmToStdClass($input);
+          $stdClass = $this->getProductService()->odmToStdClass($input);
+          $stdClass->values = $input->values;
+          $stdClass->cloud_href = $input->cloud_href;
+          $retval[] = $stdClass;
         }
       } catch (NotFoundException $e) {
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+        $retval['messages'] = array($e->getMessage());
+      }
+    }
+    return new JsonModel($retval);
+  }
+
+  public function provisionAction() {
+    $retval = array();
+    if($this->getRequest()->getMethod() != Request::METHOD_POST) {
+      $this->getResponse()->setStatusCode(Response::STATUS_CODE_405);
+      $this->getResponse()->getHeaders()->addHeaderLine('Allow', array('POST'));
+      $retval['messages'][] = "Only the POST method is allowed.";
+    } else {
+      $product_id = $this->params('id');
+      try {
+        $provisioning_adapter = $this->getProvisioningAdapter();
+        $prov_prod = $this->getProvisionedProductService()->create(array());
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+
+        $this->getLogger()->debug("Calling toOutputJson with the following params ".print_r($this->params()->fromPost(), true));
+        $output_json = $this->getProductService()->toOutputJson($product_id, $this->params()->fromPost());
+
+        $retval['messages'][] = sprintf(
+          "View your provisioned product in the admin panel <a href='%s'>here</a>.",
+          $this->url()->fromRoute('provisionedproducts', array('action' => 'show', 'id' => $prov_prod->id))
+        );
+
+        $provisioning_adapter->provision($prov_prod->id, $output_json);
+        $retval['messages'] = array_merge($retval['messages'], $provisioning_adapter->getMessages(true));
+
+        $this->getResponse()->getHeaders()->addHeaderLine('Location',
+          $this->url()->fromRoute('api-provisionedproduct', array('id' => $prov_prod->id)));
+      } catch (NotFoundException $e) {
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+        $retval['messages'] = array($e->getMessage());
+      } catch (\Exception $e) {
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+        $retval['messages'] = array($e->getMessage());
+        $this->getLogger()->err("An error occurred attempting to provision ".$product_id." Error: ".$e->getMessage()." Trace: ".$e->getTraceAsString());
       }
     }
     return new JsonModel($retval);

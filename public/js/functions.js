@@ -9,14 +9,24 @@ function timeout_func()
   }
 }
 
-function open_message_dialog(height, width, title, content) {
-  $('#message-dialog').html(content);
-  $('#message-dialog').dialog({
-    title: title,
-    height: height,
-    width: width
-  });
-  $('#message-dialog').dialog('open');
+function open_message_dialog(title, content, action_btn_props) {
+  dialog = $('#message-dialog');
+  footer = $('.modal-footer', dialog);
+  footer.children().remove();
+  $('.modal-body', dialog).html(content);
+  $('.modal-header > h3', dialog).text(title);
+  $('#message-dialog').modal('show');
+  footer.append('<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>');
+  if(action_btn_props) {
+    actionbtn_markup = '<a class="btn btn-primary ajaxaction">';
+    actionbtn_markup += action_btn_props['value'];
+    actionbtn_markup += '</a>';
+    actionbtn_dom = $(actionbtn_markup);
+    $.each(action_btn_props, function(k,v) {
+      actionbtn_dom.attr(k,v);
+    });
+    footer.append(actionbtn_dom);
+  }
 }
 
 function response_messages_to_content(messages) {
@@ -25,4 +35,36 @@ function response_messages_to_content(messages) {
     content += "<p>"+message+"</p>";
   });
   return content;
+}
+
+function convertFormToKeyValuePairJson(selector) {
+  serializedForm = $(selector).serializeArray();
+  data = {};
+  $.each(serializedForm, function(i, field) {
+    if(data[field.name]) {
+      if($.isArray(data[field.name])) {
+        data[field.name] = data[field.name].concat(field.value);
+      } else {
+        oldval = data[field.name];
+        data[field.name] = [oldval].concat(field.value);
+      }
+    } else {
+      multiple = $("[name='"+field.name+"']", $(selector)).attr('multiple');
+      if(multiple) {
+        data[field.name] = [field.value];
+      } else {
+        data[field.name] = field.value;
+      }
+    }
+  });
+  return data;
+}
+
+function isEmpty(obj) {
+  for(var key in obj) {
+    if(obj.hasOwnProperty(key)) {
+      return false;
+    }
+  }
+  return true;
 }

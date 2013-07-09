@@ -87,15 +87,13 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
     $provisionedProductService = $this->getProvisionedProductService();
     $provisionedProduct = $provisionedProductService->create(array());
 
-    $this->getRequest()->setContent(
-      json_encode(
-        array(
-          'type' => 'rs.deployments',
-          'href' => 'http://foo.bar.baz'
-        )
+    $this->dispatch(sprintf('/api/provisionedproduct/%s/objects', $provisionedProduct->id),
+      Request::METHOD_POST,
+      array(
+        'type' => 'rs.deployments',
+        'href' => 'http://foo.bar.baz'
       )
     );
-    $this->dispatch(sprintf('/api/provisionedproduct/%s/objects', $provisionedProduct->id), Request::METHOD_POST);
 
     $this->assertResponseStatusCode(201);
   }
@@ -109,15 +107,8 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testObjectReturns400WhenTypeIsMissing() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->getRequest()->setContent(
-      json_encode(
-        array(
-          'href' => 'http://foo.bar.baz'
-        )
-      )
-    );
 
-    $this->dispatch('/api/provisionedproduct/abc123/objects',Request::METHOD_POST);
+    $this->dispatch('/api/provisionedproduct/abc123/objects',Request::METHOD_POST,array('href' => 'http://foo.bar.baz'));
 
     $response = strval($this->getResponse());
 
@@ -128,15 +119,8 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testObjectReturns400WhenHrefIsMissing() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->getRequest()->setContent(
-      json_encode(
-        array(
-          'type' => 'rs.deployments'
-        )
-      )
-    );
 
-    $this->dispatch('/api/provisionedproduct/abc123/objects',Request::METHOD_POST);
+    $this->dispatch('/api/provisionedproduct/abc123/objects',Request::METHOD_POST, array('type' => 'rs.deployments'));
 
     $response = strval($this->getResponse());
 

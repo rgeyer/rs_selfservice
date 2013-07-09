@@ -28,6 +28,9 @@ use Zend\Mvc\Controller\AbstractActionController;
 
 abstract class BaseController extends AbstractActionController {
 
+  /**
+   * @return \Zend\Log\Logger
+   */
   public function getLogger() {
     return $this->getServiceLocator()->get('logger');
   }

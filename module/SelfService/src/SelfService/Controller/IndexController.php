@@ -47,7 +47,7 @@ class IndexController extends BaseController {
 			$product->img_url = "images/icons/" . $product->icon_filename;
 		}
 
-		return array( 'products' => $products, 'use_layout' => false );
+		return array( 'products' => $products, 'use_layout' => true );
 	}
 
   public function adminindexAction() {

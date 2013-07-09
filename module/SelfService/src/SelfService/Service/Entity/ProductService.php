@@ -588,6 +588,7 @@ class ProductService extends BaseEntityService {
   public function inputs($id, array $params = array()) {
     $api_cache = $this->getRightscaleApiCache();
     $clouds = $api_cache->getClouds();
+    $cloud_product_input_values = array();
     $cloud_capabilities_by_href = array();
     foreach($clouds as $cloud) {
       if(!in_array($cloud->href, array_keys($cloud_capabilities_by_href))) {
@@ -596,6 +597,8 @@ class ProductService extends BaseEntityService {
       foreach($cloud->links as $link) {
         $cloud_capabilities_by_href[$cloud->href][] = $link->rel;
       }
+
+      $cloud_product_input_values[] = array('name' => $cloud->name, 'href' => $cloud->href);
     }
     $inputs = array();
     $product = $this->find($id);
@@ -603,6 +606,7 @@ class ProductService extends BaseEntityService {
     $valuesByInputId = self::convertInputParamsToResourceIdKeys($product, $params);
     foreach($product->resources as $resource) {
       if($resource instanceof \SelfService\Document\AbstractProductInput) {
+        # Begin opt out checks
         if(!self::hasDependsMatch($resource, $valuesByInputId)) { continue; }
         if($resource->required_cloud_capability !== null) {
           $match = $resource->required_cloud_capability['match'] ? : 'all';
@@ -629,6 +633,41 @@ class ProductService extends BaseEntityService {
           $cloud = $cloud_capabilities_by_href[$valuesByInputId[$resource->cloud_product_input['id']]];
           if(!in_array('datacenters', $cloud)) { continue; }
         }
+        # End opt out checks
+
+        # Begin value setting
+        if ($resource instanceof \SelfService\Document\CloudProductInput) {
+          $resource->values = $cloud_product_input_values;
+        }
+
+        if ($resource instanceof \SelfService\Document\InstanceTypeProductInput) {
+          $resource->values = array();
+          $cloud_href = $valuesByInputId[$resource->cloud_product_input['id']];
+          $resource->cloud_href = $cloud_href;
+          $client_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($cloud_href);
+          foreach($api_cache->getInstanceTypes($client_id) as $instance_type) {
+            $resource->values[] = array('name' => $instance_type->name, 'href' => $instance_type->href);
+          }
+          $instance_types = $valuesByInputId[$resource->id];
+          if(is_array($instance_types) && strpos($instance_types[0], $cloud_href) ===0) {
+            $resource->default_value = array((object)array('cloud_href' => $cloud_href, 'resource_hrefs' => $instance_types));
+          }
+        }
+
+        if ($resource instanceof \SelfService\Document\DatacenterProductInput) {
+          $resource->values = array();
+          $cloud_href = $valuesByInputId[$resource->cloud_product_input['id']];
+          $resource->cloud_href = $cloud_href;
+          $client_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($cloud_href);
+          foreach($api_cache->getDatacenters($client_id) as $datacenter) {
+            $resource->values[] = array('name' => $datacenter->name, 'href' => $datacenter->href);
+          }
+          $datacenters = $valuesByInputId[$resource->id];
+          if(is_array($datacenters) && strpos($datacenters[0], $cloud_href) === 0) {
+            $resource->default_value = array((object)array('cloud_href' => $cloud_href, 'resource_hrefs' => $datacenters));
+          }
+        }
+        # End value setting
 
         $inputs[] = $resource;
       }

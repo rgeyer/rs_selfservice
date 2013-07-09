@@ -357,7 +357,7 @@ class ProvisioningHelper {
       if($ssh_key) {
         $params['server[instance][ssh_key_href]'] = $ssh_key->href;
       }
-      if(property_exists($server, 'optimized')) {
+      if(property_exists($server, 'optimized') && $server->optimized) {
         $params['server[optimized]'] = $server->optimized ? 'true' : 'false';
       }
 
@@ -599,7 +599,7 @@ class ProvisioningHelper {
       'server_array[instance][multi_cloud_image_href]' => $mci_href,
       'server_array[instance][instance_type_href]' => $instance_type_href,
     );
-    if(property_exists($array, 'optimized')) {
+    if(property_exists($array, 'optimized') && $array->optimized) {
       $params['server_array[optimized]'] = $array->optimized ? 'true' : 'false';
     }
     if($array->array_type == "alert") {

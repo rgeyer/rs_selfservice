@@ -62,20 +62,6 @@ return array(
           )
         )
       ),
-      'productrendermetaform' => array(
-        'type' => 'Segment',
-        'options' => array(
-          'route' => '/product/rendermetaform[/:id]',
-          'constraints' => array(
-            'id' => '[0-9]+'
-          ),
-          'defaults' => array(
-            '__NAMESPACE__' => 'SelfService\Controller',
-            'controller'    => 'Product',
-            'action'        => 'rendermetaform',
-          )
-        )
-      ),
       'login' => array(
         'type' => 'Segment',
         'options' => array(

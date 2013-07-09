@@ -60,8 +60,7 @@ class UserController extends AbstractRestfulController {
   {
     $retval = array();
     $response =  $this->getResponse();
-    $body = strval($this->getRequest()->getContent());
-    $post_params = get_object_vars(json_decode($body));
+    $post_params = $this->params()->fromPost();
     if(array_key_exists('email', $post_params)) {
       if(array_key_exists('password', $post_params)) {
         $post_params['password'] = md5($post_params['password']);
@@ -73,7 +72,7 @@ class UserController extends AbstractRestfulController {
         $this->url()->fromRoute('api-user', array('id' => $user->id)));
     } else {
       $response->setStatusCode(Response::STATUS_CODE_400);
-      $retval['message'] = "An email address is required";
+      $retval['messages'][] = "An email address is required";
     }
     $retval['code'] = $this->getResponse()->getStatusCode();
     $response->sendHeaders();
@@ -144,7 +143,7 @@ class UserController extends AbstractRestfulController {
     if($this->getRequest()->getMethod() != Request::METHOD_POST) {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_405);
       $this->getResponse()->getHeaders()->addHeaderLine('Allow', array('POST'));
-      $retval['message'] = "Only the POST method is allowed.";
+      $retval['messages'][] = "Only the POST method is allowed.";
     } else {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
       try {
@@ -163,7 +162,7 @@ class UserController extends AbstractRestfulController {
     if($this->getRequest()->getMethod() != Request::METHOD_POST) {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_405);
       $this->getResponse()->getHeaders()->addHeaderLine('Allow', array('POST'));
-      $retval['message'] = "Only the POST method is allowed.";
+      $retval['messages'][] = "Only the POST method is allowed.";
     } else {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
       try {

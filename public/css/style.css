@@ -47,3 +47,8 @@ ul.nav {
 .nav li {
   /*height: 35px;*/
 }
+
+body .modal {
+  width: 750px;
+  margin-left: -375px;
+}

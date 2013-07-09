@@ -39,14 +39,9 @@
         autoOpen:false
       });
 
-      $('#message-dialog').dialog({
-        height: 350,
-        width: 500,
-        modal: true,
-        autoOpen:false
-      });
-
-      $('a.ajaxaction').click(function(evt) {
+      $(document).on('click', 'a.ajaxaction', function(evt) {
+        messageDlgAsParent = $(this).closest('#message-dialog');
+        if(messageDlgAsParent.length > 0) { $("#message-dialog").modal('hide'); }
         $('#progress-dialog').dialog('open');
         timeout_func();
         data = {};
@@ -58,12 +53,7 @@
         }
         closest_form = $(this).closest('form');
         if(closest_form.length > 0) {
-          serialized_ary = closest_form.serializeArray();
-          normalized = {};
-          $(serialized_ary).each(function(k,v) {
-            normalized[v.name] = v.value;
-          });
-          data = JSON.stringify(normalized);
+          data = convertFormToKeyValuePairJson(closest_form);
         }
         $.ajax({
           url: href,
@@ -71,95 +61,44 @@
           type: method,
           data: data,
           success: function(data, status, jqXHR) {
-            $('#progress-dialog').dialog('close');
             if (data.result == 'error') {
+              $('#progress-dialog').dialog('close');
               open_message_dialog(
-                $(window).height() - 100,
-                $(window).width() - 100,
                 "Error",
                 "<p>"+data.error+"</p>"
               );
             } else if (data.messages != undefined && data.messages.length > 0) {
-              $('#message-dialog').dialog({
-                close: function( event, ui ) {
-                  if(nexthop) {
-                    window.location.href = nexthop
-                  } else {
-                    location.reload();
-                  }
-                }
-              });
-              content = response_messages_to_content(data.messages);
-              open_message_dialog(
-                350,
-                500,
-                "Messages",
-                content
-              );
-            } else {
-              if(nexthop) {
-                window.location.href = nexthop
-              } else {
-                location.reload();
-              }
-            }
-          },
-          error: function(jqXHR, status, error) {
-            content = $('<div>').append(jqXHR.responseText).find("#content");
-            $('#progress-dialog').dialog('close');
-            open_message_dialog(
-              $(window).height() - 100,
-              $(window).width() - 100,
-              "Error",
-              content
-            );
-          }
-        });
-        evt.preventDefault();
-      });
-
-      $('input[type="submit"].ajaxaction').click(function(evt) {
-        $('#progress-dialog').dialog('open');
-        timeout_func();
-        form = $(this).parent();
-        href = $(form).attr('action');
-        $.ajax({
-          url: href,
-          dataType: 'json',
-          type: 'POST',
-          data: $(form).serializeArray(),
-          success: function(data, status, jqXHR) {
-            $('#progress-dialog').dialog('close');
-            if (data.result == 'error') {
-              open_message_dialog(
-                $(window).height() - 100,
-                $(window).width() - 100,
-                "Error",
-                "<p>"+data.error+"</p>"
-              );
-            } else if (data.messages != undefined) {
-              $('#message-dialog').dialog({
-                close: function( event, ui ) {
+              $('#message-dialog').on('hidden', function() {
+                if(nexthop == 'self') {
                   location.reload();
+                } else if(nexthop) {
+                  window.location.href = nexthop
                 }
+                $(this).on('hidden');
               });
               content = response_messages_to_content(data.messages);
+              $('#progress-dialog').dialog('close');
               open_message_dialog(
-                350,
-                500,
                 "Messages",
                 content
               );
             } else {
-              location.reload();
+              if(nexthop == 'self') {
+                location.reload();
+              } else if(nexthop) {
+                window.location.href = nexthop
+              }
+              $('#progress-dialog').dialog('close');
             }
           },
           error: function(jqXHR, status, error) {
             content = $('<div>').append(jqXHR.responseText).find("#content");
+            if(content.length == 0) {
+              data = $.parseJSON(jqXHR.responseText);
+              content = response_messages_to_content(data.messages);
+            }
             $('#progress-dialog').dialog('close');
             open_message_dialog(
-              $(window).height() - 100,
-              $(window).width() - 100,
               "Error",
               content
             );
@@ -184,10 +123,10 @@
       <a class="brand" href="{$this->url('home')}">{$this->translate('IT Vending Machine')}</a>
       <div class="nav-collapse collapse">
         <ul class="nav nav-tabs" id="nav">
-          <li class="active"><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
-          <li><a href="{$this->url('product', ['action' => 'index'])}">{$this->translate("Products")}</a></li>
-          <li><a href="{$this->url('provisionedproducts', ['action' => 'index'])}">{$this->translate('Provisioned Products')}</a></li>
-          <li class="dropdown">
+          <li{if $this->controllerName() == 'SelfService\Controller\Index'} class="active"{/if}><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
+          <li{if $this->controllerName() == 'SelfService\Controller\Product'} class="active"{/if}><a href="{$this->url('product', ['action' => 'index'])}">{$this->translate("Products")}</a></li>
+          <li{if $this->controllerName() == 'SelfService\Controller\ProvisionedProduct'} class="active"{/if}><a href="{$this->url('provisionedproducts', ['action' => 'index'])}">{$this->translate('Provisioned Products')}</a></li>
+          <li class="{if $this->controllerName() == 'SelfService\Controller\User'}active {/if}dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">{$this->translate('Users')}<b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="{$this->url('user', ['action' => 'index'])}">{$this->translate("List")}</a></li>
@@ -201,17 +140,29 @@
 </div>
 <div id="content" class="container">
   {$this->content}
+</div> <!-- /container -->
+<div class="container navbar-fixed-bottom"
   <hr>
   <footer>
     <p>&copy; 2013 by Ryan J. Geyer {$this->translate('All rights reserved.')}</p>
   </footer>
-</div> <!-- /container -->
+</div>
 <div id="progress-dialog" title="Please wait">
   <p>Processing your request</p>
   <div id="progressbar"></div>
 </div>
-<div id="message-dialog" title="Message"></div>
-  {$this->inlineScript()}
+<form>
+  <div id="message-dialog" class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Header</h3>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer">
+    </div>
+  </div>
+</form>
+{$this->inlineScript()}
 </body>
 </html>
 {/if}

@@ -1029,7 +1029,6 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
   }
 
   public function testProvisionServerArrayUsesDatacentersWhenDefaultIsAvailable() {
-    $this->markTestSkipped("See: https://github.com/rgeyer/rs_guzzle_client/issues/6");
     $log = $this->getMock('Zend\Log\Logger');
     $request_paths = array(
       '1.5/clouds/json/with_different_ids/response',
@@ -1069,7 +1068,7 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     $instance_model = new \stdClass();
     $instance_model->cloud_href = "/api/clouds/11111";
     $instance_model->server_template = $server_template_model;
-    $instance_model->datacenter_href = array("/api/clouds/11111/datacenters/11111");
+    $instance_model->datacenter_href = array("/api/clouds/11111/datacenters/11111", "/api/clouds/11111/datacenters/22222");
     $instance_model->security_groups = array();
     $array_model->instance = $instance_model;
     $provisioned_stuff = $helper->provisionServerArray($array_model, $deployment);
@@ -1078,7 +1077,8 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     # Make sure the helper made all of the expected API calls
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains("datacenter_href]=%2Fapi%2Fclouds%2Fdatacenters%2F/11111", strval($responses[6]));
+    $this->assertContains("datacenter_href]=%2Fapi%2Fclouds%2F11111%2Fdatacenters%2F11111", strval($responses[6]));
+    $this->assertContains("datacenter_href]=%2Fapi%2Fclouds%2F11111%2Fdatacenters%2F22222", strval($responses[6]));
   }
 
   public function testProvisionServerArraySetsDecisionThresholdIfMissing() {
@@ -1451,7 +1451,6 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
   }
 
   public function testProvisionServerArrayUsesOptimizedIfSet() {
-    $this->markTestSkipped("rs_guzzle_client doesn't support the param yet.");
     $log = $this->getMock('Zend\Log\Logger');
     $request_paths = array(
       '1.5/clouds/json/with_different_ids/response',
@@ -1500,10 +1499,11 @@ class ProvisioningHelperTest extends AbstractHttpControllerTestCase {
     # Make sure the helper made all of the expected API calls
     $responses = $this->_guzzletestcase->getMockedRequests();
     $this->assertEquals(count($request_paths), count($responses));
-    $this->assertContains("server_array[state]=enabled", strval($responses[6]));}
+    $this->assertContains("server_array[optimized]=true", strval($responses[6]));
+  }
 
   public function testProvisionServerArrayUsesScheduleIfSet() {
-    $this->markTestSkipped("rs_guzzle_client doesn't support the param yet.");
+    $this->markTestSkipped("rs_guzzle_client supports this.  Need to implement this test now.");
   }
 
   public function testProvisionServerArrayThrowsErrorIfTemplateNotImported() {

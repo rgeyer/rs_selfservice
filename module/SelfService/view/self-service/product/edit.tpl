@@ -1,9 +1,16 @@
-<form method="POST" action="{$this->url('product', ['action' => 'update', 'id' => $product->id])}">
-  <label for="name">Name:</label>
-  <input type="text" name="name" id="name" value="{$product->name}" />
-  <label for="launch_servers">Launch Servers:</label>
-  <input type="checkbox" name="launch_servers" id="launch_servers"{if $product->launch_servers} checked{/if}/>
-  <div class="clearfix"></div>
+<form class="form-horizontal">
+  <div class="control-group">
+    <label for="name">Name:</label>
+    <div class="controls">
+      <input type="text" name="name" id="name" value="{$product->name}" />
+    </div>
+  </div>
+  <div class="control-group">
+    <label for="launch_servers">Launch Servers:</label>
+    <div class="controls">
+      <input type="checkbox" name="launch_servers" id="launch_servers"{if $product->launch_servers} checked{/if}/>
+    </div>
+  </div>
   <label for="icon_filename">Icon:</label>
   <select name="icon_filename" id="icon_filename" class="image-picker">
 {foreach $icons as $icon}
@@ -17,7 +24,14 @@
     </div>
   </div>
 
-  <input type="submit" name="submit" value="Save" class="btn ajaxaction"/>
+  <div class="control-group">
+    <div class="controls">
+      <a class="btn btn-primary ajaxaction"
+         href="{$this->url('product', ['action' => 'update', 'id' => $product->id])}"
+         data-method="POST"
+         data-nexthop="{$this->url('product', ['action' => 'index'])}">Save</a>
+    </div>
+  </div>
 </form>
 
 {literal}

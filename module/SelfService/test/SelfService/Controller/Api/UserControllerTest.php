@@ -37,12 +37,7 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
 
   public function testCreateCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->getRequest()->setContent(
-      json_encode(
-        array('email' => 'foo@bar.baz')
-      )
-    );
-    $this->dispatch('/api/user', Request::METHOD_POST);
+    $this->dispatch('/api/user', Request::METHOD_POST, array('email' => 'foo@bar.baz'));
 
     $this->assertActionName('create');
     $this->assertControllerName('selfservice\controller\api\user');
@@ -59,12 +54,8 @@ class UserControllerTest extends AbstractHttpControllerTestCase {
 
   public function testCreateHashesPlaintextPassword() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
-    $this->getRequest()->setContent(
-      json_encode(
-        array('email' => 'foo@bar.baz', 'password' => 'password')
-      )
-    );
-    $this->dispatch('/api/user', Request::METHOD_POST);
+    $this->dispatch('/api/user', Request::METHOD_POST,
+      array('email' => 'foo@bar.baz', 'password' => 'password'));
     $users = $this->getUserService()->findAll();
     $user = $users->getNext();
     $this->assertNotEquals('password', $user->password);

@@ -128,16 +128,15 @@ class ProvisionedProductController extends AbstractRestfulController {
     if($this->getRequest()->getMethod() != Request::METHOD_POST) {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_405);
       $this->getResponse()->getHeaders()->addHeaderLine('Allow', array('POST'));
-      $retval['message'] = "Only the POST (or create) method is allowed.";
+      $retval['messages'][] = "Only the POST (or create) method is allowed.";
     } else {
       $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
       $required_params = array('href', 'type');
-      $body = strval($this->getRequest()->getContent());
-      $post_params = get_object_vars(json_decode($body));
+      $post_params = $this->params()->fromPost();
       $missing_required_params = array_diff($required_params, array_keys($post_params));
       if(count($missing_required_params) > 0) {
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-        $retval['message'] = 'Missing required fields: '.join(',', $missing_required_params);
+        $retval['messages'][] = 'Missing required fields: '.join(',', $missing_required_params);
       } else {
         $matches = array();
         if(preg_match('/rs\.([a-z_]+)/', $post_params['type'], $matches)) {

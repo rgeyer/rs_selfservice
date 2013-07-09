@@ -54,4 +54,17 @@ class Module
         ->doAuthenticate($event, $sm);
     }
   }
+
+  public function getViewHelperConfig()
+  {
+    return array(
+      'factories' => array(
+        'ControllerName' => function ($sm) {
+          $match = $sm->getServiceLocator()->get('application')->getMvcEvent()->getRouteMatch();
+          $viewHelper = new \SelfService\View\Helper\ControllerName($match);
+          return $viewHelper;
+        },
+      ),
+    );
+  }
 }

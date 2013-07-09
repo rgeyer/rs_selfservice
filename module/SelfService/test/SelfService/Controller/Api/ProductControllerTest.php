@@ -155,4 +155,76 @@ EOF;
     $this->assertEquals(2, count($obj));
     $this->assertEquals('foo', $obj[0]->id);
   }
+
+  public function testProvisionCanBeAccessed() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $productServiceMock = $this->getMockBuilder("\SelfService\Service\Entity\ProductService")
+      ->getMock();
+    $helpermock = $this->getMockBuilder('SelfService\Provisioner\AbstractProvisioner')
+      ->getMock();
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('Provisioner', $helpermock);
+    $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\ProductService', $productServiceMock);
+    $this->dispatch('/api/product/abc123/provision', Request::METHOD_POST);
+
+    $this->assertResponseStatusCode(201);
+  }
+
+  public function testProvisionReturns405OnNonPostMethod() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $this->dispatch('/api/product/abc123/provision', Request::METHOD_PUT);
+
+    $this->assertResponseStatusCode(405);
+  }
+
+  public function testProvisionReturns404ForNonExistentProduct() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+
+    $this->dispatch('/api/product/abc123/provision', Request::METHOD_POST);
+
+    $this->assertResponseStatusCode(404);
+  }
+
+  public function testProvisionSetsProvisionedProductAsLocationHeader() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $helpermock = $this->getMockBuilder('SelfService\Provisioner\AbstractProvisioner')
+      ->getMock();
+    $helpermock->expects($this->once())
+      ->method('provision');
+    $helpermock->expects($this->once())
+      ->method('getMessages')
+      ->will($this->returnValue(array()));
+    $productServiceMock = $this->getMockBuilder("\SelfService\Service\Entity\ProductService")
+      ->getMock();
+    $productServiceMock->expects($this->once())
+      ->method('toOutputJson');
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('Provisioner', $helpermock);
+    $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\ProductService', $productServiceMock);
+
+    $this->dispatch('/api/product/abc123/provision', Request::METHOD_POST);
+    $this->assertResponseStatusCode(201);
+    $this->assertHasResponseHeader('Location');
+    $this->assertRegExp(',api/provisionedproduct/[0-9a-z]+,', strval($this->getResponse()));
+  }
+
+  public function testProvisionReturns500AndMessageBodyOnUnexpectedError() {
+    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $helpermock = $this->getMockBuilder('SelfService\Provisioner\AbstractProvisioner')
+      ->getMock();
+    $productServiceMock = $this->getMockBuilder("\SelfService\Service\Entity\ProductService")
+      ->getMock();
+    $productServiceMock->expects($this->once())
+      ->method('toOutputJson')
+      ->will($this->throwException(new \Exception("message")));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('Provisioner', $helpermock);
+    $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\ProductService', $productServiceMock);
+
+    $this->dispatch('/api/product/abc123/provision', Request::METHOD_POST);
+
+    $this->assertResponseStatusCode(500);
+  }
 }
