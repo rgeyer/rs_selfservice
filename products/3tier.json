@@ -13,6 +13,20 @@
       "description": "The deployment name"
     },
     {
+      "id": "dr_deployment_name",
+      "resource_type": "text_product_input",
+      "default_value": "3-Tier Disaster Recovery",
+      "input_name": "dr_deployment_name",
+      "display_name": "DR Deployment Name",
+      "description": "The deployment name for the disaster recovery deployment",
+      "advanced": true,
+      "depends": {
+        "ref": "select_product_input",
+        "id": "haz_dr",
+        "value": ["true"]
+      }
+    },
+    {
       "id": "cloud_1",
       "resource_type": "cloud_product_input",
       "default_value": "/api/clouds/1",
@@ -172,30 +186,6 @@
       "description": "The instance type for load balancers"
     },
     {
-      "id": "burst_lb_instance_type",
-      "resource_type": "instance_type_product_input",
-      "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud_2" },
-      "default_value": [
-        {
-          "cloud_href": "/api/clouds/1",
-          "resource_hrefs": ["/api/clouds/1/instance_types/CQQV62T389R32"]
-        },
-        {
-          "cloud_href": "/api/clouds/2",
-          "resource_hrefs": ["/api/clouds/2/instance_types/F1KMCJ2VTC975"]
-        }
-      ],
-      "input_name": "burst_lb_instance_type",
-      "display_name": "Burst LB Instance Type",
-      "description": "The instance type for burst load balancers in the production deployment",
-      "advanced": true,
-      "depends": {
-        "ref": "select_product_input",
-        "id": "haz_bursting",
-        "value": ["true"]
-      }
-    },
-    {
       "id": "dr_lb_instance_type",
       "resource_type": "instance_type_product_input",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud_3" },
@@ -304,30 +294,6 @@
       "description": "The instance type for databases"
     },
     {
-      "id": "burst_db_instance_type",
-      "resource_type": "instance_type_product_input",
-      "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud_2" },
-      "default_value": [
-        {
-          "cloud_href": "/api/clouds/1",
-          "resource_hrefs": ["/api/clouds/1/instance_types/CQQV62T389R32"]
-        },
-        {
-          "cloud_href": "/api/clouds/2",
-          "resource_hrefs": ["/api/clouds/2/instance_types/F1KMCJ2VTC975"]
-        }
-      ],
-      "input_name": "burst_db_instance_type",
-      "display_name": "Burst DB Instance Type",
-      "description": "The instance type for burst databases in the production deployment",
-      "advanced": true,
-      "depends": {
-        "ref": "select_product_input",
-        "id": "haz_bursting",
-        "value": ["true"]
-      }
-    },
-    {
       "id": "dr_db_instance_type",
       "resource_type": "instance_type_product_input",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud_3" },
@@ -348,6 +314,34 @@
       "depends": {
         "ref": "select_product_input",
         "id": "haz_dr",
+        "value": ["true"]
+      }
+    },
+    {
+      "id": "prod_app_count",
+      "resource_type": "text_product_input",
+      "default_value": "2",
+      "input_name": "prod_app_count",
+      "display_name": "Prod Application Server Qty",
+      "description": "The fixed number of application servers in your primary cloud when bursting is used.",
+      "advanced": true,
+      "depends": {
+        "ref": "select_product_input",
+        "id": "haz_bursting",
+        "value": ["true"]
+      }
+    },
+    {
+      "id": "cache_count",
+      "resource_type": "text_product_input",
+      "default_value": "2",
+      "input_name": "cache_count",
+      "display_name": "Memcached Server Qty",
+      "description": "How much caching memory do you need?",
+      "advanced": true,
+      "depends": {
+        "ref": "select_product_input",
+        "id": "haz_caching",
         "value": ["true"]
       }
     },
@@ -468,6 +462,77 @@
       }
     },
     {
+      "id": "prod_app_instance",
+      "resource_type": "instance",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
+      "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
+      "instance_type_href": { "ref": "instance_type_product_input", "id": "prod_app_instance_type" },
+      "security_groups": [
+        { "ref": "security_group", "id": "prod_default_security_group" }
+      ],
+      "server_template": [
+        { "ref": "server_template", "id": "python_app_template" },
+        { "ref": "server_template", "id": "java_app_template" },
+        { "ref": "server_template", "id": "ruby_app_template" },
+        { "ref": "server_template", "id": "php_app_template" }
+      ]
+    },
+    {
+      "id": "burst_app_instance",
+      "resource_type": "instance",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_2" },
+      "datacenter_href": { "ref": "datacenter_product_input", "id": "burst_datacenter" },
+      "instance_type_href": { "ref": "instance_type_product_input", "id": "burst_app_instance_type" },
+      "security_groups": [
+        { "ref": "security_group", "id": "burst_default_security_group" }
+      ],
+      "server_template": [
+        { "ref": "server_template", "id": "python_app_template" },
+        { "ref": "server_template", "id": "java_app_template" },
+        { "ref": "server_template", "id": "ruby_app_template" },
+        { "ref": "server_template", "id": "php_app_template" }
+      ]
+    },
+    {
+      "id": "dr_app_instance",
+      "resource_type": "instance",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_3" },
+      "datacenter_href": { "ref": "datacenter_product_input", "id": "dr_datacenter" },
+      "instance_type_href": { "ref": "instance_type_product_input", "id": "dr_app_instance_type" },
+      "security_groups": [
+        { "ref": "security_group", "id": "dr_default_security_group" }
+      ],
+      "server_template": [
+        { "ref": "server_template", "id": "python_app_template" },
+        { "ref": "server_template", "id": "java_app_template" },
+        { "ref": "server_template", "id": "ruby_app_template" },
+        { "ref": "server_template", "id": "php_app_template" }
+      ]
+    },
+    {
+      "id": "elasticity_params",
+      "resource_type": "elasticity_params",
+      "bounds": [
+        {
+          "min_count": "2",
+          "max_count": "10"
+        }
+      ],
+      "pacing": [
+        {
+          "resize_calm_time": "5",
+          "resize_down_by": "1",
+          "resize_up_by": "2"
+        }
+      ],
+      "alert_specific_params": [
+        {
+          "decision_threshold": "51",
+          "voters_tag_predicate": "appservers"
+        }
+      ]
+    },
+    {
       "id": "deployment",
       "resource_type": "deployment",
       "name": { "ref": "text_product_input", "id": "deployment_name" },
@@ -493,23 +558,12 @@
           ]
         },
         {
-          "id": "BurstLbServer",
+          "id": "ProdAppServer",
           "resource_type": "server",
-          "name_prefix": "Burst LB",
-          "description": "Apache/HAProxy Load Balancer",
-          "count": "1",
+          "name_prefix": "App",
+          "count": { "ref": "text_product_input", "id": "prod_app_count" },
           "instance": [
-            {
-              "id": "BurstLbInstance",
-              "resource_type": "instance",
-              "cloud_href": { "ref": "cloud_product_input", "id": "cloud_2" },
-              "datacenter_href": { "ref": "datacenter_product_input", "id": "burst_datacenter" },
-              "instance_type_href": { "ref": "instance_type_product_input", "id": "burst_lb_instance_type" },
-              "security_groups": [
-                { "ref": "security_group", "id": "burst_default_security_group" }
-              ],
-              "server_template": [{ "ref": "server_template", "id": "haproxy_template" }]
-            }
+            { "ref": "instance", "id": "prod_app_instance" }
           ],
           "depends": {
             "ref": "select_product_input",
@@ -538,6 +592,54 @@
               ]
             }
           ]
+        },
+        {
+          "id": "CacheServer",
+          "resource_type": "server",
+          "name_prefix": "MemCached",
+          "description": "MemCached Server",
+          "count": { "ref": "text_product_input", "id": "cache_count" },
+          "instance": [
+            {
+              "id": "CacheInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
+              "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
+              "security_groups": [
+                { "ref": "security_group", "id": "prod_default_security_group" }
+              ],
+              "server_template": [{ "ref": "server_template", "id": "memcached_template" }]
+            }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "haz_caching",
+            "value": ["true"]
+          }
+        },
+        {
+          "id": "SyslogServer",
+          "resource_type": "server",
+          "name_prefix": "Syslog",
+          "description": "Syslog Server",
+          "count": "1",
+          "instance": [
+            {
+              "id": "SyslogInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
+              "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
+              "security_groups": [
+                { "ref": "security_group", "id": "prod_default_security_group" }
+              ],
+              "server_template": [{ "ref": "server_template", "id": "rsyslog_template" }]
+            }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "haz_logging",
+            "value": ["true"]
+          }
         }
       ],
       "server_arrays": [
@@ -548,47 +650,145 @@
           "state": "disabled",
           "array_type": "alert",
           "elasticity_params": [
-            {
-              "id": "prod_elasticity_params",
-              "resource_type": "elasticity_params",
-              "bounds": [
-                {
-                  "min_count": "2",
-                  "max_count": "10"
-                }
-              ],
-              "pacing": [
-                {
-                  "resize_calm_time": "5",
-                  "resize_down_by": "1",
-                  "resize_up_by": "2"
-                }
-              ],
-              "alert_specific_params": [
-                {
-                  "decision_threshold": "51",
-                  "voters_tag_predicate": "appservers"
-                }
-              ]
-            }
+            { "ref": "elasticity_params", "id": "elasticity_params" }
           ],
           "instance": [
+            { "ref": "instance", "id": "prod_app_instance" }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "haz_bursting",
+            "value": ["false"]
+          }
+        },
+        {
+          "id": "burst_app_array",
+          "resource_type": "server_array",
+          "name": "Burst Application Servers",
+          "state": "disabled",
+          "array_type": "alert",
+          "elasticity_params": [
+            { "ref": "elasticity_params", "id": "elasticity_params" }
+          ],
+          "instance": [
+            { "ref": "instance", "id": "burst_app_instance" }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "haz_bursting",
+            "value": ["true"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "dr_deployment",
+      "resource_type": "deployment",
+      "name": { "ref": "text_product_input", "id": "dr_deployment_name" },
+      "servers": [
+        {
+          "id": "DRLbServer",
+          "resource_type": "server",
+          "name_prefix": "LB",
+          "description": "Apache/HAProxy Load Balancer",
+          "count": "2",
+          "instance": [
             {
-              "id": "prod_app_instance",
+              "id": "DRLbInstance",
               "resource_type": "instance",
-              "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
-              "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
-              "instance_type_href": { "ref": "instance_type_product_input", "id": "prod_app_instance_type" },
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud_3" },
+              "datacenter_href": { "ref": "datacenter_product_input", "id": "dr_datacenter" },
+              "instance_type_href": { "ref": "instance_type_product_input", "id": "dr_lb_instance_type" },
               "security_groups": [
-                { "ref": "security_group", "id": "prod_default_security_group" }
+                { "ref": "security_group", "id": "dr_default_security_group" }
+              ],
+              "server_template": [{ "ref": "server_template", "id": "haproxy_template" }]
+            }
+          ]
+        },
+        {
+          "id": "DrDbServer",
+          "resource_type": "server",
+          "name_prefix": "DB",
+          "count": "2",
+          "instance": [
+            {
+              "id": "DrDbInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud_3" },
+              "datacenter_href": { "ref": "datacenter_product_input", "id": "dr_datacenter" },
+              "instance_type_href": { "ref": "instance_type_product_input", "id": "dr_db_instance_type" },
+              "security_groups": [
+                { "ref": "security_group", "id": "dr_default_security_group" }
               ],
               "server_template": [
-                { "ref": "server_template", "id": "python_app_template" },
-                { "ref": "server_template", "id": "java_app_template" },
-                { "ref": "server_template", "id": "ruby_app_template" },
-                { "ref": "server_template", "id": "php_app_template" }
+                { "ref": "server_template", "id": "pgsql_db_template" },
+                { "ref": "server_template", "id": "mysql_db_template" }
               ]
             }
+          ]
+        },
+        {
+          "id": "DrCacheServer",
+          "resource_type": "server",
+          "name_prefix": "MemCached",
+          "description": "MemCached Server",
+          "count": { "ref": "text_product_input", "id": "cache_count" },
+          "instance": [
+            {
+              "id": "DrCacheInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud_3" },
+              "datacenter_href": { "ref": "datacenter_product_input", "id": "dr_datacenter" },
+              "security_groups": [
+                { "ref": "security_group", "id": "dr_default_security_group" }
+              ],
+              "server_template": [{ "ref": "server_template", "id": "memcached_template" }]
+            }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "haz_caching",
+            "value": ["true"]
+          }
+        },
+        {
+          "id": "DrSyslogServer",
+          "resource_type": "server",
+          "name_prefix": "Syslog",
+          "description": "Syslog Server",
+          "count": "1",
+          "instance": [
+            {
+              "id": "DrSyslogInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud_3" },
+              "datacenter_href": { "ref": "datacenter_product_input", "id": "dr_datacenter" },
+              "security_groups": [
+                { "ref": "security_group", "id": "dr_default_security_group" }
+              ],
+              "server_template": [{ "ref": "server_template", "id": "rsyslog_template" }]
+            }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "haz_logging",
+            "value": ["true"]
+          }
+        }
+      ],
+      "server_arrays": [
+        {
+          "id": "dr_app_array",
+          "resource_type": "server_array",
+          "name": "Application Servers",
+          "state": "disabled",
+          "array_type": "alert",
+          "elasticity_params": [
+            { "ref": "elasticity_params", "id": "elasticity_params" }
+          ],
+          "instance": [
+            { "ref": "instance", "id": "dr_app_instance" }
           ]
         }
       ]
