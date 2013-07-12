@@ -1330,6 +1330,99 @@ EOF;
     $this->assertEquals(2, count($inputs));
   }
 
+  public function testInputsIncludesDatacenterInputsForFirstAvailableCloudWhenDefaultCloudIsNotReturned() {
+    $mocklink = new \stdClass();
+    $mocklink->rel = 'datacenters';
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockcloud->links = array($mocklink);
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getDatacenters')
+      ->with('1');
+
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/2"
+    },
+    {
+      "id": "bar",
+      "resource_type": "datacenter_product_input",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "foo" }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(2, count($inputs));
+  }
+
+  public function testInputsIncludesInstanceTypeInputsForFirstAvailableCloudWhenDefaultCloudIsNotReturned() {
+    $mockcloud = new \stdClass();
+    $mockcloud->href = "/api/clouds/1";
+    $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
+      ->disableOriginalConstructor()
+      ->getMock();
+    $mockrsapicache->expects($this->once())
+      ->method('getInstanceTypes')
+      ->with('1');
+
+    $mockrsapicache->expects($this->once())
+      ->method('getClouds')
+      ->will($this->returnValue(array($mockcloud)));
+
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('RightScaleAPICache', $mockrsapicache);
+    $json = <<<EOF
+{
+  "version": "1.0.0",
+  "name": "foo",
+  "resources": [
+    {
+      "id": "foo",
+      "resource_type": "cloud_product_input",
+      "input_name": "foo",
+      "default_value": "/api/clouds/2"
+    },
+    {
+      "id": "bar",
+      "resource_type": "instance_type_product_input",
+      "cloud_product_input": { "ref": "cloud_product_input", "id": "foo" }
+    }
+  ]
+}
+
+EOF;
+
+    $productService = $this->getProductService();
+    $product = $productService->createFromJson($json);
+    $this->getDocumentManager()->clear();
+    $inputs = $productService->inputs($product->id);
+
+    $this->assertEquals(2, count($inputs));
+  }
+
   public function testInputsSetsValuesArrayForCloudInput() {
     $mockcloud = new \stdClass();
     $mockcloud->href = "/api/clouds/1";

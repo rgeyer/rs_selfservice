@@ -637,8 +637,12 @@ class ProductService extends BaseEntityService {
         }
 
         if ($resource instanceof \SelfService\Document\InstanceTypeProductInput) {
-          $resource->values = array();
           $cloud_href = $valuesByInputId[$resource->cloud_product_input['id']];
+          if(!array_key_exists($cloud_href,$cloud_capabilities_by_href)) {
+            $keys = array_keys($cloud_capabilities_by_href);
+            $cloud_href = array_shift($keys);
+          }
+          $resource->values = array();
           $resource->cloud_href = $cloud_href;
           $client_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($cloud_href);
           foreach($api_cache->getInstanceTypes($client_id) as $instance_type) {
@@ -651,12 +655,16 @@ class ProductService extends BaseEntityService {
         }
 
         if ($resource instanceof \SelfService\Document\DatacenterProductInput) {
+          $cloud_href = $valuesByInputId[$resource->cloud_product_input['id']];
+          if(!array_key_exists($cloud_href, $cloud_capabilities_by_href)) {
+            $keys = array_keys($cloud_capabilities_by_href);
+            $cloud_href = array_shift($keys);
+          }
           if(property_exists($resource, 'cloud_product_input')) {
-            $cloud = $cloud_capabilities_by_href[$valuesByInputId[$resource->cloud_product_input['id']]];
+            $cloud = $cloud_capabilities_by_href[$cloud_href];
             if(!in_array('datacenters', $cloud)) { continue; }
           }
           $resource->values = array();
-          $cloud_href = $valuesByInputId[$resource->cloud_product_input['id']];
           $resource->cloud_href = $cloud_href;
           $client_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($cloud_href);
           foreach($api_cache->getDatacenters($client_id) as $datacenter) {

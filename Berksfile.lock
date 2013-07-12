@@ -166,7 +166,9 @@
       "locked_version": "2.3.0"
     },
     "rightscaleshim": {
-      "path": "../../Chef/rgeyer-rs-cookbooks/rightscaleshim"
+      "locked_version": "0.1.0",
+      "git": "https://github.com/rgeyer-rs-cookbooks/rightscaleshim.git",
+      "ref": "bd66cd70665abfb77b9bf03263fe890c2a59b014"
     },
     "system": {
       "locked_version": "0.0.1",
