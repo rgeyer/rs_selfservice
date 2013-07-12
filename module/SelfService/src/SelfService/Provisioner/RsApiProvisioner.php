@@ -64,14 +64,16 @@ class RsApiProvisioner extends AbstractProvisioner {
     foreach($product->resources as $resource) {
       if($resource->resource_type == 'security_group') {
         $sg = $prov_helper->provisionSecurityGroup($resource);
-        $prov_prod_service->addProvisionedObject(
-          $provisioned_product_id,
-          array(
-            'href' => $sg->href,
-            'cloud_id' => $sg->cloud_id,
-            'type' => 'security_group'
-          )
-        );
+        if($sg) {
+          $prov_prod_service->addProvisionedObject(
+            $provisioned_product_id,
+            array(
+              'href' => $sg->href,
+              'cloud_id' => $sg->cloud_id,
+              'type' => 'security_group'
+            )
+          );
+        }
       }
     }
 
