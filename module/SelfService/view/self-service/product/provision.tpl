@@ -15,10 +15,11 @@
 <script>
 var product_id = "{$id}";
 var basepath = "{$this->basePath()}";
+var firstfetch = true;
 {literal}
 function paintControl(input, parent) {
   inputid = sanitizeProductInputId(input.id);
-  markup = "<div class='control-group";
+  markup = "<div class='control-group alert-info";
   if(!input.display) {
     markup += " hide";
   }
@@ -67,6 +68,9 @@ function updateControl(dom, input) {
     selects.html(renderCloudInputDependentSelectOptions(input.values, input.default_value, input.cloud_href));
   }
   if(input.display) {
+    if(dom.hasClass('hide')) {
+      dom.addClass('alert-info');
+    }
     dom.removeClass('hide');
   }
 }
@@ -148,11 +152,19 @@ function gofetch() {
           }
         });
       }
+
+      if(firstfetch) {
+        console.log("Was first fetch, gonna clean up");
+        $(".alert-info").removeClass('alert-info');
+        firstfetch = false;
+      }
     }
   });
 }
 
 $(function() {
+  $("#product_input_form").on("focus", "div.control-group.alert-info", function(event) { $(this).removeClass('alert-info'); } );
+
   gofetch();
 
   $("#product_input_form").on("change", "select", function(event) {
