@@ -1,0 +1,214 @@
+{
+  "sources": {
+    "rightscale": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/rightscale"
+    },
+    "logging": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/logging"
+    },
+    "logging_rsyslog": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/logging_rsyslog"
+    },
+    "logging_syslog_ng": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/logging_syslog_ng"
+    },
+    "db": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/db"
+    },
+    "db_mysql": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/db_mysql"
+    },
+    "db_postgres": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/db_postgres"
+    },
+    "block_device": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/block_device"
+    },
+    "sys": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/sys"
+    },
+    "sys_dns": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/sys_dns"
+    },
+    "sys_ntp": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/sys_ntp"
+    },
+    "sys_firewall": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/sys_firewall"
+    },
+    "repo": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/repo"
+    },
+    "repo_svn": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/repo_svn"
+    },
+    "repo_git": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/repo_git"
+    },
+    "repo_ros": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/repo_ros"
+    },
+    "repo_ftp": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/repo_ftp"
+    },
+    "repo_rsync": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/repo_rsync"
+    },
+    "web_apache": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/web_apache"
+    },
+    "app": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/app"
+    },
+    "app_php": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/app_php"
+    },
+    "app_passenger": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/app_passenger"
+    },
+    "app_tomcat": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/app_tomcat"
+    },
+    "app_django": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/app_django"
+    },
+    "lamp": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/lamp"
+    },
+    "memcached": {
+      "locked_version": "13.3.0",
+      "git": "git://github.com/rgeyer/rightscale_cookbooks-1.git",
+      "ref": "88bd1a72999d55239aa7e8e316d3ac4d9d91e749",
+      "rel": "cookbooks/memcached"
+    },
+    "rsss": {
+      "path": "./cookbooks/rsss"
+    },
+    "apt": {
+      "locked_version": "1.10.0"
+    },
+    "yum": {
+      "locked_version": "2.3.0"
+    },
+    "rightscaleshim": {
+      "path": "../../Chef/rgeyer-rs-cookbooks/rightscaleshim"
+    },
+    "system": {
+      "locked_version": "0.0.1",
+      "git": "git://github.com/flaccid/cookbooks.git",
+      "ref": "95fc01fe287c0afafc4dbc83ede926d74fed6631",
+      "rel": "cookbooks/system"
+    },
+    "resolver": {
+      "locked_version": "1.1.2"
+    },
+    "iptables": {
+      "locked_version": "0.12.0"
+    },
+    "git": {
+      "locked_version": "2.5.2"
+    },
+    "dmg": {
+      "locked_version": "1.1.0"
+    },
+    "build-essential": {
+      "locked_version": "1.4.0"
+    },
+    "windows": {
+      "locked_version": "1.10.0"
+    },
+    "chef_handler": {
+      "locked_version": "1.1.4"
+    },
+    "runit": {
+      "locked_version": "1.1.6"
+    },
+    "apache2": {
+      "locked_version": "1.6.6"
+    },
+    "logrotate": {
+      "locked_version": "1.2.2"
+    },
+    "python": {
+      "locked_version": "1.3.4"
+    },
+    "cron": {
+      "locked_version": "1.2.4"
+    }
+  }
+}

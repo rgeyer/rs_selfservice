@@ -1,3 +1,5 @@
+site :opscode
+
 group :servertemplate do
   cookbook "rightscale",
     git: "git://github.com/rgeyer/rightscale_cookbooks-1.git",
@@ -130,15 +132,16 @@ group :servertemplate do
     rel: "cookbooks/memcached"
 
   cookbook "rsss",
-    path: "cookbooks/rsss"
+    git: "git://github.com/rgeyer-rs-cookbooks/rsss.git"
+
+  cookbook "apt", "~> 1.10.0"
 end
 
 group :vagrant_only do
   cookbook "yum"
 
-  cookbook "rs_vagrant_shim",
-    git: "https://github.com/rgeyer-rs-cookbooks/rs_vagrant_shim.git",
-    rel: "cookbooks/rs_vagrant_shim"
+  cookbook "rightscaleshim",
+    git: "https://github.com/rgeyer-rs-cookbooks/rightscaleshim.git"
 
   cookbook "system",
     git: "git://github.com/flaccid/cookbooks.git",

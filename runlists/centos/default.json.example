@@ -47,6 +47,7 @@
       "8:9999-9999-9999"
     ],
     "dns": {
+      "_comment": "Set these plus 'user' and 'password' if you want to perform a dynamic DNS update. Otherwise leave blank",
       "id": "id",
       "region": "only for CloudDNS"
     }
@@ -59,16 +60,10 @@
     "nameservers": ["8.8.8.8","8.8.4.4","4.2.2.3","4.2.2.6"],
     "search": "foo.bar.baz"
   },
-  "sys_dns": {
-    "choice": "DNSMadeEasy",
-    "user": "user",
-    "password": "password"
-  },
   "run_list": [
     "recipe[resolver]",
-    "recipe[rs_vagrant_shim]",
+    "recipe[rightscaleshim]",
     "recipe[system::hostname]",
-    "recipe[sys_dns::default]",
     "recipe[logging::default]",
     "recipe[sys_firewall::default]",
     "recipe[sys_ntp::default]",
