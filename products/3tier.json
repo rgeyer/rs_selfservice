@@ -386,47 +386,220 @@
       "advanced": true
     },
     {
+      "id": "ssh_security_group_rule",
+      "resource_type": "security_group_rule",
+      "protocol": "tcp",
+      "cidr_ips": "0.0.0.0\/0",
+      "source_type": "cidr_ips",
+      "protocol_details": [
+        {
+          "end_port": "22",
+          "start_port": "22"
+        }
+      ]
+    },
+    {
       "id": "prod_default_security_group",
       "resource_type": "security_group",
       "name": "default",
-      "description": "3-Tier",
+      "description": "3-Tier Default",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "ssh_security_group_rule" }
+      ]
+    },
+    {
+      "id": "prod_lb_security_group",
+      "resource_type": "security_group",
+      "name": "prod-lb",
+      "description": "3-Tier Load Balancer",
       "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
       "security_group_rules": [
         {
-          "id": "SshIngressSecurityGroupRule",
+          "id": "prod_lb_http_ingress",
           "resource_type": "security_group_rule",
           "protocol": "tcp",
           "cidr_ips": "0.0.0.0\/0",
           "source_type": "cidr_ips",
           "protocol_details": [
             {
-              "end_port": "22",
-              "start_port": "22"
+              "end_port": "80",
+              "start_port": "80"
+            }
+          ]
+        },
+        {
+          "id": "prod_lb_https_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "cidr_ips": "0.0.0.0\/0",
+          "source_type": "cidr_ips",
+          "protocol_details": [
+            {
+              "end_port": "443",
+              "start_port": "443"
             }
           ]
         }
       ]
     },
     {
-      "id": "burst_default_security_group",
+      "id": "prod_app_security_group",
       "resource_type": "security_group",
-      "name": "burst-default",
-      "description": "3-Tier",
-      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_2" },
+      "name": "prod-app",
+      "description": "3-Tier Application",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
       "security_group_rules": [
         {
-          "id": "SshIngressSecurityGroupRule",
+          "id": "prod_app_lb_ingress",
           "resource_type": "security_group_rule",
           "protocol": "tcp",
-          "cidr_ips": "0.0.0.0\/0",
-          "source_type": "cidr_ips",
+          "ingress_group": { "ref": "security_group", "id": "prod_lb_security_group" },
+          "source_type": "group",
           "protocol_details": [
             {
-              "end_port": "22",
-              "start_port": "22"
+              "end_port": "8000",
+              "start_port": "8000"
             }
           ]
         }
+      ]
+    },
+    {
+      "id": "prod_db_security_group",
+      "resource_type": "security_group",
+      "name": "prod-db",
+      "description": "3-Tier Database",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
+      "security_group_rules": [
+        {
+          "id": "prod_db_noburst_app_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "ingress_group": { "ref": "security_group", "id": "prod_app_security_group" },
+          "source_type": "group",
+          "protocol_details": [
+            {
+              "end_port": "3306",
+              "start_port": "3306",
+              "depends": {
+                "ref": "text_product_input",
+                "id": "db_tier_type",
+                "value": ["mysql"]
+              }
+            },
+            {
+              "end_port": "5432",
+              "start_port": "5432",
+              "depends": {
+                "ref": "text_product_input",
+                "id": "db_tier_type",
+                "value": ["pgsql"]
+              }
+            }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "haz_bursting",
+            "value": ["false"]
+          }
+        },
+        {
+          "id": "prod_db_burst_app_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "ingress_group": { "ref": "security_group", "id": "prod_app_security_group" },
+          "source_type": "group",
+          "protocol_details": [
+            {
+              "end_port": "3306",
+              "start_port": "3306",
+              "depends": {
+                "ref": "text_product_input",
+                "id": "db_tier_type",
+                "value": ["mysql"]
+              }
+            },
+            {
+              "end_port": "5432",
+              "start_port": "5432",
+              "depends": {
+                "ref": "text_product_input",
+                "id": "db_tier_type",
+                "value": ["pgsql"]
+              }
+            }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "haz_bursting",
+            "value": ["true"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "prod_syslog_security_group",
+      "resource_type": "security_group",
+      "name": "prod-rsyslog",
+      "description": "3-Tier Rsyslog",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
+      "security_group_rules": [
+        {
+          "id": "prod_syslog_default_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "udp",
+          "ingress_group": { "ref": "security_group", "id": "prod_default_security_group" },
+          "source_type": "group",
+          "protocol_details": [
+            {
+              "end_port": "514",
+              "start_port": "514"
+            }
+          ]
+        }
+      ],
+      "depends": {
+        "ref": "select_product_input",
+        "id": "haz_logging",
+        "value": ["true"]
+      }
+    },
+    {
+      "id": "prod_cache_security_group",
+      "resource_type": "security_group",
+      "name": "prod-cache",
+      "description": "3-Tier Memcache",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
+      "security_group_rules": [
+        {
+          "id": "prod_cache_app_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "ingress_group": { "ref": "security_group", "id": "prod_app_security_group" },
+          "source_type": "group",
+          "protocol_details": [
+            {
+              "end_port": "27017",
+              "start_port": "27017"
+            }
+          ]
+        }
+      ],
+      "depends": {
+        "ref": "select_product_input",
+        "id": "haz_caching",
+        "value": ["true"]
+      }
+    },
+    {
+      "id": "burst_default_security_group",
+      "resource_type": "security_group",
+      "name": "burst-default",
+      "description": "3-Tier Bursting Default",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_2" },
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "ssh_security_group_rule" }
       ],
       "depends": {
         "ref": "select_product_input",
@@ -435,25 +608,35 @@
       }
     },
     {
-      "id": "dr_default_security_group",
+      "id": "burst_app_security_group",
       "resource_type": "security_group",
-      "name": "dr-default",
-      "description": "3-Tier",
-      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_3" },
+      "name": "burst-app",
+      "description": "3-Tier Bursting Application",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_2" },
       "security_group_rules": [
         {
-          "id": "SshIngressSecurityGroupRule",
+          "id": "burst_app_lb_ingress",
           "resource_type": "security_group_rule",
           "protocol": "tcp",
           "cidr_ips": "0.0.0.0\/0",
           "source_type": "cidr_ips",
           "protocol_details": [
             {
-              "end_port": "22",
-              "start_port": "22"
+              "end_port": "8000",
+              "start_port": "8000"
             }
           ]
         }
+      ]
+    },
+    {
+      "id": "dr_default_security_group",
+      "resource_type": "security_group",
+      "name": "dr-default",
+      "description": "3-Tier Disaster Recover Default",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud_3" },
+      "security_group_rules": [
+        { "ref": "security_group_rule", "id": "ssh_security_group_rule" }
       ],
       "depends": {
         "ref": "select_product_input",
@@ -468,7 +651,8 @@
       "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
       "instance_type_href": { "ref": "instance_type_product_input", "id": "prod_app_instance_type" },
       "security_groups": [
-        { "ref": "security_group", "id": "prod_default_security_group" }
+        { "ref": "security_group", "id": "prod_default_security_group" },
+        { "ref": "security_group", "id": "prod_app_security_group" }
       ],
       "server_template": [
         { "ref": "server_template", "id": "python_app_template" },
@@ -533,9 +717,120 @@
       ]
     },
     {
+      "id": "mysql_db_provider_input",
+      "resource_type": "input",
+      "name": "db\/provider_type",
+      "value": "text:db_mysql_5.5",
+      "depends": {
+        "ref": "text_product_input",
+        "id": "db_tier_type",
+        "value": ["mysql"]
+      }
+    },
+    {
+      "id": "pgsql_db_provider_input",
+      "resource_type": "input",
+      "name": "db\/provider_type",
+      "value": "text:db_postgres_9.1",
+      "depends": {
+        "ref": "text_product_input",
+        "id": "db_tier_type",
+        "value": ["pgsql"]
+      }
+    },
+    {
+      "id": "repo_input",
+      "resource_type": "input",
+      "name": "repo\/default\/repository",
+      "value": "text: git:\/\/github.com\/rightscale\/examples.git"
+    },
+    {
+      "id": "php_revision_input",
+      "resource_type": "input",
+      "name": "repo\/default\/revision",
+      "value": "text: unified_php",
+      "depends": {
+        "ref": "text_product_input",
+        "id": "app_tier_type",
+        "value": ["php"]
+      }
+    },
+    {
+      "id": "python_revision_input",
+      "resource_type": "input",
+      "name": "repo\/default\/revision",
+      "value": "text: unified_django",
+      "depends": {
+        "ref": "text_product_input",
+        "id": "app_tier_type",
+        "value": ["python"]
+      }
+    },
+    {
+      "id": "ruby_revision_input",
+      "resource_type": "input",
+      "name": "repo\/default\/revision",
+      "value": "text: unified_rails3",
+      "depends": {
+        "ref": "text_product_input",
+        "id": "app_tier_type",
+        "value": ["ruby"]
+      }
+    },
+    {
+      "id": "java_revision_input",
+      "resource_type": "input",
+      "name": "repo\/default\/revision",
+      "value": "text: unified_tomcat",
+      "depends": {
+        "ref": "text_product_input",
+        "id": "app_tier_type",
+        "value": ["java"]
+      }
+    },
+    {
       "id": "deployment",
       "resource_type": "deployment",
       "name": { "ref": "text_product_input", "id": "deployment_name" },
+      "inputs": [
+        {
+          "id": "prod_db_fqdn_input",
+          "resource_type": "input",
+          "name": "db\/dns\/master\/fqdn",
+          "value": "text: localhost"
+        },
+        {
+          "id": "prod_db_lineage_input",
+          "resource_type": "input",
+          "name": "db\/backup\/lineage",
+          "value": "text:changeme"
+        },
+        { "ref": "input", "id": "mysql_db_provider_input" },
+        { "ref": "input", "id": "pgsql_db_provider_input" },
+        { "ref": "input", "id": "repo_input"},
+        { "ref": "input", "id": "php_revision_input"},
+        { "ref": "input", "id": "python_revision_input"},
+        { "ref": "input", "id": "ruby_revision_input"},
+        { "ref": "input", "id": "java_revision_input"},
+        {
+          "id": "prod_dns_choice_input",
+          "resource_type": "input",
+          "name": "sys_dns\/choice",
+          "value": "text:DNSMadeEasy"
+        },
+        {
+          "id": "prod_dns_password_input",
+          "resource_type": "input",
+          "name": "sys_dns\/password",
+          "value": "text:password"
+        },
+        {
+          "id": "prod_dns_user_input",
+          "resource_type": "input",
+          "name": "sys_dns\/user",
+          "value": "text:user"
+        }
+      ],
       "servers": [
         {
           "id": "LbServer",
@@ -551,7 +846,8 @@
               "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
               "instance_type_href": { "ref": "instance_type_product_input", "id": "prod_lb_instance_type" },
               "security_groups": [
-                { "ref": "security_group", "id": "prod_default_security_group" }
+                { "ref": "security_group", "id": "prod_default_security_group" },
+                { "ref": "security_group", "id": "prod_lb_security_group" }
               ],
               "server_template": [{ "ref": "server_template", "id": "haproxy_template" }]
             }
@@ -584,7 +880,8 @@
               "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
               "instance_type_href": { "ref": "instance_type_product_input", "id": "prod_db_instance_type" },
               "security_groups": [
-                { "ref": "security_group", "id": "prod_default_security_group" }
+                { "ref": "security_group", "id": "prod_default_security_group" },
+                { "ref": "security_group", "id": "prod_db_security_group" }
               ],
               "server_template": [
                 { "ref": "server_template", "id": "pgsql_db_template" },
@@ -606,7 +903,8 @@
               "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
               "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
               "security_groups": [
-                { "ref": "security_group", "id": "prod_default_security_group" }
+                { "ref": "security_group", "id": "prod_default_security_group" },
+                { "ref": "security_group", "id": "prod_cache_security_group" }
               ],
               "server_template": [{ "ref": "server_template", "id": "memcached_template" }]
             }
@@ -630,7 +928,8 @@
               "cloud_href": { "ref": "cloud_product_input", "id": "cloud_1" },
               "datacenter_href": { "ref": "datacenter_product_input", "id": "prod_datacenter" },
               "security_groups": [
-                { "ref": "security_group", "id": "prod_default_security_group" }
+                { "ref": "security_group", "id": "prod_default_security_group" },
+                { "ref": "security_group", "id": "prod_syslog_security_group" }
               ],
               "server_template": [{ "ref": "server_template", "id": "rsyslog_template" }]
             }
@@ -685,6 +984,45 @@
       "id": "dr_deployment",
       "resource_type": "deployment",
       "name": { "ref": "text_product_input", "id": "dr_deployment_name" },
+      "inputs": [
+        {
+          "id": "prod_db_fqdn_input",
+          "resource_type": "input",
+          "name": "db\/dns\/master\/fqdn",
+          "value": "text: localhost"
+        },
+        {
+          "id": "prod_db_lineage_input",
+          "resource_type": "input",
+          "name": "db\/backup\/lineage",
+          "value": "text:changeme"
+        },
+        { "ref": "input", "id": "mysql_db_provider_input" },
+        { "ref": "input", "id": "pgsql_db_provider_input" },
+        { "ref": "input", "id": "repo_input"},
+        { "ref": "input", "id": "php_revision_input"},
+        { "ref": "input", "id": "python_revision_input"},
+        { "ref": "input", "id": "ruby_revision_input"},
+        { "ref": "input", "id": "java_revision_input"},
+        {
+          "id": "prod_dns_choice_input",
+          "resource_type": "input",
+          "name": "sys_dns\/choice",
+          "value": "text:DNSMadeEasy"
+        },
+        {
+          "id": "prod_dns_password_input",
+          "resource_type": "input",
+          "name": "sys_dns\/password",
+          "value": "text:password"
+        },
+        {
+          "id": "prod_dns_user_input",
+          "resource_type": "input",
+          "name": "sys_dns\/user",
+          "value": "text:user"
+        }
+      ],
       "servers": [
         {
           "id": "DRLbServer",
@@ -851,9 +1189,9 @@
     {
       "id": "java_app_template",
       "resource_type": "server_template",
-      "name": "Tomcat7 App Server Beta (v13.4)",
-      "revision": "63",
-      "publication_id": "52708",
+      "name": "Tomcat App Server (v13.4)",
+      "revision": "137",
+      "publication_id": "52707",
       "depends": {
         "ref": "text_product_input",
         "id": "app_tier_type",

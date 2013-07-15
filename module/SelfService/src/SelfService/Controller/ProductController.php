@@ -134,6 +134,7 @@ class ProductController extends BaseController {
             $this->getLogger()->err("The file referenced by product_json does not exist.");
           } else {
             $this->getProductEntityService()->createFromJson(file_get_contents($product_path));
+            $this->getLogger()->info(sprintf("Successfully added product %s from file %s", $relative_path, $product_path));
           }
         }
       } catch (\Exception $e) {
