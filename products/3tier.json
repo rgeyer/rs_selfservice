@@ -791,7 +791,12 @@
             { "ref": "instance", "id": "dr_app_instance" }
           ]
         }
-      ]
+      ],
+      "depends": {
+        "ref": "select_product_input",
+        "id": "haz_dr",
+        "value": ["true"]
+      }
     },
     {
       "id": "rsyslog_template",
