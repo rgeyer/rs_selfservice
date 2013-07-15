@@ -159,7 +159,7 @@
     "rsss": {
       "locked_version": "0.0.5",
       "git": "git://github.com/rgeyer-rs-cookbooks/rsss.git",
-      "ref": "68a5a910525a5c85fa3f0b5a88c12778e7287763"
+      "ref": "110a0641c51364b2275f4c183c792308380161c6"
     },
     "apt": {
       "locked_version": "1.10.0"
