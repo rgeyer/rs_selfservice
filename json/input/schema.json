@@ -553,7 +553,7 @@
         "protocol": { "enum": ["tcp","udp","icmp"] },
         "protocol_details": {
           "type": "array",
-          "maxItems": 1,
+          "minItems": 1,
           "items": {
             "type": "object",
             "properties": {
