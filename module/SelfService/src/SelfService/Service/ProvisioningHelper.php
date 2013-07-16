@@ -302,6 +302,16 @@ class ProvisioningHelper {
     $result = array();
     $cloud_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($server->instance->cloud_href);
 
+    $cloud = $this->_clouds[$cloud_id];
+    if (!$cloud) {
+      $message = sprintf("Attempting to provision server named %s on cloud id %s but this account only has the following clouds (%s)",
+        $server->name_prefix,
+        $cloud_id,
+        join(',', array_keys($this->_clouds))
+      );
+      throw new \InvalidArgumentException($message);
+    }
+
     $st = $this->_findOrImportServerTemplate(
       $server->instance->server_template->name,
       $server->instance->server_template->revision,
@@ -313,7 +323,7 @@ class ProvisioningHelper {
     $this->_selectMciAndInstanceType($st, $cloud_id, $mci_href, $instance_type_href);
 
     $datacenter_hrefs = array();
-    if($this->_clouds[$cloud_id]->supportsCloudFeature('datacenters')) {
+    if($cloud->supportsCloudFeature('datacenters')) {
       if($server->instance->datacenter_href) {
         $datacenter_hrefs = $server->instance->datacenter_href;
       } else {
@@ -344,7 +354,7 @@ class ProvisioningHelper {
       $params['server[name]'] = $nickname;
       $params['server[deployment_href]'] = $deployment->href;
       $params['server[instance][server_template_href]'] = $st->href;
-      $params['server[instance][cloud_href]'] = $this->_clouds[$cloud_id]->href;
+      $params['server[instance][cloud_href]'] = $cloud->href;
       $params['server[instance][instance_type_href]'] = $instance_href;
       if(count($server_secgrps) > 0) {
         $params['server[instance][security_group_hrefs]'] = $server_secgrps;
@@ -463,7 +473,16 @@ class ProvisioningHelper {
     $security_group->name = sprintf("%s-%s", $security_group->name, $this->_now_ts);
     $cloud_id = RightScaleClient::getIdFromRelativeHref($security_group->cloud_href);
     // Check if this cloud supports security groups first!
-    if(!$this->_clouds[$cloud_id]->supportsCloudFeature('security_groups')) {
+    $cloud = $this->_clouds[$cloud_id];
+    if (!$cloud) {
+      $message = sprintf("Attempting to provision security group named %s on cloud id %s but this account only has the following clouds (%s)",
+        $security_group->name,
+        $cloud_id,
+        join(',', array_keys($this->_clouds))
+      );
+      throw new \InvalidArgumentException($message);
+    }
+    if(!$cloud->supportsCloudFeature('security_groups')) {
       $this->log->debug('The specified cloud (' . $cloud_id . ') does not support security groups, skipping the creation of the security group');
       return false;
     }
@@ -499,8 +518,18 @@ class ProvisioningHelper {
    */
   public function provisionSecurityGroupRules($security_group) {
     $cloud_id = RightScaleClient::getIdFromRelativeHref($security_group->cloud_href);
+
+    $cloud = $this->_clouds[$cloud_id];
+    if (!$cloud) {
+      $message = sprintf("Attempting to provision security group rule for security group named %s on cloud id %s but this account only has the following clouds (%s)",
+        $security_group->name,
+        $cloud_id,
+        join(',', array_keys($this->_clouds))
+      );
+      throw new \InvalidArgumentException($message);
+    }
     // Check if this cloud supports security groups first!
-    if(!$this->_clouds[$cloud_id]->supportsCloudFeature('security_groups')) {
+    if(!$cloud->supportsCloudFeature('security_groups')) {
       $this->log->debug('The specified cloud (' . $cloud_id . ') does not support security groups, skipping the creation of the security group rules');
       return false;
     }
@@ -571,6 +600,16 @@ class ProvisioningHelper {
     $result = array();
     $cloud_id = \RGeyer\Guzzle\Rs\RightScaleClient::getIdFromRelativeHref($array->instance->cloud_href);
 
+    $cloud = $this->_clouds[$cloud_id];
+    if (!$cloud) {
+      $message = sprintf("Attempting to provision server array named %s on cloud id %s but this account only has the following clouds (%s)",
+        $array->name,
+        $cloud_id,
+        join(',', array_keys($this->_clouds))
+      );
+      throw new \InvalidArgumentException($message);
+    }
+
     $st = $this->_findOrImportServerTemplate(
       $array->instance->server_template->name,
       $array->instance->server_template->revision,
@@ -594,7 +633,7 @@ class ProvisioningHelper {
       'server_array[elasticity_params][pacing][resize_up_by]' => strval($array->elasticity_params->pacing->resize_up_by) ?: "3",
       'server_array[elasticity_params][pacing][resize_down_by]' => strval($array->elasticity_params->pacing->resize_down_by) ?: "1",
       'server_array[deployment_href]' => $deployment->href,
-      'server_array[instance][cloud_href]' => $this->_clouds[$cloud_id]->href,
+      'server_array[instance][cloud_href]' => $cloud->href,
       'server_array[instance][server_template_href]' => $st->href,
       'server_array[instance][multi_cloud_image_href]' => $mci_href,
       'server_array[instance][instance_type_href]' => $instance_type_href,

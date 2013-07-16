@@ -627,7 +627,12 @@
             }
           ]
         }
-      ]
+      ],
+      "depends": {
+        "ref": "select_product_input",
+        "id": "haz_bursting",
+        "value": ["true"]
+      }
     },
     {
       "id": "dr_default_security_group",
