@@ -44,6 +44,10 @@ class User
 	 * @var string
 	 */
 	public $name;
+
+  public function getName() {
+    return $this->name;
+  }
 	
 	/**
    * @ODM\String

@@ -14,7 +14,7 @@
     <tr>
       <td>{$product->id}</td>
       <td>{$product->product->name}</td>
-      <td>{$product->owner->name}</td>
+      <td>{$product->owner->getName()}</td>
       <td>{$product->createdate|date_format}</td>
       <td>{count($product->provisioned_objects)}
       <td>{foreach $actions as $key=>$action}<a href="{$this->url($action.url_parts.controller, ['action' => $action.url_parts.action, 'id' => $product->id])}"{if $action.is_ajax} class="ajaxaction" data-nexthop="self"{/if}><img src="{$this->basePath()}/{$action.img_path}"/></a>{/foreach}</td>
