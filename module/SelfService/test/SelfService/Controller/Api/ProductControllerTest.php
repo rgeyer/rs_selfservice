@@ -165,6 +165,7 @@ EOF;
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('Provisioner', $helpermock);
     $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\ProductService', $productServiceMock);
+    $this->getApplicationServiceLocator()->setService('logger', $this->getMock('\Zend\Log\Logger'));
     $this->dispatch('/api/product/abc123/provision', Request::METHOD_POST);
 
     $this->assertResponseStatusCode(201);
@@ -179,6 +180,7 @@ EOF;
 
   public function testProvisionReturns404ForNonExistentProduct() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $this->getApplicationServiceLocator()->setService('logger', $this->getMock('\Zend\Log\Logger'));
 
     $this->dispatch('/api/product/abc123/provision', Request::METHOD_POST);
 
@@ -202,6 +204,7 @@ EOF;
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('Provisioner', $helpermock);
     $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\ProductService', $productServiceMock);
+    $this->getApplicationServiceLocator()->setService('logger', $this->getMock('\Zend\Log\Logger'));
 
     $this->dispatch('/api/product/abc123/provision', Request::METHOD_POST);
     $this->assertResponseStatusCode(201);
@@ -222,6 +225,7 @@ EOF;
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('Provisioner', $helpermock);
     $this->getApplicationServiceLocator()->setService('SelfService\Service\Entity\ProductService', $productServiceMock);
+    $this->getApplicationServiceLocator()->setService('logger', $this->getMock('\Zend\Log\Logger'));
 
     $this->dispatch('/api/product/abc123/provision', Request::METHOD_POST);
 

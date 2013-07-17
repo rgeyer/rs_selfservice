@@ -18,6 +18,7 @@ class CacheControllerTest extends AbstractConsoleControllerTestCase {
     $cache_service_mock = $this->getMockBuilder('SelfService\Service\CacheService')->disableOriginalConstructor()->getMock();
     $this->getApplicationServiceLocator()->setAllowOverride(true);
     $this->getApplicationServiceLocator()->setService('CacheService', $cache_service_mock);
+    $this->getApplicationServiceLocator()->setService('logger', $this->getMock('\Zend\Log\Logger'));
 
     $this->dispatch('cache update rightscale');
 

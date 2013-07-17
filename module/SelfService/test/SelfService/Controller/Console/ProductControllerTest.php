@@ -33,6 +33,8 @@ class ProductControllerTest extends AbstractConsoleControllerTestCase {
   }
 
   public function testConsoleAddActionCanBeAccessed() {
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('logger', $this->getMock('\Zend\Log\Logger'));
     $productService = $this->getProductEntityService();
     $this->assertEquals(0, $productService->findAll()->count());
     $this->dispatch('product add php3tier');
@@ -44,6 +46,8 @@ class ProductControllerTest extends AbstractConsoleControllerTestCase {
   }
 
   public function testConsoleAddAssumesManifestNameWhenPathFlagNotSet() {
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('logger', new \Zend\Log\Logger());
     $this->dispatch('product add php3tier');
 
     $this->assertActionName('consoleadd');
@@ -53,6 +57,8 @@ class ProductControllerTest extends AbstractConsoleControllerTestCase {
   }
 
   public function testConsoleAddTriesRelativeOrAbsolutePathWhenPathFlagSet() {
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('logger', new \Zend\Log\Logger());
     $this->dispatch('product add ./foo/bar/baz.manifest.json --path');
 
     $this->assertActionName('consoleadd');
@@ -62,6 +68,8 @@ class ProductControllerTest extends AbstractConsoleControllerTestCase {
   }
 
   public function testConsoleAddInformsUserWhenManifestDoesNotHaveProductJson() {
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('logger', new \Zend\Log\Logger());
     $this->dispatch('product add '.__DIR__.'/../../../products/empty.manifest.json --path');
 
     $this->assertActionName('consoleadd');
@@ -71,6 +79,8 @@ class ProductControllerTest extends AbstractConsoleControllerTestCase {
   }
 
   public function testConsoleAddInformsUserWhenManifestReferencesNonExistentProductJson() {
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('logger', new \Zend\Log\Logger());
     $this->dispatch('product add '.__DIR__.'/../../../products/invalidproductjson.manifest.json --path');
 
     $this->assertActionName('consoleadd');

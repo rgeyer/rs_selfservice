@@ -43,7 +43,7 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
   }
 
   public function testIndexActionHasCorrectActionsForProvisionedProducts() {
-    \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    \SelfServiceTest\Helpers::authenticateAsAdmin($this->getApplicationServiceLocator());
     $service = $this->getProvisionedProductEntityService();
     $pp = $service->create(array());
 
@@ -58,6 +58,8 @@ class ProvisionedProductControllerTest extends AbstractHttpControllerTestCase {
 
   public function testCleanupActionCanBeAccessed() {
     \SelfServiceTest\Helpers::disableAuthenticationAndAuthorization($this->getApplicationServiceLocator());
+    $this->getApplicationServiceLocator()->setAllowOverride(true);
+    $this->getApplicationServiceLocator()->setService('logger', $this->getMock('\Zend\Log\Logger'));
     $provisionedProduct = $this->getProvisionedProductEntityService()->create(array());
     $this->dispatch('/provisionedproducts/'.$provisionedProduct->id.'/cleanup');
 
