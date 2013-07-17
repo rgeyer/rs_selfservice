@@ -14,4 +14,4 @@ before_script:
   - mkdir -p data/SmartyModule/templates_c
   - sudo easy_install pip
   - sudo pip install jsonschema
-script: phpunit -d memory_limit=2056M --coverage-text -c module/SelfService/test/phpunit.xml
+script: phpunit -d memory_limit=2056M -c module/SelfService/test/phpunit.xml
