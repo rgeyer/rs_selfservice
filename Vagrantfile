@@ -5,8 +5,8 @@ Vagrant.configure("2") do |config|
   config.vm.define :centos do |default_config|
     default_config.vm.hostname = "centos"
 
-    default_config.vm.box = "ri_centos6.3_v5.8.8"
-    default_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_centos6.3_v5.8.8.box"
+    default_config.vm.box = "ri_centos6.4_v13.4"
+    default_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_centos6.4_v13.4.box"
 
     default_config.vm.network :private_network, ip: "33.33.33.9"
     default_config.vm.network :forwarded_port, guest: 27017, host: 27017
@@ -17,6 +17,8 @@ Vagrant.configure("2") do |config|
     default_config.rightscaleshim.run_list_dir = "runlists/centos"
     default_config.rightscaleshim.shim_dir = "rightscaleshim/centos"
     default_config.vm.provision :chef_solo do |chef|
+      chef.binary_env = "GEM_HOME=/opt/rightscale/sandbox/lib/ruby/gems/1.8"
+      chef.binary_path = "/opt/rightscale/sandbox/bin"
     end
   end
 
