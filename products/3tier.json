@@ -794,6 +794,30 @@
       }
     },
     {
+      "id": "ApplicationScaleUpAlertSpec",
+      "resource_type": "alert_spec",
+      "name": "Apache Scale Up",
+      "file": "apache/apache_requests",
+      "variable": "count",
+      "condition": ">",
+      "threshold": "25",
+      "duration": "1",
+      "vote_tag": "appservers",
+      "vote_type": "grow"
+    },
+    {
+      "id": "ApplicationScaleDownAlertSpec",
+      "resource_type": "alert_spec",
+      "name": "Apache Scale Down",
+      "file": "apache/apache_requests",
+      "variable": "count",
+      "condition": "<",
+      "threshold": "75",
+      "duration": "1",
+      "vote_tag": "appservers",
+      "vote_type": "shrink"
+    },
+    {
       "id": "deployment",
       "resource_type": "deployment",
       "name": { "ref": "text_product_input", "id": "deployment_name" },
@@ -959,6 +983,10 @@
           "instance": [
             { "ref": "instance", "id": "prod_app_instance" }
           ],
+          "alert_specs": [
+            { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
+            { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
+          ],
           "depends": {
             "ref": "select_product_input",
             "id": "haz_bursting",
@@ -976,6 +1004,10 @@
           ],
           "instance": [
             { "ref": "instance", "id": "burst_app_instance" }
+          ],
+          "alert_specs": [
+            { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
+            { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
           ],
           "depends": {
             "ref": "select_product_input",
@@ -1132,6 +1164,10 @@
           ],
           "instance": [
             { "ref": "instance", "id": "dr_app_instance" }
+          ],
+          "alert_specs": [
+            { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
+            { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
           ]
         }
       ],
