@@ -427,9 +427,16 @@
     {
       "id": "httperf_template",
       "resource_type": "server_template",
-      "name": "Httperf Load Tester",
-      "revision": "15",
-      "publication_id": "41366"
+      "name": "Siege Load Tester",
+      "revision": "17",
+      "publication_id": "53158"
+    },
+    {
+      "id": "memcached_template",
+      "resource_type": "server_template",
+      "name": "Memcached Server Beta (v13.4)",
+      "revision": "49",
+      "publication_id": "52715"
     }
   ]
 }
