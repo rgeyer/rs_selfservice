@@ -79,7 +79,7 @@ function renderCloudSelectOptions(options, default_value) {
   markup = "";
   $(options).each(function(k,v) {
     markup += "      <option value='"+v['href']+"'";
-    if(v.value == default_value) {
+    if(v['href'] == default_value) {
       markup += " selected";
     }
     markup += ">"+v['name']+"</option>";
