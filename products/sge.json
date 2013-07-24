@@ -1,0 +1,435 @@
+{
+  "version": "1.0.0",
+  "name": "Social Gaming",
+  "icon_filename": "sge.png",
+  "launch_servers": false,
+  "resources": [
+    {
+      "id": "deployment_name",
+      "resource_type": "text_product_input",
+      "default_value": "Social Gaming",
+      "input_name": "deployment_name",
+      "display_name": "Deployment Name",
+      "description": "The deployment name"
+    },
+    {
+      "id": "cloud",
+      "resource_type": "cloud_product_input",
+      "default_value": "/api/clouds/2175",
+      "input_name": "cloud",
+      "display_name": "Cloud",
+      "description": "The cloud for your application"
+    },
+    {
+      "id": "type",
+      "resource_type": "select_product_input",
+      "options": ["dev","prod","load"],
+      "default_value": ["prod"],
+      "input_name": "type",
+      "display_name": "Deployment Type",
+      "description": "What sort of deployment do you need?"
+    },
+    {
+      "id": "default_security_group",
+      "resource_type": "security_group",
+      "name": "sge-default",
+      "description": "SGE Default",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "id": "ssh_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "cidr_ips": "0.0.0.0\/0",
+          "source_type": "cidr_ips",
+          "protocol_details": [
+            {
+              "end_port": "22",
+              "start_port": "22"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lb_security_group",
+      "resource_type": "security_group",
+      "name": "sge-lb",
+      "description": "SGE Load Balancer",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "id": "http_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "cidr_ips": "0.0.0.0\/0",
+          "source_type": "cidr_ips",
+          "protocol_details": [
+            {
+              "end_port": "80",
+              "start_port": "80"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app_security_group",
+      "resource_type": "security_group",
+      "name": "sge-app",
+      "description": "SGE Application",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "id": "lb_to_app_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "ingress_group": { "ref": "security_group", "id": "lb_security_group" },
+          "source_type": "group",
+          "protocol_details": [
+            {
+              "end_port": "8000",
+              "start_port": "8000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db_security_group",
+      "resource_type": "security_group",
+      "name": "sge-db",
+      "description": "SGE Database",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "id": "ssh_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "ingress_group": { "ref": "security_group", "id": "app_security_group" },
+          "source_type": "group",
+          "protocol_details": [
+            {
+              "end_port": "3306",
+              "start_port": "3306"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cache_security_group",
+      "resource_type": "security_group",
+      "name": "sge-cache",
+      "description": "SGE Memcache",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_group_rules": [
+        {
+          "id": "cache_app_ingress",
+          "resource_type": "security_group_rule",
+          "protocol": "tcp",
+          "ingress_group": { "ref": "security_group", "id": "app_security_group" },
+          "source_type": "group",
+          "protocol_details": [
+            {
+              "end_port": "27017",
+              "start_port": "27017"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app_instance",
+      "resource_type": "instance",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_groups": [
+        { "ref": "security_group", "id": "default_security_group" },
+        { "ref": "security_group", "id": "app_security_group" }
+      ],
+      "server_template": [
+        { "ref": "server_template", "id": "php_app_template" }
+      ]
+    },
+    {
+      "id": "elasticity_params",
+      "resource_type": "elasticity_params",
+      "bounds": [
+        {
+          "min_count": "2",
+          "max_count": "10"
+        }
+      ],
+      "pacing": [
+        {
+          "resize_calm_time": "5",
+          "resize_down_by": "1",
+          "resize_up_by": "2"
+        }
+      ],
+      "alert_specific_params": [
+        {
+          "decision_threshold": "51",
+          "voters_tag_predicate": "appservers"
+        }
+      ]
+    },
+    {
+      "id": "CacheInstance",
+      "resource_type": "instance",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_groups": [
+        { "ref": "security_group", "id": "default_security_group" },
+        { "ref": "security_group", "id": "cache_security_group" }
+      ],
+      "server_template": [{ "ref": "server_template", "id": "memcached_template" }]
+    },
+    {
+      "id": "DbInstance",
+      "resource_type": "instance",
+      "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+      "security_groups": [
+        { "ref": "security_group", "id": "default_security_group" },
+        { "ref": "security_group", "id": "db_security_group" }
+      ],
+      "server_template": [
+        { "ref": "server_template", "id": "mysql_db_template" }
+      ]
+    },
+    {
+      "id": "deployment",
+      "resource_type": "deployment",
+      "name": { "ref": "text_product_input", "id": "deployment_name" },
+      "inputs": [
+        {
+          "id": "db_name",
+          "resource_type": "input",
+          "name": "app\/database_name",
+          "value": "text: dbschema"
+        },
+        {
+          "id": "db_fqdn",
+          "resource_type": "input",
+          "name": "db\/dns\/master\/fqdn",
+          "value": "text: localhost"
+        },
+        {
+          "id": "db_provider_type",
+          "resource_type": "input",
+          "name": "db\/provider_type",
+          "value": "text: db_mysql_5.5"
+        },
+        {
+          "id": "repository",
+          "resource_type": "input",
+          "name": "repo\/default\/repository",
+          "value": "text: git:\/\/github.com\/rightscale\/examples.git"
+        },
+        {
+          "id": "revision",
+          "resource_type": "input",
+          "name": "repo\/default\/revision",
+          "value": "text: unified_php"
+        },
+        {
+          "id": "db_lineage",
+          "resource_type": "input",
+          "name": "db\/backup\/lineage",
+          "value": "text: changeme"
+        },
+        {
+          "id": "dns_choice",
+          "resource_type": "input",
+          "name": "sys_dns\/choice",
+          "value": "text: DNSMadeEasy"
+        },
+        {
+          "id": "dns_password",
+          "resource_type": "input",
+          "name": "sys_dns\/password",
+          "value": "text: password"
+        },
+        {
+          "id": "dns_user",
+          "resource_type": "input",
+          "name": "sys_dns\/user",
+          "value": "text: user"
+        }
+      ],
+      "servers": [
+        {
+          "id": "LbServer",
+          "resource_type": "server",
+          "name_prefix": "LB",
+          "description": "Apache/HAProxy Load Balancer",
+          "count": "2",
+          "instance": [
+            {
+              "id": "LbInstance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+              "security_groups": [
+                { "ref": "security_group", "id": "default_security_group" },
+                { "ref": "security_group", "id": "lb_security_group" }
+              ],
+              "server_template": [{ "ref": "server_template", "id": "haproxy_template" }]
+            }
+          ]
+        },
+        {
+          "id": "ProdAppServer",
+          "resource_type": "server",
+          "name_prefix": "App",
+          "count": "1",
+          "instance": [
+            { "ref": "instance", "id": "app_instance" }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "type",
+            "value": ["dev"]
+          }
+        },
+        {
+          "id": "DbServer",
+          "resource_type": "server",
+          "name_prefix": "DB",
+          "count": "2",
+          "instance": [
+            { "ref": "instance", "id": "DbInstance" }
+          ]
+        },
+        {
+          "id": "CacheServer",
+          "resource_type": "server",
+          "name_prefix": "MemCached",
+          "description": "MemCached Server",
+          "count": "1",
+          "instance": [
+            { "ref": "instance", "id": "CacheInstance"}
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "type",
+            "value": ["dev"]
+          }
+        }
+      ],
+      "server_arrays": [
+        {
+          "id": "app_array",
+          "resource_type": "server_array",
+          "name": "Application Servers",
+          "state": "disabled",
+          "array_type": "alert",
+          "elasticity_params": [
+            { "ref": "elasticity_params", "id": "elasticity_params" }
+          ],
+          "instance": [
+            { "ref": "instance", "id": "app_instance" }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "type",
+            "match": "any",
+            "value": ["prod","load"]
+          }
+        },
+        {
+          "id": "db_array",
+          "resource_type": "server_array",
+          "name": "Database Read Only Slaves",
+          "state": "disabled",
+          "array_type": "alert",
+          "elasticity_params": [
+            { "ref": "elasticity_params", "id": "elasticity_params" }
+          ],
+          "instance": [
+            { "ref": "instance", "id": "DbInstance" }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "type",
+            "match": "any",
+            "value": ["prod","load"]
+          }
+        },
+        {
+          "id": "cache_array",
+          "resource_type": "server_array",
+          "name": "Cache Servers",
+          "state": "disabled",
+          "array_type": "alert",
+          "elasticity_params": [
+            { "ref": "elasticity_params", "id": "elasticity_params" }
+          ],
+          "instance": [
+            { "ref": "instance", "id": "CacheInstance" }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "type",
+            "match": "any",
+            "value": ["prod","load"]
+          }
+        },
+        {
+          "id": "httperf_array",
+          "resource_type": "server_array",
+          "name": "Httperf Servers",
+          "state": "disabled",
+          "array_type": "alert",
+          "elasticity_params": [
+            { "ref": "elasticity_params", "id": "elasticity_params" }
+          ],
+          "instance": [
+            {
+              "id": "httperf_instance",
+              "resource_type": "instance",
+              "cloud_href": { "ref": "cloud_product_input", "id": "cloud" },
+              "security_groups": [
+                { "ref": "security_group", "id": "default_security_group" }
+              ],
+              "server_template": [
+                { "ref": "server_template", "id": "httperf_template" }
+              ]
+            }
+          ],
+          "depends": {
+            "ref": "select_product_input",
+            "id": "type",
+            "value": ["load"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "mysql_db_template",
+      "resource_type": "server_template",
+      "name": "Database Manager for MySQL 5.5 (v13.4)",
+      "revision": "125",
+      "publication_id": "52712"
+    },
+    {
+      "id": "php_app_template",
+      "resource_type": "server_template",
+      "name": "PHP App Server (v13.4)",
+      "revision": "176",
+      "publication_id": "52704"
+    },
+    {
+      "id": "haproxy_template",
+      "resource_type": "server_template",
+      "name": "Load Balancer with HAProxy (v13.4)",
+      "revision": "155",
+      "publication_id": "52702"
+    },
+    {
+      "id": "httperf_template",
+      "resource_type": "server_template",
+      "name": "Httperf Load Tester",
+      "revision": "15",
+      "publication_id": "41366"
+    }
+  ]
+}
