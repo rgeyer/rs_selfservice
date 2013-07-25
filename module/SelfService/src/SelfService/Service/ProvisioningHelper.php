@@ -542,15 +542,18 @@ class ProvisioningHelper {
       return false;
     }
 
+    $owner = null;
+
     // Make sure that we can derive the owner
     if(!array_key_exists($cloud_id, $this->_owners)) {
       $this->log->warn(sprintf("Could not determine the 'owner' for cloud id %s.", $cloud_id));
       $this->log->debug(sprintf("The available clouds (and owners) is as follows.  %s", print_r($this->_owners, true)));
       return false;
+    } else {
+      $owner = $this->_owners[$cloud_id];
     }
 
     $api = $this->_security_groups[$security_group->id]['api'];
-    $owner = $this->_owners[$cloud_id];
 
     $this->log->info("About to provision " . count($security_group->security_group_rules) . " rules for Security Group " . $security_group->name);
     foreach ( $security_group->security_group_rules as $rule ) {

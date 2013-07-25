@@ -532,14 +532,22 @@ class ProductService extends BaseEntityService {
     foreach(get_object_vars($odm) as $key => $val) {
       if(is_array($val)) {
         $stdClass->{$key} = array();
-        foreach($val as $aryval) {
+        foreach($val as $arykey => $aryval) {
           if(array_key_exists('ref', $aryval)) {
             # By the time we get here, we should have resolved all the nested-ness and we need
             # to remove that decoration
             unset($aryval['nested']);
-            $stdClass->{$key}[] = $aryval;
+            if(is_numeric($arykey)) {
+              $stdClass->{$key}[] = $aryval;
+            } else {
+              $stdClass->{$key}[$arykey] = $aryval;
+            }
           } else {
-            $stdClass->{$key}[] = is_scalar($aryval) ? $aryval : $this->odmToStdClass($aryval);
+            if(is_numeric($arykey)) {
+              $stdClass->{$key}[] = is_scalar($aryval) ? $aryval : $this->odmToStdClass($aryval);
+            } else {
+              $stdClass->{$key}[$arykey] = is_scalar($aryval) ? $aryval : $this->odmToStdClass($aryval);
+            }
           }
         }
       } else if (get_class($val) == "Doctrine\ODM\MongoDB\PersistentCollection") {

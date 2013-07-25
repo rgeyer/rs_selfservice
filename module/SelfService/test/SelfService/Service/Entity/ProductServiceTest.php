@@ -804,6 +804,16 @@ EOF;
     }
   }
 
+  public function testOdmToStdClassRetainsKeysOfAssociativeArrays() {
+    $odm = new \stdClass();
+    $odm->foo = array("bar" => "baz", "foo" => "bar");
+
+    $productService = $this->getProductService();
+    $stdClass = $productService->odmToStdClass($odm);
+
+    $this->assertEquals(array("bar","foo"), array_keys($stdClass->foo));
+  }
+
   public function testInputsReturnsAllInputsWhenNoParamsSupplied() {
     $mockrsapicache = $this->getMockBuilder("\SelfService\Service\RightScaleAPICache")
       ->disableOriginalConstructor()
