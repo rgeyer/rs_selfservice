@@ -858,6 +858,12 @@
           "resource_type": "input",
           "name": "sys_dns\/user",
           "value": "text:user"
+        },
+        {
+          "id": "database_name_input",
+          "resource_type": "input",
+          "name": "app\/database_name",
+          "value": "text:dbname"
         }
       ],
       "servers": [
