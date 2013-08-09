@@ -896,6 +896,10 @@
           "instance": [
             { "ref": "instance", "id": "prod_app_instance" }
           ],
+          "alert_specs": [
+            { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
+            { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
+          ],
           "depends": {
             "ref": "select_product_input",
             "id": "haz_bursting",
