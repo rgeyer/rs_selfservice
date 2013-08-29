@@ -800,7 +800,7 @@
       "file": "apache/apache_requests",
       "variable": "count",
       "condition": ">",
-      "threshold": "25",
+      "threshold": "5",
       "duration": "1",
       "vote_tag": "appservers",
       "vote_type": "grow"
@@ -812,8 +812,8 @@
       "file": "apache/apache_requests",
       "variable": "count",
       "condition": "<",
-      "threshold": "75",
-      "duration": "1",
+      "threshold": "20",
+      "duration": "5",
       "vote_tag": "appservers",
       "vote_type": "shrink"
     },
@@ -1018,6 +1018,14 @@
           "alert_specs": [
             { "ref": "alert_spec", "id": "ApplicationScaleUpAlertSpec" },
             { "ref": "alert_spec", "id": "ApplicationScaleDownAlertSpec" }
+          ],
+          "inputs": [
+            {
+              "id": "burst_app_backend_ip_input",
+              "resource_type": "input",
+              "name": "app\/backend_ip_type",
+              "value": "text:public"
+            }
           ],
           "depends": {
             "ref": "select_product_input",
