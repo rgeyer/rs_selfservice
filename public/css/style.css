@@ -1624,7 +1624,7 @@ header {
   padding: 0;
   margin: 0;
   background-color: #115186;
-  box-shadow: 0 -15px 30px rgba(0, 0, 0, 0.8) inset; }
+  box-shadow: 0 -15px 30px rgba(0, 0, 0, 0.4) inset; }
   header .nav,
   header .brand {
     float: left;
@@ -1650,14 +1650,19 @@ header {
       border-left: solid thin rgba(255, 255, 255, 0.2); }
       header ul.nav li.dropdown a.dropdown-toggle .caret {
         border-top-color: white; }
-      header ul.nav li.dropdown.open a {
-        background-color: transparent; }
+      header ul.nav li.dropdown.open a.dropdown-toggle {
+        background-color: transparent;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3) inset; }
       header ul.nav li.active {
         background: transparent; }
+        header ul.nav li.active.dropdown.open a.dropdown-toggle {
+          background-color: transparent; }
+          header ul.nav li.active.dropdown.open a.dropdown-toggle:hover {
+            background-color: transparent; }
         header ul.nav li.active > a {
           background: transparent;
           border: none;
-          box-shadow: 0 0 30px rgba(0, 0, 0, 0.5) inset;
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.3) inset;
           background-color: transparent;
           border: none;
           padding: 1em;
@@ -1681,16 +1686,24 @@ header {
           border: none;
           padding: 1em;
           margin: 0;
-          box-shadow: 0 0 20px rgba(51, 51, 51, 0.8) inset;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.3) inset;
           color: white; }
       header ul.nav li ul.dropdown-menu {
         padding: 0;
         margin: 0;
-        background: #0082C3;
-        border: none; }
+        background: #eee;
+        border: none;
+        margin-top: 3px;
+        border: solid 2px #aaa;
+        -webkit-border-bottom-right-radius: 10px;
+        -webkit-border-bottom-left-radius: 10px;
+        -moz-border-radius-bottomright: 10px;
+        -moz-border-radius-bottomleft: 10px;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px; }
         header ul.nav li ul.dropdown-menu::after {
           content: "";
-          border: solid 10px #0082C3;
+          border: solid 10px #999;
           border-top-color: transparent;
           border-left-color: transparent;
           border-right-color: transparent;
@@ -1700,20 +1713,36 @@ header {
         header ul.nav li ul.dropdown-menu li {
           background: transparent;
           border-bottom: solid thin rgba(0, 0, 0, 0.2);
-          border-top: solid thin rgba(255, 255, 255, 0.2); }
+          border-top: solid thin rgba(255, 255, 255, 0.2);
+          border-right: none;
+          border-left: none; }
           header ul.nav li ul.dropdown-menu li:first-of-type {
             border-top: none; }
           header ul.nav li ul.dropdown-menu li:last-of-type {
             border-bottom: none; }
+            header ul.nav li ul.dropdown-menu li:last-of-type a {
+              -webkit-border-bottom-right-radius: 10px;
+              -webkit-border-bottom-left-radius: 10px;
+              -moz-border-radius-bottomright: 10px;
+              -moz-border-radius-bottomleft: 10px;
+              border-bottom-right-radius: 10px;
+              border-bottom-left-radius: 10px; }
           header ul.nav li ul.dropdown-menu li:hover {
             background: transparent; }
-          header ul.nav li ul.dropdown-menu li a:hover {
-            box-shadow: 0;
-            background: transparent;
-            border: none;
-            padding: 1em;
-            margin: 0;
-            box-shadow: 0 0 20px rgba(51, 51, 51, 0.8) inset; }
+          header ul.nav li ul.dropdown-menu li a {
+            color: #115186;
+            text-shadow: none; }
+            header ul.nav li ul.dropdown-menu li a:hover {
+              box-shadow: 0;
+              background: transparent;
+              border: none;
+              padding: 1em;
+              margin: 0;
+              box-shadow: none;
+              background-color: #f2f8ff; }
+
+#idxcontent {
+  background-image: none; }
 
 table.ui-widget {
   background: none;
@@ -1734,6 +1763,8 @@ table.ui-widget {
     background: transparent; }
     table.ui-widget tbody.ui-widget-content tr {
       border-bottom: solid thin gray; }
+      table.ui-widget tbody.ui-widget-content tr:last-of-type {
+        border: none; }
     table.ui-widget tbody.ui-widget-content td {
       padding: .5em 1em .5em;
       border: none; }
@@ -1791,6 +1822,9 @@ div.server {
   .state.stranded::after {
     content: "\f071";
     color: orange; }
+
+.bx-wrapper .bx-viewport {
+  box-shadow: none; }
 
 #content [href*="/product/"] {
   font-family: 'FontAwesome';

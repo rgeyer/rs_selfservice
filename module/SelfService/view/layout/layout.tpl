@@ -15,7 +15,8 @@
   ->prependStylesheet($this->basePath()|cat:'/css/default.css')
   ->prependStylesheet($this->basePath()|cat:'/css/bootstrap.min.css')
   ->prependStylesheet($this->basePath()|cat:'/css/image-picker.css')
-  ->prependStylesheet($this->basePath()|cat:'/js/jquery-ui-1.10.2.custom/css/ui-darkness/jquery-ui-1.10.2.custom.css')}
+  ->prependStylesheet($this->basePath()|cat:'/js/jquery-ui-1.10.2.custom/css/ui-darkness/jquery-ui-1.10.2.custom.css')
+  ->prependStylesheet($this->basePath()|cat:'/css/jquery.bxslider.css')}
 
   {assign var="conditional_scripts_ary" value=['conditional' => 'lt IE 9']}
   {$this->headScript()->prependFile($this->basePath()|cat:'/js/html5.js', 'text/javascript', $conditional_scripts_ary)
@@ -24,7 +25,11 @@
   ->appendFile('https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js')
   ->appendFile($this->basePath()|cat:'/js/functions.js')
   ->appendFile($this->basePath()|cat:'/js/image-picker.min.js')
-  ->appendFile($this->basePath()|cat:'/js/vendor/livereload-js/dist/livereload.js')}
+  ->appendFile($this->basePath()|cat:'/js/vendor/livereload-js/dist/livereload.js')
+  ->appendFile($this->basePath()|cat:'/js/prefixfree.min.js')
+  ->appendFile($this->basePath()|cat:'/js/application.js')
+  ->appendFile($this->basePath()|cat:'/js/vendor/jquery.bxslider.min.js')
+  ->appendFile($this->basePath()|cat:'/js/behaviors/behavior.bxslider.js')}
 
   {literal}
   <script>

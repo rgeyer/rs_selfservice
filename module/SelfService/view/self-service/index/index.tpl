@@ -72,7 +72,9 @@ $(function() {
 #idxcontent {
   width: 988px;
   height: 568px;
-  background: #012b5d url('images/it-services-v1.png') no-repeat right top;
+  /*background: #012b5d url('images/it-services-v1.png') no-repeat right top;*/
+  background: url('images/acme_logo.jpg') no-repeat left top;
+  background-size: 20%;
   padding: 11em 3em 0 3em;
   position: relative;
   text-align: center;
@@ -80,18 +82,18 @@ $(function() {
 }
 
 #products {
-	overflow: hidden;
+/*	overflow: hidden;
   width: 870px;
-  margin: 0 59px;
+  margin: 0 59px;*/
 }
 
 #products .product
 {
-	display: inline-block;
+/*	display: inline-block;
   margin: auto 2em;
   height: 196px;
   width: 142px;
-  vertical-align: top;
+  vertical-align: top;*/
 }
 
 .product img {
@@ -100,7 +102,7 @@ $(function() {
 }
 
 .product p {
-	color: white;
+	color: #3e3e3e;
 }
 
 #leftlink {
@@ -131,20 +133,20 @@ $(function() {
 }
 
 body {
-  background-color: #012b5d !important;
+  /*background-color: #012b5d !important;*/
 }
 
 </style>
 
 <div id="idxcontent">
-  <div id="products">
-    <div id="leftlink"><img src="{$this->basePath()}/images/left.png" /></div>
-    <div id="rightlink"><img src="{$this->basePath()}/images/right.png" /></div>
+  <div id="products" data-behavior="bxSlider">
+<!--    <div id="leftlink"><img src="{$this->basePath()}/images/left.png" /></div>
+    <div id="rightlink"><img src="{$this->basePath()}/images/right.png" /></div>-->
     {foreach $products as $product}    
-    <div class="product" id="product_{$product->id}">
-      <img src="{$this->basePath()}/{$product->img_url}"/>
-      <p>{$product->name}</p>
-      <input type="hidden" value="{$product->id}" />
+    <div class="product slide" id="product_{$product->id}">
+        <img src="{$this->basePath()}/{$product->img_url}"/>
+        <p>{$product->name}</p>
+        <input type="hidden" value="{$product->id}" />
     </div>
     {/foreach}
  </div>
