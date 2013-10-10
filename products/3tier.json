@@ -45,7 +45,7 @@
       "depends": {
         "ref": "select_product_input",
         "id": "haz_bursting",
-        "value": ["true"]
+        "value": "true"
       }
     },
     {
