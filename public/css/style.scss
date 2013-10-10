@@ -1,0 +1,449 @@
+/* @override
+	https://azurevend.cse.cloudlord.com/css/style.css */
+	
+@import "homebase";
+@import "fontawesome/font-awesome";
+
+$pad: 28px;
+.zf-green {
+    color: #68b604;
+}
+
+.btn-success {
+  background-color: #57a900;
+  background-image: -moz-linear-gradient(top, #70d900, #57a900);
+  background-image: -ms-linear-gradient(top, #70d900, #57a900);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#70d900), to(#57a900));
+  background-image: -webkit-linear-gradient(top, #70d900, #57a900);
+  background-image: -o-linear-gradient(top, #70d900, #57a900);
+  background-image: linear-gradient(top, #70d900, #57a900);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#70d900', endColorstr='#57a900', GradientType=0);
+}
+
+.btn-success:hover,
+.btn-success:active,
+.btn-success.active,
+.btn-success.disabled,
+.btn-success[disabled] {
+  background-color: #57a900;
+}
+
+.btn-success:active, .btn-success.active {
+  background-color: #57a900;
+}
+
+div.container a.brand {
+    background: url("../images/rs-logo-trans.png") no-repeat scroll 0 10px transparent;
+    margin-left: 0;
+    padding: 8px 20px 12px 155px;
+}
+
+.navbar-inner {
+  height: 45px;
+}
+
+ul.nav {
+  background-color: black;
+}
+
+.nav li {
+  /*height: 35px;*/
+}
+
+@include grid-base($pad);
+
+body .modal {
+  width: 750px;
+  margin-left: -375px;
+}
+
+.conatiner {
+  padding: 0;
+  margin: 0;
+  max-width: 1170px;
+}
+
+header {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+//  background-image: url(../images/tweed.png);
+  background-color: #115186;
+  box-shadow: 0 -15px 30px rgba(black, .4) inset;
+  .nav,
+  .brand {
+    float: left;
+    color: white;
+  }
+  
+  a.brand {
+    font-size: 16px;
+    line-height: 28px;
+    padding-left: 170px !important;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+  
+  ul.nav {
+    margin: 0;
+    border: none;
+    background-color: transparent;
+    border-left: solid thin rgba(black, .2);
+    border-right: solid thin rgba(white, .2);
+    li {
+      margin: 0;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      border-right: solid thin rgba(black, .2);
+      border-left: solid thin rgba(white, .2);
+      &.dropdown a.dropdown-toggle .caret {
+        border-top-color: white;
+      }
+      
+      &.dropdown.open a.dropdown-toggle {
+        background-color: transparent;
+        box-shadow: 0 0 30px rgba(black, .3) inset;
+      }
+      
+      &.active {
+        background: transparent;
+        
+        &.dropdown.open a.dropdown-toggle {
+          background-color: transparent;
+          &:hover {
+            background-color: transparent;
+          }
+        }
+        
+        > a {
+          background: transparent;
+          border: none;
+          box-shadow: 0 0 30px rgba(black, .3) inset;
+          background-color: transparent;
+          border: none;
+          padding: 1em;
+          margin: 0;
+          color: white;
+              
+          &:hover {
+            border: none;
+            background-color: transparent;
+            color: white;
+          }
+        }
+      }
+      a {
+        margin: 0;
+        border-radius: 0;
+        color: white;
+        padding: 1em;
+        border: none;
+        color: #e3e3e3;
+        text-shadow: 0 -1px #000;
+        
+        &:hover {
+          box-shadow: 0;
+          background-color: transparent;
+          border: none;
+          padding: 1em;
+          margin: 0;
+          box-shadow: 0 0 20px rgba(black, .3) inset;
+          color: white;
+        }
+      }
+      
+      
+      ul.dropdown-menu {
+        padding: 0;
+        margin: 0;
+        background: #eee;
+        border: none;
+//        border-top: solid 2px #eee;
+        margin-top: 3px;
+        border: solid 2px #aaa;
+        -webkit-border-bottom-right-radius: 10px;
+        -webkit-border-bottom-left-radius: 10px;
+        -moz-border-radius-bottomright: 10px;
+        -moz-border-radius-bottomleft: 10px;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        
+        &::after {
+          content: "";
+          border: solid 10px #999;
+          border-top-color: transparent;
+          border-left-color: transparent;
+          border-right-color: transparent;
+          position: absolute;
+          top: -20px;
+          left: 10px;
+        }
+        li {
+          background: transparent;
+          border-bottom: solid thin rgba(black, .2);
+          border-top: solid thin rgba(white, .2);
+          border-right: none;
+          border-left: none;
+          
+          &:first-of-type {
+            border-top: none;
+          }
+          &:last-of-type {
+            border-bottom: none;
+            a {
+              -webkit-border-bottom-right-radius: 10px;
+              -webkit-border-bottom-left-radius: 10px;
+              -moz-border-radius-bottomright: 10px;
+              -moz-border-radius-bottomleft: 10px;
+              border-bottom-right-radius: 10px;
+              border-bottom-left-radius: 10px;
+            }
+          }
+          &:hover {
+            background: transparent;
+          }
+          a {
+            color: #115186;
+            text-shadow: none;
+            &:hover {
+              box-shadow: 0;
+              background: transparent;
+              border: none;
+              padding: 1em;
+              margin: 0;
+//              box-shadow: 0 0 20px rgba(#333, .8) inset;
+              box-shadow: none;
+              background-color: #f2f8ff;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#idxcontent {
+  background-image: none;
+}
+
+table.ui-widget {
+  background: none;
+  border: none;
+  width: 100%;
+  padding-bottom: 1em;
+  margin-bottom: 2em;
+  
+  thead tr.ui-widget-header {
+    background: none;
+    border: none;
+    background: #0082C3;
+    border-bottom: none; 
+    td {
+      padding: .5em .5em .5em 1em; 
+    }
+  }
+  tbody.ui-widget-content {
+    border: none;
+    color: #3e3e3e;
+    background: transparent;
+    tr {
+      border-bottom: solid thin gray;
+      &:last-of-type {
+        border: none;
+      }
+    }
+    td {
+      padding: .5em 1em .5em;
+      border: none;
+    }
+  }
+}
+
+#main {
+  padding-top: $pad;
+}
+
+footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+//.legend-inner {
+//  background-color: #00C3BA;
+//  color: white;
+//  padding: $pad;
+//  width: 100%;
+//  .tbody {
+//    padding: $pad;
+//  }
+//  tr {
+//    border-bottom: solid thin gray;
+//    
+//    &:last-of-type {
+//      border-bottom: none;
+//    }
+//  }
+//}
+
+div.server {
+  width: 25px;
+}
+
+.legend {
+//  margin-top: 30px;
+  border-left: solid thin gray;
+  padding-left: $pad;
+  border: solid thin #ccc;
+  border-radius: 10px;
+  background-color: #fdfdfd;
+  border-top-color: #aaa;
+  border-bottom-color: #eee;
+  
+
+//  position: relative;
+padding: $pad/2 $pad;
+//padding-right: 0;
+
+  h4 { margin-top: $pad/2; }
+  
+  table {
+    margin-top: 1em;
+  }
+  
+//  &::after {
+//    content: "";
+//    width: 1px;
+//    display: block;
+//    position: absolute;
+//    top: $pad;
+//    bottom: $pad;
+//    left: 0;
+//    box-shadow: 0 0 5px #000;
+//  }
+}
+
+
+.state {
+//  background-image: url(../images/32server.png);
+  background-repeat: no-repeat;
+//  width: 36px;
+//  height: 36px;
+  display: block;
+  position: relative;
+  
+  &::before {
+    color: #6e6e6e;
+  }
+  &::after {
+    content: "";
+//    width: 16px;
+//    height: 16px;
+    display: block;
+//    position: absolute;
+//    bottom: 0;
+//    right: 0;
+    font-family: "FontAwesome";
+    font-size: 1.2em;
+    line-height: 2.3em;
+  }
+  &.inactive::after {
+    content: "\f05e";
+    color: red;
+//    background-image: url(../images/16block.png);
+  }
+  
+  &.operational::after {
+    color: green;
+    content: "\f058";
+  }
+  &.booting::after {
+//    background-image: url(../images/16up.png);
+    content: "\f0aa";
+    color: green;
+  }
+  &.decommissioning::after {
+    content: "\f0ab";
+    color: red;
+//    background-image: url(../images/16down.png);
+  }
+  &.stranded::after {
+    content: "\f071";
+    color: orange;
+//    background-image: url(../images/16warning_triangle.png);
+  }
+}
+
+.bx-wrapper .bx-viewport {
+  box-shadow: none;
+}
+
+
+
+#content [href*="/product/"] {
+  font-family: 'FontAwesome';
+  margin-right: 1em;
+  background: black;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  border-radius: 12px;
+  text-align: center;
+  line-height: 1.5em;
+  background-color: #0082C3;
+  box-shadow: 0px 1px #ddd;
+  font-size: .9em; }
+  #content [href*="/product/"]::before {
+    color: white; }
+  #content [href*="/product/"]:hover {
+    text-decoration: none;
+    background-color: #0070A8; }
+#content [href*="/product/edit/"] {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  font-family: 'FontAwesome'; }
+  #content [href*="/product/edit/"] img {
+    display: none; }
+  #content [href*="/product/edit/"]::before {
+    content: "\f040";
+    text-indent: 0; }
+#content [href*="/product/delete/"] {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  font-family: 'FontAwesome';
+  position: relative; }
+  #content [href*="/product/delete/"] img {
+    display: none; }
+  #content [href*="/product/delete/"]::before {
+    content: "\f00d"; }
+#content [href*="/provisionedproducts/"] {
+  font-family: 'FontAwesome';
+  margin-right: 1em;
+  background: black;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border-radius: 12px;
+  text-align: center;
+  line-height: 1.25em;
+  background-color: #0082C3; }
+  #content [href*="/provisionedproducts/"]:hover {
+    text-decoration: none;
+    background-color: #0070A8; }
+    #content [href*="/provisionedproducts/"]:hover:before {
+      color: white; }
+  #content [href*="/provisionedproducts/"]::before {
+    font-weight: normal;
+    content: "\f040";
+    color: white; }
+  #content [href*="/provisionedproducts/"] img {
+    display: none; }
+#content [href*="/show"]::before {
+  content: "\f129"; }
+#content [href*="/cleanup"]::before {
+  content: "\f00d"; }

@@ -15,7 +15,8 @@
   ->prependStylesheet($this->basePath()|cat:'/css/default.css')
   ->prependStylesheet($this->basePath()|cat:'/css/bootstrap.min.css')
   ->prependStylesheet($this->basePath()|cat:'/css/image-picker.css')
-  ->prependStylesheet($this->basePath()|cat:'/js/jquery-ui-1.10.2.custom/css/ui-darkness/jquery-ui-1.10.2.custom.css')}
+  ->prependStylesheet($this->basePath()|cat:'/js/jquery-ui-1.10.2.custom/css/ui-darkness/jquery-ui-1.10.2.custom.css')
+  ->prependStylesheet($this->basePath()|cat:'/css/jquery.bxslider.css')}
 
   {assign var="conditional_scripts_ary" value=['conditional' => 'lt IE 9']}
   {$this->headScript()->prependFile($this->basePath()|cat:'/js/html5.js', 'text/javascript', $conditional_scripts_ary)
@@ -23,7 +24,12 @@
   ->prependFile('https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
   ->appendFile('https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js')
   ->appendFile($this->basePath()|cat:'/js/functions.js')
-  ->appendFile($this->basePath()|cat:'/js/image-picker.min.js')}
+  ->appendFile($this->basePath()|cat:'/js/image-picker.min.js')
+  ->appendFile($this->basePath()|cat:'/js/vendor/livereload-js/dist/livereload.js')
+  ->appendFile($this->basePath()|cat:'/js/prefixfree.min.js')
+  ->appendFile($this->basePath()|cat:'/js/application.js')
+  ->appendFile($this->basePath()|cat:'/js/vendor/jquery.bxslider.min.js')
+  ->appendFile($this->basePath()|cat:'/js/behaviors/behavior.bxslider.js')}
 
   {literal}
   <script>
@@ -113,16 +119,10 @@
 
 </head>
 <body>
-<div class="navbar navbar-inverse navbar-fixed-top">
-  <div class="navbar-inner">
+  <header>
     <div class="container">
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
       <a class="brand" href="{$this->url('home')}">{$this->translate('IT Vending Machine')}</a>
-      <div class="nav-collapse collapse">
+      <nav>
         <ul class="nav nav-tabs" id="nav">
           <li{if $this->controllerName() == 'SelfService\Controller\Index'} class="active"{/if}><a href="{$this->url('home')}">{$this->translate('Home')}</a></li>
           <li{if $this->controllerName() == 'SelfService\Controller\Product'} class="active"{/if}><a href="{$this->url('product', ['action' => 'index'])}">{$this->translate("Products")}</a></li>
@@ -135,17 +135,20 @@
             </ul>
           </li>
         </ul>
-      </div><!--/.nav-collapse -->
+      </nav>
     </div>
+  </header>
+  <div id="main" role="main">
+    <div id="content" class="container">
+      {$this->content}
+    </div> <!-- /container -->
   </div>
-</div>
-<div id="content" class="container">
-  {$this->content}
-</div> <!-- /container -->
-<div class="container navbar-fixed-bottom"
-  <hr>
+  <div class="container navbar-fixed-bottom"
+    <hr>
   <footer>
-    <p>&copy; 2013 by Ryan J. Geyer {$this->translate('All rights reserved.')}</p>
+    <div class="container">
+      <p>&copy; 2013 by Ryan J. Geyer {$this->translate('All rights reserved.')}</p>
+    </div>
   </footer>
 </div>
 <div id="progress-dialog" title="Please wait">

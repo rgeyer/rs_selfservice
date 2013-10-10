@@ -1,10 +1,10 @@
 <table class="ui-widget" cellpadding="2em">
   <thead>
    <tr class="ui-widget-header ui-corner-top">
-     <td>Name:</td>
-     <td>Icon:</td>
-     <td>Launch Servers:</td>
-     <td>Actions:</td>
+     <td width="20%">Name</td>
+     <td width="20%">Icon</td>
+     <td width="50%">Launch Servers</td>
+     <td width="10%">Actions</td>
    </tr>
   </thead>
   <tbody class="ui-widget-content">
