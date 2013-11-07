@@ -23,3 +23,5 @@ application/proxies/*.php
 rightscaleshim
 runlists/centos/default.json
 runlists/centos/setup_rsss.json
+.php-version
+composer.phar
