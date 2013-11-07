@@ -15,7 +15,6 @@ application/proxies/*.php
 *.iml
 *.ipr
 *.iws
-vendor
 .idea
 .release_config
 .DS_Store
