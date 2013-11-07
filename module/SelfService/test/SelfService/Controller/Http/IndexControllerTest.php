@@ -49,7 +49,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase {
     $this->assertActionName('index');
     $this->assertControllerName('selfservice\controller\index');
     $this->assertResponseStatusCode(200);
-    $this->assertXpathQueryCount("//div[@class='product']", 1);
+    $this->assertXpathQueryCount("//child::div[@id='products']", 1);
   }
 
   public function testIndexActionRendersLeftArrowWhenMoreThanFourProducts() {
