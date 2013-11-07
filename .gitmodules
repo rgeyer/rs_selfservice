@@ -1,6 +1,3 @@
-[submodule "cookbooks/rsss"]
-	path = cookbooks/rsss
-	url = git://github.com/rgeyer-rs-cookbooks/rsss.git
 [submodule "public/js/vendor/livereload-js"]
 	path = public/js/vendor/livereload-js
 	url = https://github.com/livereload/livereload-js.git
