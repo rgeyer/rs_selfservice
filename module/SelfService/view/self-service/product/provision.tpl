@@ -18,8 +18,8 @@ var basepath = "{$this->basePath()}";
 var firstfetch = true;
 {literal}
 function paintControl(input, parent) {
-  inputid = sanitizeProductInputId(input.id);
-  markup = "<div class='control-group alert-info";
+  var inputid = sanitizeProductInputId(input.id);
+  var markup = "<div class='control-group alert-info";
   if(!input.display) {
     markup += " hide";
   }
@@ -52,7 +52,12 @@ function paintControl(input, parent) {
       markup += ">"+option+"</option>"
     });
   } else {
-    markup += "    <input type='text' name='"+input.input_name+"' value='"+input.default_value+"' />";
+    markup += "    <input type='text' name='"+input.input_name+"' value='"+input.default_value;
+    if(input.unique) {
+      var ts = new Date().getTime();
+      markup += "-"+ts;
+    }
+    markup += "' />";
   }
   if(input.description) {
     markup += "<p class='text-info'><img src='"+basepath+"/images/info.png' />"+input.description+"</p>";
@@ -154,7 +159,6 @@ function gofetch() {
       }
 
       if(firstfetch) {
-        console.log("Was first fetch, gonna clean up");
         $(".alert-info").removeClass('alert-info');
         firstfetch = false;
       }

@@ -43,7 +43,7 @@ $(function() {
       url: '{$this->url("product", ['action' => 'provision'])}/'+id,
       dataType: 'html',
       success: function(data, status, jqXHR) {
-        content = $('<div>').append(jqXHR.responseText).find("#content");
+        var content = $('<div>').append(jqXHR.responseText).find("#content");
         content.attr('id','');
         content.removeClass();
         open_message_dialog(

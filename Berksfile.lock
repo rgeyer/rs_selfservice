@@ -175,7 +175,7 @@
     "system": {
       "locked_version": "0.0.1",
       "git": "git://github.com/flaccid/cookbooks.git",
-      "ref": "95fc01fe287c0afafc4dbc83ede926d74fed6631",
+      "ref": "6d5150257eac1f71a23849b5bae67887f7d30f7d",
       "rel": "cookbooks/system"
     },
     "resolver": {

@@ -40,4 +40,10 @@ class TextProductInput extends AbstractProductInput {
    */
   public $default_value;
 
+  /**
+   * @ODM\Boolean
+   * @var bool
+   */
+  public $unique = false;
+
 }

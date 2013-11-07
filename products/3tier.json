@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "3-Tier",
   "icon_filename": "apache.png",
   "launch_servers": false,
@@ -10,7 +10,8 @@
       "default_value": "3-Tier",
       "input_name": "deployment_name",
       "display_name": "Deployment Name",
-      "description": "The deployment name"
+      "description": "The deployment name",
+      "unique": true
     },
     {
       "id": "dr_deployment_name",

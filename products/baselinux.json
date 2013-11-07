@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Base Linux",
   "icon_filename": "redhat.png",
   "launch_servers": true,
@@ -10,7 +10,8 @@
       "default_value": "Base",
       "input_name": "deployment_name",
       "display_name": "Deployment Name",
-      "description": "The deployment name"
+      "description": "The deployment name",
+      "unique": true
     },
     {
       "id": "cloud",

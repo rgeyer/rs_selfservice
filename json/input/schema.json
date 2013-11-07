@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema",
-  "title": "RightScale Self Service Vending Machine Product Input v1.3",
+  "title": "RightScale Self Service Vending Machine Product Input v1.4",
   "type":"object",
   "required": ["name", "resources"],
   "properties":{
@@ -595,6 +595,7 @@
         "description": { "type":"string" },
         "display": { "type": "boolean", "default": true },
         "advanced": { "type": "boolean", "default": false },
+        "unique": { "type": "boolean", "default": false, "description": "When set to true the value should be suffixed with a timestamp by the UI" },
         "depends": {
           "type": "object",
           "description": "Makes this resource dependent upon the specified product_input dependency being matched.  Only if the constraint is matched, will this resource be provisioned.  This allows for profiles within a product definition such as; if cloud == aws then provision this resource",

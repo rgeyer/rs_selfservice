@@ -1,0 +1,84 @@
+{
+  "cloud": { "provider": "vagrant", "public_ips": [], "private_ips": [] },
+  "rightscale": { "instance_uuid": "uuid-default" },
+  "sys": {
+    "swap_size": "0.5",
+    "swap_file": "/mnt/ephemeral/swapfile"
+  },
+  "block_device": {
+    "devices": {
+      "device1": {
+        "mount_point": "/mnt/storage",
+        "backup": {
+          "lineage": "lineage"
+        }
+      }
+    }
+  },
+  "repo": {
+    "default": {
+      "repository": "git://github.com/rgeyer/rs_selfservice.git",
+      "branch": "master",
+      "destination": "/home/webapps"
+    }
+  },
+  "app_php": {
+    "modules_list": ["php53-pdo","php53u-mysql","php53u-pecl-memcached","php-pecl-mongo","php53u-xml"]
+  },
+  "web_apache": {
+    "application_name": "rsss"
+  },
+  "rsss": {
+    "rightscale_email": "ryan.geyer@rightscale.com",
+    "rightscale_password": "Madvcr047MEPbDbJ",
+    "rightscale_acct_num": "63370",
+    "revision": "master",
+    "fqdn": "33.33.33.9",
+    "products": ["baselinux","3tier"],
+    "users": ["ryan.geyer@rightscale.com"],
+    "owners": [
+      "1:816783988377",
+      "2:816783988377",
+      "3:816783988377",
+      "4:816783988377",
+      "5:816783988377",
+      "6:816783988377",
+      "7:816783988377",
+      "8:816783988377"
+    ],
+    "dns": {
+      "_comment": "Set these plus 'user' and 'password' if you want to perform a dynamic DNS update. Otherwise leave blank",
+      "id": "id",
+      "region": "only for CloudDNS"
+    }
+  },
+  "system": {
+    "short_hostname": "vg",
+    "domain_name": "wordpressaio"
+  },
+  "resolver": {
+    "nameservers": ["8.8.8.8","8.8.4.4","4.2.2.3","4.2.2.6"],
+    "search": "foo.bar.baz"
+  },
+  "run_list": [
+    "recipe[resolver]",
+    "recipe[rightscaleshim]",
+    "recipe[system::hostname]",
+    "recipe[logging::default]",
+    "recipe[sys_firewall::default]",
+    "recipe[sys_ntp::default]",
+    "recipe[rightscale::default]",
+    "recipe[rightscale::install_tools]",
+    "recipe[block_device::setup_ephemeral]",
+    "recipe[sys::setup_swap]",
+    "recipe[repo::default]",
+    "recipe[web_apache::default]",
+    "recipe[app_php::setup_server_5_3]",
+    "recipe[app::install_server]",
+    "recipe[app::do_update_code]",
+    "recipe[app::setup_vhost]",
+    "recipe[web_apache::setup_monitoring]",
+    "recipe[memcached::install_server]",
+    "recipe[rsss::setup_rsss_aio]"
+  ]
+}
