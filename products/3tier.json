@@ -85,22 +85,6 @@
       "id": "prod_datacenter",
       "resource_type": "datacenter_product_input",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud_1" },
-      "default_value": [
-        {
-          "cloud_href": "/api/clouds/1",
-          "resource_hrefs": [
-            "/api/clouds/1/datacenters/36F8AT46B08LN",
-            "/api/clouds/1/datacenters/6BFHL6M8K8FHH"
-          ]
-        },
-        {
-          "cloud_href": "/api/clouds/2",
-          "resource_hrefs": [
-            "/api/clouds/2/datacenters/2T6TBBRK2E94D",
-            "/api/clouds/2/datacenters/83CG48S3I2H31"
-          ]
-        }
-      ],
       "input_name": "prod_datacenter",
       "display_name": "Datacenters",
       "description": "A list of datacenters your instances will be evenly distributed amongst for HA",
@@ -110,22 +94,6 @@
       "id": "burst_datacenter",
       "resource_type": "datacenter_product_input",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud_2" },
-      "default_value": [
-        {
-          "cloud_href": "/api/clouds/1",
-          "resource_hrefs": [
-            "/api/clouds/1/datacenters/36F8AT46B08LN",
-            "/api/clouds/1/datacenters/6BFHL6M8K8FHH"
-          ]
-        },
-        {
-          "cloud_href": "/api/clouds/2",
-          "resource_hrefs": [
-            "/api/clouds/2/datacenters/2T6TBBRK2E94D",
-            "/api/clouds/2/datacenters/83CG48S3I2H31"
-          ]
-        }
-      ],
       "input_name": "burst_datacenter",
       "display_name": "Burst Datacenters",
       "description": "A list of datacenters your instances will be evenly distributed amongst for HA",
@@ -141,22 +109,6 @@
       "id": "dr_datacenter",
       "resource_type": "datacenter_product_input",
       "cloud_product_input": { "ref": "cloud_product_input", "id": "cloud_3" },
-      "default_value": [
-        {
-          "cloud_href": "/api/clouds/1",
-          "resource_hrefs": [
-            "/api/clouds/1/datacenters/36F8AT46B08LN",
-            "/api/clouds/1/datacenters/6BFHL6M8K8FHH"
-          ]
-        },
-        {
-          "cloud_href": "/api/clouds/2",
-          "resource_hrefs": [
-            "/api/clouds/2/datacenters/2T6TBBRK2E94D",
-            "/api/clouds/2/datacenters/83CG48S3I2H31"
-          ]
-        }
-      ],
       "input_name": "dr_datacenter",
       "display_name": "DR Datacenters",
       "description": "A list of datacenters your instances will be evenly distributed amongst for HA",
